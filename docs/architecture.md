@@ -70,8 +70,25 @@ values sent to the device are never translated, and user data (network names,
 reminders, face names) is marked `translate="no"`. Every `lz('…')` key must be
 in `RU`; `tests/i18n` checks it.
 
-The page is also a home-screen web app: `/manifest.webmanifest` and the icons
-from `src/PwaAssets.h` (`tools/pwa_icon.py`, `tools/gen_pwa.py`).
+The page is also a home-screen web app (how to add it: README, *On your phone
+as an app*):
+
+- `/manifest.webmanifest` (`display: standalone`, start URL and scope `/`) and
+  the icons `/apple-touch-icon.png`, `/icon-192.png`, `/icon-512.png` come from
+  `src/PwaAssets.h`. `tools/pwa_icon.py` draws the icons into `tools/pwa/`,
+  `tools/gen_pwa.py` writes the header; run both after changing an icon or
+  the manifest. They are served without the password (a phone fetches them
+  without credentials) and cached for a week.
+- The `apple-mobile-web-app-*` meta tags give iOS a full-screen app with a
+  translucent status bar; the page pads itself with `env(safe-area-inset-*)`.
+- The viewport has `maximum-scale=1`, which most browsers obey. Safari
+  ignores it, so in the installed app only (`display-mode: standalone` or
+  `navigator.standalone`) the page also cancels the iOS `gesturestart` /
+  `gesturechange` events (pinch) and sets `touch-action: pan-y` (double tap)
+  and `overscroll-behavior: none` (the rubber band past the edges); text can
+  be selected in fields only. A Safari tab keeps its normal zoom.
+- There is no service worker: the page needs the device anyway, and a service
+  worker needs HTTPS.
 
 ## Network
 

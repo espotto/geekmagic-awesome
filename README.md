@@ -40,6 +40,22 @@ apps, styled after Apple's watch faces and settings.
 4. Set your location in **General → Location** for the weather. The clock
    starts on the Modular watch face.
 
+## On your phone as an app
+
+The web page can sit on your home screen and open like an app: full screen,
+with its own icon, no browser bars, no zooming or scrolling past the edges.
+
+- **iPhone, iPad:** open `http://geekmagic.local` in Safari, tap **Share →
+  Add to Home Screen**.
+- **Android:** open the page in Chrome, tap **⋮ → Add to Home screen**.
+  Chrome makes a full app only for HTTPS pages, so over the device's plain
+  HTTP it adds a shortcut that opens in the browser.
+
+Add it from the address you will keep using: the device name
+(`geekmagic.local`, or the name you set in General) survives a new IP address
+from the router, an IP address does not. If you set a web password, the app
+asks for it like the browser does.
+
 ## Documentation
 
 | Document | For |
