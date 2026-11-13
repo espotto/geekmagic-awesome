@@ -1,5 +1,7 @@
 # geekmagic
 
+![geekmagic: циферблаты, приложения и веб-страница](docs/images/cover.png)
+
 [English version](README.md)
 
 Открытая прошивка для **GeekMagic SmallTV-Ultra** — маленького настольного

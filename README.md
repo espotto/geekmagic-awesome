@@ -1,5 +1,7 @@
 # geekmagic
 
+![geekmagic: watch faces, apps and the web page](docs/images/cover.png)
+
 [Русская версия](README.ru.md)
 
 Open firmware for the **GeekMagic SmallTV-Ultra**, the small 240×240 desktop
