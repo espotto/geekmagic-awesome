@@ -74,6 +74,28 @@ banner says so and the screen goes back.
 curl -X POST http://geekmagic.local/api/timer -d '{"start":300,"label":"Tea"}'
 ```
 
+## Pomodoro
+
+Focus sessions and breaks on the Timer's ring: red for focus, green for the
+short break after each session, blue for the long break after every *n*
+sessions; a dot under the time for each session of the set. When a phase ends
+a banner says what comes next, and with **Start the next one automatically**
+it starts by itself. Starting it puts it over the current app, like the
+timer. The durations are settings (`pomodoro` in `/api/config`: `focusMin`
+1–120, `shortMin` and `longMin` 1–60, `rounds` 1–8, `autoNext`); a phase
+keeps the length it started with. The run itself is not saved: a restart stops
+it.
+
+`POST /api/pomodoro` with any of: `start` (`true`: start the phase shown, or
+resume; optional `show`, default `true`), `pause`, `skip` (end this phase now,
+counted as done), `reset` (back to the first session, stopped), `show`,
+`hide`. `GET /api/pomodoro` and every `POST` answer
+`{"state":"idle|running|paused","phase":"focus|short|long","left":…,"total":…,"done":N,"rounds":4,"show":true}`.
+
+```sh
+curl -X POST http://geekmagic.local/api/pomodoro -d '{"start":true}'
+```
+
 ## Nightstand
 
 With **Display → Night** set to a schedule or to sunset-to-sunrise, the

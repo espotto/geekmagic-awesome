@@ -90,6 +90,19 @@ struct ButtonSettings {
   void fromJson(JsonObjectConst o);
 };
 
+// ---- Pomodoro slice (the app's durations) ----------------------------------
+struct PomodoroSettings {
+  uint8_t focusMin;   // 1..120
+  uint8_t shortMin;   // 1..60
+  uint8_t longMin;    // 1..60
+  uint8_t rounds;     // focus sessions before the long break, 1..8
+  bool    autoNext;   // the next phase starts by itself
+
+  void setDefaults();
+  void toJson(JsonObject o) const;
+  void fromJson(JsonObjectConst o);
+};
+
 // ---- Top-level settings ----------------------------------------------------
 struct Settings {
   // --- WiFi station networks (the device joins one of these) ---
@@ -107,7 +120,7 @@ struct Settings {
 
   // --- Carousel (mode == MODE_CAROUSEL): dwell + which features rotate ---
   uint16_t carouselSec;
-  bool carouselTheme, carouselCalendar, carouselReminders, carouselWeather, carouselTimer;
+  bool carouselTheme, carouselCalendar, carouselReminders, carouselWeather, carouselTimer, carouselPomodoro;
 
   // --- Shared HTTP / display ---
   uint16_t httpTimeout; // ms
@@ -121,6 +134,7 @@ struct Settings {
   DisplaySettings display;   // panel colour correction
   AuthSettings    auth;      // optional web UI password
   ButtonSettings  button;    // physical button behaviour (boards with BTN_PIN)
+  PomodoroSettings pomodoro; // the Pomodoro app's durations
 
   void setDefaults();
 };

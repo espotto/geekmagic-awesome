@@ -18,6 +18,12 @@ struct Layout {
   bool smallDigits = false;    // over an hour: Headline instead of DisplayS
   char label[28] = {0};
   char sub[28] = {0};
+  // Set after layout() by an app that draws this screen in its own colours
+  // (Pomodoro): the arc running and paused, the label, and a row of dots
+  // under the time, `dotsOn` of them filled.
+  uint16_t arc = 0xFCE1, arcDim = 0x7A40;   // #ff9f0a and a paused one
+  uint16_t labelColour = 0x8C72;
+  uint8_t dots = 0, dotsOn = 0;
 };
 
 // `leftMs` of `totalMs`; `endHour`/`endMin` < 0 when the clock is not set.

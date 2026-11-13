@@ -103,6 +103,33 @@ void ButtonSettings::fromJson(JsonObjectConst o) {
 }
 
 // ===========================================================================
+// Pomodoro slice
+// ===========================================================================
+void PomodoroSettings::setDefaults() {
+  focusMin = 25;
+  shortMin = 5;
+  longMin  = 15;
+  rounds   = 4;
+  autoNext = true;
+}
+
+void PomodoroSettings::toJson(JsonObject o) const {
+  o["focusMin"] = focusMin;
+  o["shortMin"] = shortMin;
+  o["longMin"]  = longMin;
+  o["rounds"]   = rounds;
+  o["autoNext"] = autoNext;
+}
+
+void PomodoroSettings::fromJson(JsonObjectConst o) {
+  if (o["focusMin"].is<int>()) focusMin = constrain((int)o["focusMin"], 1, 120);
+  if (o["shortMin"].is<int>()) shortMin = constrain((int)o["shortMin"], 1, 60);
+  if (o["longMin"].is<int>())  longMin  = constrain((int)o["longMin"], 1, 60);
+  if (o["rounds"].is<int>())   rounds   = constrain((int)o["rounds"], 1, 8);
+  if (o["autoNext"].is<bool>()) autoNext = o["autoNext"];
+}
+
+// ===========================================================================
 // Web UI password slice
 // ===========================================================================
 void AuthSettings::setDefaults() {
@@ -202,6 +229,7 @@ void Settings::setDefaults() {
   carouselReminders = false;
   carouselWeather = false;
   carouselTimer = false;
+  carouselPomodoro = false;
   httpTimeout = DEFAULT_HTTP_TIMEOUT;
 
   brightness = DEFAULT_BRIGHTNESS;
@@ -213,6 +241,7 @@ void Settings::setDefaults() {
   display.setDefaults();
   auth.setDefaults();
   button.setDefaults();
+  pomodoro.setDefaults();
 }
 
 // ---------------------------------------------------------------------------
@@ -288,6 +317,7 @@ void settingsToJson(const Settings& s, JsonObject root, bool includeSecrets) {
                             : (s.mode == MODE_REMINDERS) ? "reminders"
                             : (s.mode == MODE_WEATHER) ? "weather"
                             : (s.mode == MODE_TIMER) ? "timer"
+                            : (s.mode == MODE_POMODORO) ? "pomodoro"
                             : (s.mode == MODE_CAROUSEL) ? "carousel" : "theme";
   root["carouselSec"]       = s.carouselSec;
   root["carouselTheme"]     = s.carouselTheme;
@@ -295,6 +325,7 @@ void settingsToJson(const Settings& s, JsonObject root, bool includeSecrets) {
   root["carouselReminders"] = s.carouselReminders;
   root["carouselWeather"]   = s.carouselWeather;
   root["carouselTimer"]     = s.carouselTimer;
+  root["carouselPomodoro"]  = s.carouselPomodoro;
   root["httpTimeout"]       = s.httpTimeout;
   root["brightness"]        = s.brightness;
   root["autoBrightness"]    = s.autoBrightness;
@@ -306,6 +337,7 @@ void settingsToJson(const Settings& s, JsonObject root, bool includeSecrets) {
   s.display.toJson(root["display"].to<JsonObject>());
   s.auth.toJson(root["auth"].to<JsonObject>(), includeSecrets);
   s.button.toJson(root["button"].to<JsonObject>());
+  s.pomodoro.toJson(root["pomodoro"].to<JsonObject>());
 }
 
 // Apply only the keys that are present (partial update friendly). Accepts both
@@ -360,6 +392,7 @@ void settingsApplyJson(Settings& s, JsonObjectConst root) {
            : m.equalsIgnoreCase("reminders") ? MODE_REMINDERS
            : m.equalsIgnoreCase("weather") ? MODE_WEATHER
            : m.equalsIgnoreCase("timer") ? MODE_TIMER
+           : m.equalsIgnoreCase("pomodoro") ? MODE_POMODORO
            : m.equalsIgnoreCase("carousel") ? MODE_CAROUSEL
            // apps this firmware no longer has: the watch face instead
            : (m.equalsIgnoreCase("stocks") || m.equalsIgnoreCase("radar") || m.equalsIgnoreCase("ha") ||
@@ -381,6 +414,7 @@ void settingsApplyJson(Settings& s, JsonObjectConst root) {
   if (root["carouselReminders"].is<bool>()) s.carouselReminders = root["carouselReminders"];
   if (root["carouselWeather"].is<bool>()) s.carouselWeather = root["carouselWeather"];
   if (root["carouselTimer"].is<bool>()) s.carouselTimer = root["carouselTimer"];
+  if (root["carouselPomodoro"].is<bool>()) s.carouselPomodoro = root["carouselPomodoro"];
 
   if (root["httpTimeout"].is<int>())        s.httpTimeout = constrain((int)root["httpTimeout"], 1000, 20000);
   if (root["brightness"].is<int>())         s.brightness = constrain((int)root["brightness"], 0, 100);
@@ -393,6 +427,7 @@ void settingsApplyJson(Settings& s, JsonObjectConst root) {
   if (root["display"].is<JsonObjectConst>()) s.display.fromJson(root["display"].as<JsonObjectConst>());
   if (root["auth"].is<JsonObjectConst>()) s.auth.fromJson(root["auth"].as<JsonObjectConst>());
   if (root["button"].is<JsonObjectConst>()) s.button.fromJson(root["button"].as<JsonObjectConst>());
+  if (root["pomodoro"].is<JsonObjectConst>()) s.pomodoro.fromJson(root["pomodoro"].as<JsonObjectConst>());
 
   // The sun schedule and the light sensor each pick the brightness alone: not
   // both. Whichever this save turned on wins; if both arrive on (or both were

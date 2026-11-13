@@ -2,7 +2,7 @@
 //
 // Apps, each a self-contained DisplayMode (see Mode.h), picked in the web UI
 // and dispatched from the registry below: watch faces (features/theme),
-// Calendar, Reminders, Weather and Timer;
+// Calendar, Reminders, Weather, Timer and Pomodoro;
 // notifications, the timer and the nightstand go over them.
 // Shared plumbing (WiFi, web UI, OTA, display core, settings) lives at src root.
 //
@@ -25,6 +25,7 @@
 #include "RemindersMode.h"
 #include "WeatherMode.h"
 #include "TimerMode.h"
+#include "PomodoroMode.h"
 #include "Nightstand.h"
 
 
@@ -37,6 +38,7 @@ static DisplayMode* kModes[] = {
   &g_remindersMode,
   &g_weatherMode,
   &g_timerMode,
+  &g_pomodoroMode,
 };
 static const size_t kModeCount = sizeof(kModes) / sizeof(kModes[0]);
 
@@ -54,6 +56,7 @@ static bool carouselHas(const Settings& s, const DisplayMode* m) {
     case MODE_REMINDERS: return s.carouselReminders;
     case MODE_WEATHER: return s.carouselWeather;
     case MODE_TIMER: return s.carouselTimer;
+    case MODE_POMODORO: return s.carouselPomodoro;
     default:          return true;
   }
 }
@@ -457,6 +460,7 @@ void loop() {
   clockService(g_settings);
   appApplyBrightness();
   g_timerMode.tick(g_settings);   // a timer that reaches zero raises its banner here
+  g_pomodoroMode.tick(g_settings);   // so does each Pomodoro phase
 
   // On expiry the carousel dwell is credited back the time it was hidden, so it
   // resumes on the same feature with the same remaining slice. heldMs() spans
@@ -485,6 +489,16 @@ void loop() {
     return;
   }
   if (wasTimer) { wasTimer = false; restore = true; }
+  // Then a running Pomodoro started with "show".
+  static bool wasPomodoro = false;
+  if (g_pomodoroMode.overlay()) {
+    if (!wasPomodoro || restore) g_pomodoroMode.invalidate(g_settings);
+    wasPomodoro = true;
+    g_pomodoroMode.service(g_settings);
+    delay(5);
+    return;
+  }
+  if (wasPomodoro) { wasPomodoro = false; restore = true; }
 
   // At night, the night clock over every app.
   static bool wasNightstand = false;

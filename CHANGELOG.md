@@ -2,6 +2,13 @@
 
 The firmware is `geekmagic-<version>`; every release adds 0.01.
 
+## 1.42 — 2026-11-13
+
+- **Pomodoro**, a new app: focus sessions, short breaks and a long break after
+  every few sessions, on a ring in the colour of the phase with a dot per
+  session. A banner at the end of each phase; the next one can start by
+  itself. Durations in its page; `/api/pomodoro` for scripts and Shortcuts.
+
 ## 1.41 — 2026-11-13
 
 - **Software Update** checks for a new release when the web page opens and

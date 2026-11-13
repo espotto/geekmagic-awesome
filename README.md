@@ -10,12 +10,12 @@ apps, styled after Apple's watch faces and settings.
 
 ## Features
 
-- **Apps:** watch faces, Calendar, Reminders, Weather, Timer. Show one, or let
+- **Apps:** watch faces, Calendar, Reminders, Weather, Timer, Pomodoro. Show one, or let
   the screen rotate through several with a soft fade.
 - **Watch faces:** two built in, *Modular* (digital, with the weather) and
   *Utility* (analog). More can be installed as packages; you can make your own.
-- **Over any app:** notification banners from any script, the running timer,
-  and a dim Nightstand clock at night.
+- **Over any app:** notification banners from any script, the running timer
+  or Pomodoro, and a dim Nightstand clock at night.
 - **Weather** from Open-Meteo for your location, no account or key.
 - **Reminders and timers from your phone:** a simple HTTP API that works with
   iPhone Shortcuts and Siri.

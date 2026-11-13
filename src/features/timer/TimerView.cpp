@@ -17,10 +17,9 @@ const char kWords[] PROGMEM =
 
 constexpr int kCx = 120, kCy = 120, kOuter = 98, kWidthPx = 12;
 constexpr int kMid16 = (kOuter - kWidthPx / 2) * 16;
-const uint16_t kOrange = 0xFCE1;      // #ff9f0a
-const uint16_t kOrangeDim = 0x7A40;   // a paused arc
 const uint16_t kTrack = 0x31A6;       // #333333 with a warm cast
 const uint16_t kGrey = 0x8C72;
+const uint16_t kDot = 0x4208;         // #444444, a session still to do
 
 // A pixel's direction relative to the start (12 o'clock) and the end, by
 // cross products: no trigonometry per pixel.
@@ -74,7 +73,7 @@ void renderRow(const Layout& l, int y, uint16_t* row) {
   for (int x = 0; x < appdraw::kWidth; ++x) row[x] = 0;
   const int dy = y - kCy;
   if (dy >= -kOuter - 1 && dy <= kOuter + 1) {
-    const uint16_t arc = l.state == State::Paused ? kOrangeDim : l.state == State::Idle ? kTrack : kOrange;
+    const uint16_t arc = l.state == State::Paused ? l.arcDim : l.state == State::Idle ? kTrack : l.arc;
     const int capR = kWidthPx * 8;   // half the band, 1/16 px
     for (int x = kCx - kOuter - 1; x <= kCx + kOuter + 1; ++x) {
       const int a = appdraw::ring16(x, y, kCx * 16, kCy * 16, (kOuter - kWidthPx) * 16, kOuter * 16);
@@ -94,8 +93,19 @@ void renderRow(const Layout& l, int y, uint16_t* row) {
   const TextStyle ds = l.smallDigits ? TextStyle::Headline : TextStyle::DisplayS;
   const int dh = gm::styleLineHeight(ds);
   appdraw::textCentered(ds, l.digits, kCx, kCy - dh / 2 - 2, y, 0xFFFF, row);
-  appdraw::textCentered(TextStyle::Caption, l.label, kCx, kCy - dh / 2 - 26, y, kGrey, row);
-  if (l.sub[0]) appdraw::textCentered(TextStyle::Caption, l.sub, kCx, kCy + dh / 2 + 4, y, l.state == State::Paused ? kOrange : kGrey, row);
+  appdraw::textCentered(TextStyle::Caption, l.label, kCx, kCy - dh / 2 - 26, y, l.labelColour, row);
+  if (l.sub[0]) appdraw::textCentered(TextStyle::Caption, l.sub, kCx, kCy + dh / 2 + 4, y, l.state == State::Paused ? l.arc : kGrey, row);
+  if (l.dots) {   // 8 px dots, 14 px apart, under the line below the time
+    const int cy = kCy + dh / 2 + 36, r16 = 4 * 16;
+    if (y >= cy - 5 && y <= cy + 5)
+      for (int i = 0; i < l.dots; ++i) {
+        const int cx = kCx - (l.dots - 1) * 7 + i * 14;
+        for (int x = cx - 5; x <= cx + 5; ++x) {
+          const int a = appdraw::disc16(x, y, cx * 16 + 8, cy * 16 + 8, r16);
+          if (a) row[x] = mix(row[x], i < l.dotsOn ? l.arc : kDot, a);
+        }
+      }
+  }
 }
 
 void bannerWords(uint8_t lang, char* title, int titleCap, char* text, int textCap) {

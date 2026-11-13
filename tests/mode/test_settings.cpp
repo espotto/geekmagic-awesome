@@ -44,6 +44,7 @@ static void testNamesSetTheMode() {
   CHECK(after(MODE_THEME, "{\"mode\":\"calendar\"}") == MODE_CALENDAR, "calendar");
   CHECK(after(MODE_THEME, "{\"mode\":\"weather\"}") == MODE_WEATHER, "weather");
   CHECK(after(MODE_THEME, "{\"mode\":\"carousel\"}") == MODE_CAROUSEL, "carousel");
+  CHECK(after(MODE_THEME, "{\"mode\":\"pomodoro\"}") == MODE_POMODORO, "pomodoro");
   CHECK(after(MODE_WEATHER, "{\"mode\":\"Theme\"}") == MODE_THEME, "case is ignored");
   // Apps this firmware no longer has (ticker, radar, Home Assistant, Clawdmeter): the watch face.
   CHECK(after(MODE_WEATHER, "{\"mode\":\"stocks\"}") == MODE_THEME, "stocks");
@@ -97,7 +98,28 @@ static void wifiPasswords() {
   CHECK(s.wifi[0].pass.length() == 0, "open clears it");
 }
 
+// The Pomodoro durations: defaults, a partial save, values kept in range,
+// and the round trip through the saved JSON.
+static void testPomodoro() {
+  Settings s;
+  s.setDefaults();
+  CHECK(s.pomodoro.focusMin == 25 && s.pomodoro.shortMin == 5 && s.pomodoro.longMin == 15 &&
+        s.pomodoro.rounds == 4 && s.pomodoro.autoNext, "defaults");
+  apply(s, "{\"pomodoro\":{\"focusMin\":50}}");
+  CHECK(s.pomodoro.focusMin == 50 && s.pomodoro.shortMin == 5, "partial");
+  apply(s, "{\"pomodoro\":{\"focusMin\":0,\"shortMin\":500,\"rounds\":20,\"autoNext\":false}}");
+  CHECK(s.pomodoro.focusMin == 1 && s.pomodoro.shortMin == 60 && s.pomodoro.rounds == 8 && !s.pomodoro.autoNext, "clamped");
+  apply(s, "{\"carouselPomodoro\":true,\"pomodoro\":{\"longMin\":30}}");
+  JsonDocument doc;
+  settingsToJson(s, doc.to<JsonObject>(), false);
+  Settings back;
+  back.setDefaults();
+  settingsApplyJson(back, doc.as<JsonObjectConst>());
+  CHECK(back.carouselPomodoro && back.pomodoro.longMin == 30 && back.pomodoro.focusMin == 1 && !back.pomodoro.autoNext, "round trip");
+}
+
 int main() {
+  testPomodoro();
   wifiPasswords();
   testNamesSetTheMode();
   testEmptyMode();

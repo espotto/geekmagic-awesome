@@ -10,6 +10,7 @@
 #include "RemindersMode.h"
 #include "WeatherMode.h"
 #include "TimerMode.h"
+#include "PomodoroMode.h"
 #include "StatusJson.h"
 #include "Net.h"
 #include "Gfx.h"
@@ -506,6 +507,21 @@ static void handleTimer() {
   sendObject(code, doc);
 }
 
+// GET: the Pomodoro; POST: change it (PomodoroMode::apply), answered with the new state.
+static void handlePomodoro() {
+  if (!requireAuth()) return;
+  JsonDocument doc;
+  if (server.method() == HTTP_POST) {
+    JsonDocument body;
+    if (!server.hasArg("plain") || deserializeJson(body, server.arg("plain"))) { server.send(400, "text/plain", "bad json"); return; }
+    String error;
+    const int code = g_pomodoroMode.apply(body.as<JsonVariantConst>(), *S, error);
+    if (code != 200) { doc["ok"] = false; doc["error"] = error; sendObject(code, doc); return; }
+  }
+  g_pomodoroMode.toJson(doc.to<JsonObject>(), *S);
+  sendObject(200, doc);
+}
+
 // ---- OTA ------------------------------------------------------------------
 static void handleUpdateDone() {
   if (!requireAuth()) return;
@@ -572,6 +588,8 @@ void webPortalBegin(Settings& settings) {
   server.on("/api/weather", HTTP_POST, handleWeather);
   server.on("/api/timer", HTTP_GET, handleTimer);
   server.on("/api/timer", HTTP_POST, handleTimer);
+  server.on("/api/pomodoro", HTTP_GET, handlePomodoro);
+  server.on("/api/pomodoro", HTTP_POST, handlePomodoro);
   server.on("/api/reminders", HTTP_GET, handleRemindersGet);
   server.on("/api/reminders", HTTP_POST, handleRemindersPost);
   server.on("/apple-touch-icon.png", HTTP_GET, handleAppleIcon);
