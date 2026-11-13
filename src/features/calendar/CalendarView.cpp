@@ -178,7 +178,7 @@ void renderRow(const Layout& l, int y, uint16_t* row) {
       const int cx = colCentre(c), cy = l.gridTop + band * l.rowH + l.rowH / 2;
       const bool today = day == l.today;
       if (today && y >= cy - r - 1 && y <= cy + r) drawDisc(cx, cy, r, y, kRed, row);
-      char s[3];
+      char s[12];
       snprintf(s, sizeof(s), "%d", day);
       const int top = cy - lh / 2;
       if (y >= top - lh / 4 && y < top + lh + lh / 4)

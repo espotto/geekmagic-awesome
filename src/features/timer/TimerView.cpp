@@ -63,7 +63,7 @@ void layout(State st, uint32_t leftMs, uint32_t totalMs, const char* label,
   if (st == State::Paused) appdraw::word(kWords, lang * 4 + 2, out.sub, sizeof(out.sub));
   else if (st == State::Running && endHour >= 0) {
     appdraw::entry(kWords, lang * 4 + 1, w, sizeof(w));
-    char clock[8], utf8[48];
+    char clock[24], utf8[48];
     snprintf(clock, sizeof(clock), "%02d:%02d", endHour, endMin);
     snprintf(utf8, sizeof(utf8), w, clock);
     gm::displayTextTo(out.sub, sizeof(out.sub), utf8);

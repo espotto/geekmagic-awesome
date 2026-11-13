@@ -197,7 +197,7 @@ void layout(const Data& d, Empty empty, uint8_t lang, Layout& out) {
     const Hour& h = d.hours[i];
     // The current hour too, not a "Now" word: in some languages it is wider
     // than a column; the first column stays white to mark it.
-    snprintf(out.hourText[i], sizeof(out.hourText[i]), "%02u", static_cast<unsigned>(h.hour));
+    snprintf(out.hourText[i], sizeof(out.hourText[i]), "%02u", static_cast<unsigned>(h.hour % 100));
     formatTemp(h.temp, out.hourTemp[i], sizeof(out.hourTemp[i]));
     out.hourIcon[i] = iconFor(h.code, h.day);
     out.hourDay[i] = h.day;

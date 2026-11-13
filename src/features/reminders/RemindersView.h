@@ -30,7 +30,7 @@ struct Layout {
   int titleTop = 0, listTop = 0;
   bool smallTitle = false;
   char title[24] = {0};               // display bytes
-  char count[8] = {0};
+  char count[12] = {0};
   char moreText[24] = {0};
   char empty[32] = {0};
   char text[reminders::kMax][48] = {{0}};   // each row's text, display bytes, cut to fit

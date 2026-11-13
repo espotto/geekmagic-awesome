@@ -21,7 +21,7 @@ static uint16_t hhmmToMin(const char* s, uint16_t fallback) {
 }
 static String minToHhmm(uint16_t v) {
   if (v > 1439) v = 0;
-  char b[6];
+  char b[16];
   snprintf(b, sizeof(b), "%02u:%02u", (unsigned)(v / 60), (unsigned)(v % 60));
   return String(b);
 }
