@@ -85,5 +85,6 @@ class ThemeMode : public DisplayMode {
   bool usesWeather_ = false;
   uint32_t weatherSeen_ = 0;
   void weatherValues(const Settings& s, uint8_t lang);
+  void installDefaultFaces();
 };
 extern ThemeMode g_themeMode;

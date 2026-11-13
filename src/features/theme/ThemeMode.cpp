@@ -3,6 +3,7 @@
 #include "Gfx.h"
 #include "Platform.h"
 #include "ThemeDataClient.h"
+#include "DefaultFaces.h"
 #include "SysText.h"
 #include "WeatherMode.h"
 #include <Arduino_GFX_Library.h>
@@ -82,6 +83,41 @@ void ThemeMode::begin(const Settings&) {
   // An interrupted install leaves its staging file behind; boot is the one
   // point it is safe to remove without racing a request in progress.
   LittleFS.remove("/themes/.upload");
+  installDefaultFaces();
+}
+// The standard faces, Modular and Utility, are built into the image and are
+// always on the device: a missing one, or one that differs from the image (a
+// firmware update brought a new version), is written again at start. The
+// settings select Modular by default; the web page cannot remove them.
+// Whether the installed file is the built-in face, byte for byte.
+static bool sameAsImage(const String& path, const DefaultFace& face) {
+  File f = LittleFS.open(path, "r");
+  if (!f || f.size() != face.len) return false;
+  uint8_t a[64], b[64];
+  for (size_t at = 0; at < face.len; at += sizeof(a)) {
+    const size_t n = face.len - at < sizeof(a) ? face.len - at : sizeof(a);
+    if (f.read(a, n) != n) return false;
+    memcpy_P(b, face.data + at, n);
+    if (memcmp(a, b, n)) return false;
+  }
+  return true;
+}
+void ThemeMode::installDefaultFaces() {
+  for (const DefaultFace& face : DEFAULT_FACES) {
+    const String path = String("/themes/") + face.id + ".stheme";
+    if (sameAsImage(path, face)) continue;
+    File f = LittleFS.open(path, "w");
+    if (!f) continue;
+    uint8_t buf[128];   // flash is read in aligned words: copy it out, a piece at a time
+    bool ok = true;
+    for (size_t at = 0; at < face.len && ok; at += sizeof(buf)) {
+      const size_t n = face.len - at < sizeof(buf) ? face.len - at : sizeof(buf);
+      memcpy_P(buf, face.data + at, n);
+      ok = f.write(buf, n) == n;
+    }
+    f.close();
+    if (!ok) LittleFS.remove(path);
+  }
 }
 // Drops every bit of state for the currently loaded theme -- the open
 // package/file, any in-flight or fetched data, and the engine itself -- so

@@ -1,5 +1,6 @@
 #include "WebPortal.h"
 #include "SysText.h"
+#include "DefaultFaces.h"
 #include "Platform.h"
 #include "WebGuard.h"
 #include <ArduinoJson.h>
@@ -127,6 +128,8 @@ static void handleGetConfig() {
   settingsToJson(*S, root, /*includeSecrets=*/false);
   // Physical button: only some boards have one, so the UI hides its card otherwise.
   JsonObject feat = root["features"].to<JsonObject>();
+  JsonArray builtIn = root["builtInFaces"].to<JsonArray>();   // the page offers no Remove for these
+  for (const DefaultFace& face : DEFAULT_FACES) builtIn.add(face.id);
 #ifdef BTN_PIN
   feat["button"] = true;
 #else
@@ -343,10 +346,23 @@ static void handleCrashClear() {
   server.send(200, "application/json", "{\"ok\":true}");
 }
 
+// Erase All Content and Settings: the settings, the reminders, the watch faces
+// the user added and the crash record. The built-in faces stay. The restart
+// then starts like a new device: the setup hotspot, Modular on the screen.
 static void handleFactory() {
   if (!requireAuth()) return;
   factoryReset(*S);
   saveSettings(*S);
+  LittleFS.remove("/reminders.json");
+  LittleFS.remove("/reminders.tmp");
+  Dir dir = LittleFS.openDir("/themes");
+  while (dir.next()) {
+    if (!dir.isFile()) continue;
+    bool builtIn = false;
+    for (const DefaultFace& face : DEFAULT_FACES) builtIn |= dir.fileName() == String(face.id) + ".stheme";
+    if (!builtIn) LittleFS.remove("/themes/" + dir.fileName());   // the index too: rebuilt as needed
+  }
+  platformCrashRecordClear();
   server.send(200, "application/json", "{\"ok\":true}");
   scheduleReboot(400);
 }

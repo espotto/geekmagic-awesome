@@ -1,8 +1,9 @@
 # Recovery
 
-- **Erase All Settings** (General → Transfer or Reset) removes the settings and
-  restarts into the setup hotspot `GeekMagic-Setup`. Installed watch faces and
-  the firmware stay.
+- **Erase All Content and Settings** (General → Transfer or Reset) removes the
+  settings, the reminders, the watch faces you added and the crash record, and
+  restarts like a new device: the setup hotspot `GeekMagic-Setup`, with Modular
+  on the screen. The built-in faces and the firmware stay.
 - **Setup hotspot.** When no saved network can be joined, the device opens its
   hotspot and shows a QR code to join it; the page is then at
   `http://192.168.4.1`.

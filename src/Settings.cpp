@@ -195,7 +195,7 @@ void Settings::setDefaults() {
   hostname = String(DEFAULT_HOSTNAME) + "-" + String(platformChipId() & 0xFFFF, HEX);
 
   mode = DEFAULT_MODE;
-  themeId = "";
+  themeId = "modular";   // built into the image, installed on first start (ThemeMode)
   carouselSec = DEFAULT_CAROUSEL_SEC;
   carouselTheme = false;   // opt in: needs an installed theme, else the slot shows an error
   carouselCalendar = false;

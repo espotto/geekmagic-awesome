@@ -12,6 +12,7 @@ J="$THEME_JSON_INCLUDE"
 run() { printf '%-26s ' "$1"; shift; "$@" >/tmp/geekmagic-test.log 2>&1 && echo ok || { echo FAIL; tail -20 /tmp/geekmagic-test.log; exit 1; }; }
 
 run webui.h python3 tools/gzip_webui.py --check
+run default-faces python3 tools/gen_default_faces.py --check
 for t in screens notify calendar reminders apps mode auth sun; do run "$t" sh "tests/$t/run.sh"; done
 run status sh -c "c++ -std=c++11 -Wall -Wextra -Werror -Isrc -I$J tests/status/test_status.cpp -o /tmp/geekmagic-status && /tmp/geekmagic-status"
 if [ $LINUX = 1 ]; then run status-memory sh tests/status/run.sh; fi

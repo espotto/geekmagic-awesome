@@ -12,8 +12,8 @@ apps, styled after Apple's watch faces and settings.
 
 - **Apps:** watch faces, Calendar, Reminders, Weather, Timer. Show one, or let
   the screen rotate through several with a soft fade.
-- **Watch faces:** two included, *Modular* (digital, with the weather) and
-  *Utility* (analog). Faces are installable packages; you can make your own.
+- **Watch faces:** two built in, *Modular* (digital, with the weather) and
+  *Utility* (analog). More can be installed as packages; you can make your own.
 - **Over any app:** notification banners from any script, the running timer,
   and a dim Nightstand clock at night.
 - **Weather** from Open-Meteo for your location, no account or key.
@@ -35,8 +35,8 @@ apps, styled after Apple's watch faces and settings.
    [docs/recovery.md](docs/recovery.md)).
 3. Join the `GeekMagic-Setup` hotspot (scan the QR code on the screen), pick
    your Wi‑Fi network, and open `http://geekmagic.local`.
-4. Install a watch face from [`faces/`](faces) in **Apps → Watch face**, and set
-   your location in **General → Location** for the weather.
+4. Set your location in **General → Location** for the weather. The clock
+   starts on the Modular watch face.
 
 ## Documentation
 

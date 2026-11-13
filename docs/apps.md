@@ -9,8 +9,11 @@ Every endpoint below needs the web password when one is set (HTTP digest).
 
 ## Watch face
 
-Shows the selected watch face. See [watch-faces.md](watch-faces.md) for the
-package format and `/api/themes`.
+Shows the selected watch face. Modular and Utility are built into the firmware
+(`src/DefaultFaces.h`): they are always on the device, written again at start
+when missing or older than the image, cannot be removed, and a new device shows
+Modular. See
+[watch-faces.md](watch-faces.md) for the package format and `/api/themes`.
 
 ## Calendar
 
@@ -114,5 +117,5 @@ over the set number of minutes.
 | `POST /api/config` | Changes the settings in the JSON body (only the keys present); a Wi‑Fi change restarts the device |
 | `GET /api/export` / `POST /api/import` | The full settings file, passwords included / restore it and restart |
 | `GET /api/scan` | Wi‑Fi networks in range |
-| `POST /api/reboot`, `POST /api/factory` | Restart / erase the settings and restart into the setup hotspot |
+| `POST /api/reboot`, `POST /api/factory` | Restart / erase the settings, reminders and watch faces and restart as new |
 | `POST /update` | A firmware image as `multipart/form-data` field `firmware` |

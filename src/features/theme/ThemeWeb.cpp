@@ -1,4 +1,5 @@
 #include "ThemeWeb.h"
+#include "DefaultFaces.h"
 #include "ThemeMode.h"
 #include "ThemeCatalog.h"
 #include "Clock.h"
@@ -460,6 +461,11 @@ void deleteTheme() {
     reply(404, "Theme not found");
     return;
   }
+  for (const DefaultFace& face : DEFAULT_FACES)
+    if (id == face.id) {
+      reply(409, "A built-in watch face cannot be removed");
+      return;
+    }
   bool onScreen = settings->mode == MODE_THEME || (settings->mode == MODE_CAROUSEL && settings->carouselTheme);
   if (settings->themeId == id && onScreen) {
     // Inspecting parses the package; free the running copy first if the heap

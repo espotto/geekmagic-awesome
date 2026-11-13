@@ -66,4 +66,7 @@ python3 tools/faces.py preview faces/modular /tmp/modular.html --data device.wea
 curl -F theme=@faces/modular.stheme http://geekmagic.local/api/themes/install
 ```
 
-The format is documented in [watch-faces.md](watch-faces.md).
+The format is documented in [watch-faces.md](watch-faces.md). Modular and
+Utility are also built into the firmware: after rebuilding either package, run
+`python3 tools/gen_default_faces.py` to update `src/DefaultFaces.h`
+(`tests/run_all.sh` checks they match).

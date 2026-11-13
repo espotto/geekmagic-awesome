@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
 <title>GeekMagic</title>
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
@@ -224,6 +224,7 @@ button.btn.sm{height:32px;padding:0 12px}
 #hostRow>.grow{flex:0 0 auto}
 #hostRow input{flex:1 1 auto;min-width:0;max-width:none;width:auto}
 #hostRow .btn{flex:0 0 auto}
+@media (display-mode:standalone){html,body{overscroll-behavior:none;touch-action:pan-y;-webkit-user-select:none;user-select:none}input,textarea,select{-webkit-user-select:text;user-select:text}}
 @media (max-width:420px){nav button{padding:5px 7px;font-size:13.5px}}
 .hero .st{padding-left:3px}
 </style>
@@ -450,7 +451,6 @@ applyUiTheme();
    <div class="item" id="hostRow"><div class="grow">Name</div><input id="hostname" class="inl" type="text" placeholder="geekmagic" autocomplete="off" spellcheck="false" oninput="hostChanged()"><button class="btn sm" type="button" id="hostBtn" onclick="saveHostname()" hidden>Rename</button></div>
   </div>
   <div class="group gap" id="statusBox"><div class="item muted">Loading…</div></div>
-  <p class="hintx">http://<span id="hostHint">geekmagic</span>.local</p>
 
   <div class="group gap" data-manual>
    <details class="more" id="updMore"><summary><div class="grow">Software Update<div class="sub">Installed <span id="fwVer">-</span></div></div></summary><div class="body">
@@ -505,9 +505,9 @@ applyUiTheme();
     <small class="hint">The file holds the Wi&#8209;Fi passwords.</small>
    </div></details>
    <button class="item act blue" type="button" onclick="reboot()">Restart</button>
-   <button class="item act red" type="button" onclick="factory()">Erase All Settings</button>
+   <button class="item act red" type="button" onclick="factory()">Erase All Content and Settings</button>
   </div>
-  <p class="foot"><span id="footVer"></span></p>
+  <p class="foot"><a href="https://github.com/espotto/geekmagic-awesome" target="_blank" rel="noopener" translate="no">github.com/espotto/geekmagic-awesome</a></p>
  </section>
 </main>
 
@@ -659,7 +659,7 @@ var RU={
  'Pick a config .json first':'Сначала выберите файл .json','Not valid JSON':'Это не JSON','Apply this configuration and reboot?':'Применить эти настройки и перезагрузить?',
  'Imported, rebooting...':'Загружено, перезагрузка…','Import failed':'Не удалось загрузить',
  'Restart':'Перезагрузить','Restart the device?':'Перезагрузить устройство?','Restarting…':'Перезагрузка…',
- 'Erase all settings? Wi‑Fi, watch face choice and every option go back to factory values, and the device restarts into its setup hotspot. This cannot be undone.':'Стереть все настройки? Wi‑Fi, выбор циферблата и все параметры вернутся к заводским, устройство перезагрузится в режим точки доступа. Это нельзя отменить.',
+ 'Erase all content and settings? Wi‑Fi, reminders, watch faces and every option are erased, and the device restarts as new, with the standard watch faces, into its setup hotspot. This cannot be undone.':'Стереть контент и настройки? Сети Wi‑Fi, напоминания, циферблаты и все параметры будут стёрты, устройство перезагрузится как новое, со стандартными циферблатами, в режиме точки доступа. Это нельзя отменить.',
  'Erased, restarting…':'Стёрто, перезагрузка…',
  // why the device last started (ESP.getResetReason())
  'Power On':'Включение питания','Hardware Watchdog':'Аппаратный сторожевой таймер','Exception':'Исключение',
@@ -685,7 +685,7 @@ var RU={
  // the layout of 3.5.0-ru.35
  'Software Update':'Обновление ПО','Date & Time':'Дата и время','Time Zone':'Часовой пояс',
  'Privacy & Security':'Конфиденциальность и безопасность','Transfer or Reset':'Перенос или сброс','Back Up Settings':'Резервная копия',
- 'Erase All Settings':'Стереть все настройки','Screen orientation':'Ориентация экрана',
+ 'Erase All Content and Settings':'Стереть контент и настройки','Screen orientation':'Ориентация экрана',
  'of this project. The device restarts when done.':'этого проекта. По окончании устройство перезагрузится.',
  'Off by default: anyone on your network can open this page. A password locks the page, the API and firmware installs behind HTTP digest auth, so the password itself never crosses the network.':'По умолчанию выключен: эту страницу может открыть любой в вашей сети. Пароль закрывает страницу, API и установку прошивки через HTTP digest, сам пароль по сети не передаётся.',
  'The export holds the Wi‑Fi passwords in clear text; keep the file safe. Restoring applies everything and restarts.':'В файле открытым текстом лежат пароли Wi‑Fi, храните его надёжно. Восстановление применяет все настройки и перезагружает устройство.',
@@ -700,7 +700,8 @@ var RU={
  'Weather data:':'Данные о погоде:','2.4 GHz networks only. Joining or forgetting a network restarts the device.':'Только сети 2,4 ГГц. Подключение к сети или её удаление перезагружает устройство.',
  'Appears when no Wi‑Fi network can be joined.':'Включается, когда не удаётся подключиться к Wi‑Fi.',
  'There is no way to recover a forgotten password other than reflashing over USB.':'Забытый пароль можно сбросить только перепрошивкой по USB.',
- 'The file holds the Wi‑Fi passwords.':'В файле хранятся пароли Wi‑Fi.'
+ 'The file holds the Wi‑Fi passwords.':'В файле хранятся пароли Wi‑Fi.',
+ 'Built in':'Встроенный','A built-in watch face cannot be removed':'Встроенный циферблат нельзя удалить'
 };
 // The text in the panel language; {0}, {1} take a[0], a[1].
 function lz(s,a){var r=UI_LANG==='ru'&&Object.prototype.hasOwnProperty.call(RU,s)?RU[s]:s;
@@ -1039,7 +1040,7 @@ function postCfg(o){return j('/api/config',{method:'POST',headers:{'Content-Type
 // name heads its own settings; until it is known, GeekMagic.
 function showName(){var n=(C.hostname||'').trim()||'GeekMagic';var e=$('heroName');if(e)e.textContent=n;document.title=n}
 function hostChanged(){var h=gv('hostname'),b=$('hostBtn');if(b)b.hidden=h===(C.hostname||'');
- var hh=$('hostHint');if(hh)hh.textContent=h||'geekmagic'}
+ }
 function saveHostname(){var h=gv('hostname').trim();if(!h){toast(lz('Type a name first'));return}
  if(!confirm(lz('Rename the device to “{0}”? It restarts.',[h])))return;
  postCfg({hostname:h}).then(function(r){C.hostname=h;hostChanged();showName();
@@ -1123,7 +1124,6 @@ function showStatus(s){
  var cn=$('clockNow'); if(cn){var ne=!!(C.clock&&(C.clock.nightEnabled||C.clock.sunEnabled||C.clock.nightstand))||['theme','calendar','timer','carousel'].indexOf(C.mode)>=0;var ns=s.night?lz(' · night mode active'):(s.nightHeld?lz(' · night mode waiting for NTP'):'');cn.textContent=!ne?lz('Set over the internet once night mode, sunset to sunrise or an app that shows the time is on'):((s.synced?(s.time||lz('synced'))+(s.tz?' ('+s.tz+')':''):lz('Waiting for NTP…'))+ns);}
  var sn=$('sunNow'),st=sunNowText(C.clock,s); if(sn&&st!==null)sn.textContent=st;
  var fw=$('fwVer'); if(fw)fw.textContent=s.version;
- var fv=$('footVer'); if(fv)fv.textContent=(s.fw||'geekmagic')+'-'+s.version;
  $('statusBox').innerHTML=
   kv(lz('Software'),esc((s.fw||'geekmagic')+'-'+s.version))+
   kv('Wi‑Fi',s.mode==='ap'?lz('Setup hotspot'):esc(s.ssid||'-'))+kv(lz('IP address'),s.ip||'-')+kv(lz('Address'),'http://'+esc(C.hostname||'geekmagic')+'.local')+
@@ -1166,7 +1166,7 @@ function importCfg(){var f=$('cfgFile').files[0];if(!f){toast(lz('Pick a config 
 
 // maintenance
 function reboot(){if(confirm(lz('Restart the device?')))j('/api/reboot',{method:'POST'}).then(function(){toast(lz('Restarting…'));setTimeout(function(){location.reload()},8000)})}
-function factory(){if(confirm(lz('Erase all settings? Wi‑Fi, watch face choice and every option go back to factory values, and the device restarts into its setup hotspot. This cannot be undone.')))j('/api/factory',{method:'POST'}).then(function(){toast(lz('Erased, restarting…'))})}
+function factory(){if(confirm(lz('Erase all content and settings? Wi‑Fi, reminders, watch faces and every option are erased, and the device restarts as new, with the standard watch faces, into its setup hotspot. This cannot be undone.')))j('/api/factory',{method:'POST'}).then(function(){toast(lz('Erased, restarting…'))})}
 
 // preview begin
 // Theme previews, drawn in the browser the way the device draws them (a port
@@ -1340,11 +1340,13 @@ function el(tag,cls,text){var e=document.createElement(tag);if(cls)e.className=c
 function faceBezel(t){var b=el('div','bezel');if(t.valid===false){b.appendChild(el('div','bad','!'));return b}
  var c=el('canvas');c.width=240;c.height=240;b.appendChild(c);
  facePackage(t).then(function(buf){return facePaint(c,buf)}).catch(function(){});return b}
+// The faces built into the firmware (/api/config builtInFaces): always on the device.
+function builtInFace(id){return (C.builtInFaces||[]).indexOf(id)>=0}
 function faceSize(t){return t.bytes<1024?lz('{0} B',[t.bytes]):lz('{0} KB',[Math.ceil(t.bytes/1024)])}
 function renderFaces(){var list=$('faceList');if(!list)return;list.textContent='';
  themeEntries.forEach(function(t){var f=el('button','face'+(t.id===faceFocus?' sel':''));f.type='button';f.setAttribute('role','listitem');
   f.appendChild(faceBezel(t));f.appendChild(el('div','fname',t.valid===false?t.id:t.name));
-  f.appendChild(t.valid===false?el('div','fmeta',lz('Invalid package')):t.id===themeSelected?el('div','fmeta now',lz('● On device')):el('div','fmeta',faceSize(t)));
+  f.appendChild(t.valid===false?el('div','fmeta',lz('Invalid package')):t.id===themeSelected?el('div','fmeta now',lz('● On device')):el('div','fmeta',builtInFace(t.id)?lz('Built in'):faceSize(t)));
   f.onclick=function(){faceFocus=t.id;renderFaces()};list.appendChild(f)});
  var add=el('button','face add');add.type='button';var ab=el('div','bezel');ab.textContent='+';ab.style.fontSize='30px';add.appendChild(ab);
  add.appendChild(el('div','fname',lz('Add face')));add.appendChild(el('div','fmeta',lz('.stheme file')));add.onclick=function(){$('themeFile').click()};list.appendChild(add);
@@ -1358,7 +1360,7 @@ function themeChoiceChanged(){var d=$('faceDetail');if(!d)return;d.textContent='
   :[t.author,t.version?lz('version {0}',[t.version]):''].filter(Boolean).join(' · ')+(t.author||t.version?' · ':'')+faceSize(t)));
  var act=el('div','actions'),use=el('button','btn',t.id===themeSelected&&C.mode==='theme'?lz('On device'):lz('Use on device'));
  use.id='themeUseBtn';use.disabled=t.valid===false||(t.id===themeSelected&&C.mode==='theme');use.onclick=function(){selectTheme(t.id)};
- var rm=el('button','btn ghost-danger',lz('Remove'));rm.onclick=function(){deleteTheme(t.id)};act.appendChild(use);act.appendChild(rm);
+ act.appendChild(use);if(!builtInFace(t.id)){var rm=el('button','btn ghost-danger',lz('Remove'));rm.onclick=function(){deleteTheme(t.id)};act.appendChild(rm)}
  info.appendChild(act);d.appendChild(info)}
 function loadThemes(){return j('/api/themes').then(function(d){themeEntries=d.themes||[];themeSelected=d.selected||'';
  if(!themeEntries.some(function(t){return t.id===faceFocus}))faceFocus=themeSelected||(themeEntries[0]?themeEntries[0].id:'');
@@ -1525,6 +1527,11 @@ document.addEventListener('change',function(e){var t=e.target;
  autoSave()});
 
 lzPage(document.body);
+// On the home screen the page behaves like an app: Safari ignores the
+// viewport's maximum-scale, so a pinch is stopped here (and in CSS, the
+// rubber-band scroll past the page and double-tap zoom).
+if((window.matchMedia&&matchMedia('(display-mode: standalone)').matches)||navigator.standalone)
+ ['gesturestart','gesturechange'].forEach(function(t){document.addEventListener(t,function(e){e.preventDefault()},{passive:false})});
 loadConfig().then(loadStatus,loadStatus);   // the status polls on, whatever the config did
 </script>
 </body></html>
