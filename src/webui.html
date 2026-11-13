@@ -453,7 +453,10 @@ applyUiTheme();
   <div class="group gap" id="statusBox"><div class="item muted">Loading…</div></div>
 
   <div class="group gap" data-manual>
-   <details class="more" id="updMore"><summary><div class="grow">Software Update<div class="sub">Installed <span id="fwVer">-</span></div></div></summary><div class="body">
+   <details class="more" id="updMore"><summary><div class="grow">Software Update<div class="sub">Installed <span id="fwVer">-</span><span id="updAvail" translate="no"></span></div></div></summary><div class="body">
+    <div id="updNew" hidden style="margin-bottom:16px"><b id="updTitle" translate="no"></b> · <a id="updLink" href="https://github.com/espotto/geekmagic-awesome/releases" target="_blank" rel="noopener">What's New</a>
+     <div style="margin-top:12px"><button class="btn" type="button" onclick="updInstall()" id="updBtn">Download and Install</button></div></div>
+    <div id="updState" class="muted" style="margin-bottom:16px" hidden></div>
     <label>Install from a file</label>
     <input id="fw" type="file" accept=".bin">
     <div style="margin-top:12px"><button class="btn" type="button" onclick="upload()" id="upBtn">Install</button></div>
@@ -641,7 +644,7 @@ var RU={
  'clear':'очистить','off':'выкл.','Crash record cleared':'Запись о сбое очищена',
  '{0} d':'{0} д','{0} h':'{0} ч',
  // general
- 'Installed':'Установлена','Install from a file':'Установить из файла','Install':'Установить',
+ 'Installed':'Установлена','Install from a file':'Установить из файла','Download and Install':'Загрузить и установить',"What's New":'Что нового','Could not check for updates':'Не удалось проверить обновления','This is the latest version':'Установлена последняя версия',' · {0} available':' · доступна {0}','Downloading…':'Загрузка…','Download failed':'Не удалось загрузить','Install':'Установить',
  'Time zone':'Часовой пояс','Language':'Язык','On the clock and on this page':'На часах и на этой странице',
  'Clock':'Время','Search a place':'Найти место','Search':'Найти','Latitude':'Широта','Longitude':'Долгота',
  'Searching...':'Поиск…','No place found. Try another spelling, or type the numbers.':'Место не найдено. Попробуйте другое написание или введите координаты.',
@@ -1123,7 +1126,7 @@ function showStatus(s){
  $('hi').textContent=s.mode==='ap'?lz('Setup hotspot is on'):(s.connected?lz('Connected to {0}',[s.ssid||'Wi‑Fi']):lz('Not connected'));
  var cn=$('clockNow'); if(cn){var ne=!!(C.clock&&(C.clock.nightEnabled||C.clock.sunEnabled||C.clock.nightstand))||['theme','calendar','timer','carousel'].indexOf(C.mode)>=0;var ns=s.night?lz(' · night mode active'):(s.nightHeld?lz(' · night mode waiting for NTP'):'');cn.textContent=!ne?lz('Set over the internet once night mode, sunset to sunrise or an app that shows the time is on'):((s.synced?(s.time||lz('synced'))+(s.tz?' ('+s.tz+')':''):lz('Waiting for NTP…'))+ns);}
  var sn=$('sunNow'),st=sunNowText(C.clock,s); if(sn&&st!==null)sn.textContent=st;
- var fw=$('fwVer'); if(fw)fw.textContent=s.version;
+ var fw=$('fwVer'); if(fw)fw.textContent=s.version;checkUpdate(s.version,s.connected&&s.mode!=='ap');
  $('statusBox').innerHTML=
   kv(lz('Software'),esc((s.fw||'geekmagic')+'-'+s.version))+
   kv('Wi‑Fi',s.mode==='ap'?lz('Setup hotspot'):esc(s.ssid||'-'))+kv(lz('IP address'),s.ip||'-')+kv(lz('Address'),'http://'+esc(C.hostname||'geekmagic')+'.local')+
@@ -1478,15 +1481,44 @@ function installTheme(useNow){var f=facePending;if(!f){toast(lz('Choose a .sthem
  .then(function(d){closeSheet();toast(lz('Watch face added'));faceFocus=d.id;return useNow?loadThemes().then(function(){return selectTheme(d.id)}):loadThemes()})
  .catch(function(e){var m=lzMsg(e.message,true);$('sheetMeta').textContent=m;$('sheetAdd').disabled=$('sheetUse').disabled=false;toast(m)})}
 
-function upload(){var f=$('fw').files[0];if(!f){toast(lz('Pick a .bin first'));return}
- var fd=new FormData();fd.append('firmware',f,f.name);
+function upload(){var f=$('fw').files[0];if(!f){toast(lz('Pick a .bin first'));return}sendFirmware(f,f.name)}
+function updBusy(on){$('upBtn').disabled=on;var b=$('updBtn');if(b)b.disabled=on}
+function sendFirmware(blob,name){
+ var fd=new FormData();fd.append('firmware',blob,name);
  var x=new XMLHttpRequest();x.open('POST','/update');
- $('upBtn').disabled=true;
+ updBusy(true);
  x.upload.onprogress=function(e){if(e.lengthComputable){var p=Math.round(e.loaded/e.total*100);$('upBar').style.width=p+'%';$('upMsg').textContent=lz('Uploading {0}%',[p])}};
- x.onload=function(){$('upBtn').disabled=false;if(x.status==200){$('upMsg').textContent=lz('Done. Rebooting...');$('upBar').style.width='100%';setTimeout(function(){location.reload()},9000)}else{$('upMsg').textContent=lz('Failed: {0}',[x.responseText])}};
- x.onerror=function(){$('upBtn').disabled=false;$('upMsg').textContent=lz('Upload error')};
+ x.onload=function(){updBusy(false);if(x.status==200){$('upMsg').textContent=lz('Done. Rebooting...');$('upBar').style.width='100%';setTimeout(function(){location.reload()},9000)}else{$('upMsg').textContent=lz('Failed: {0}',[x.responseText])}};
+ x.onerror=function(){updBusy(false);$('upMsg').textContent=lz('Upload error')};
  x.send(fd);
 }
+// update begin
+// Updates come from the "ota" branch of the repository, which the release
+// workflow rewrites on every release: latest.json and the image it names.
+// The browser fetches both (GitHub's release downloads send no CORS headers,
+// raw.githubusercontent.com does), then installs the image like a chosen file.
+var OTA_URL='https://raw.githubusercontent.com/espotto/geekmagic-awesome/ota/';
+var updInfo=null,updFor='';
+function verParts(v){return String(v||'').split('.').map(function(n){return parseInt(n,10)||0})}
+function verNewer(a,b){var x=verParts(a),y=verParts(b);
+ for(var i=0;i<Math.max(x.length,y.length);i++){var d=(x[i]||0)-(y[i]||0);if(d)return d>0}return false}
+function checkUpdate(cur,online){if(!cur||!online||updFor===cur)return;updFor=cur;
+ fetch(OTA_URL+'latest.json',{cache:'no-store'}).then(function(r){if(!r.ok)throw new Error(r.status);return r.json()})
+ .then(function(d){updInfo=d;showUpdate(cur)})
+ .catch(function(){updInfo=null;var m=$('updState');if(m){m.hidden=false;m.textContent=lz('Could not check for updates')}})}
+function showUpdate(cur){var d=updInfo,n=$('updNew');if(!d||!n)return;var newer=verNewer(d.version,cur);
+ n.hidden=!newer;$('updState').hidden=newer;
+ $('updAvail').textContent=newer?lz(' · {0} available',[d.version]):'';
+ if(newer){$('updTitle').textContent='geekmagic '+d.version;if(d.notes)$('updLink').href=d.notes}
+ else $('updState').textContent=lz('This is the latest version')}
+function updInstall(){var d=updInfo;if(!d||!d.file)return;updBusy(true);$('upBar').style.width='0';$('upMsg').textContent=lz('Downloading…');
+ fetch(OTA_URL+encodeURIComponent(d.file),{cache:'no-store'}).then(function(r){if(!r.ok)throw new Error(lz('Download failed'));return r.arrayBuffer()})
+ .then(function(b){var u=new Uint8Array(b);
+  // An ESP8266 image starts with 0xE9; the size guards against a cut download.
+  if(u[0]!==0xE9||(d.size&&u.length!==d.size))throw new Error(lz('Download failed'));
+  sendFirmware(new Blob([b],{type:'application/octet-stream'}),d.file)})
+ .catch(function(e){updBusy(false);$('upMsg').textContent=e.message})}
+// update end
 
 // Segmented controls stand in for a hidden <select class="segsrc">.
 function segs(){document.querySelectorAll('select.segsrc').forEach(function(sel){

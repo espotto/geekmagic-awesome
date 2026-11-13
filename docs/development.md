@@ -15,6 +15,13 @@ curl -F firmware=@.pio/build/geekmagic/firmware.bin http://geekmagic.local/updat
 
 Or upload the file in the web page, **General → Software Update**.
 
+The same section checks for a new release: the page (not the device) reads
+`latest.json` from the repository's `ota` branch on
+`raw.githubusercontent.com` and, on *Download and Install*, fetches the image
+named there, checks its size and first byte, and uploads it to `/update`.
+GitHub's own release downloads send no CORS headers, so the page cannot fetch
+those. Nothing is checked while the device is in setup-hotspot mode.
+
 After editing `src/webui.html`, regenerate the served copy:
 
 ```sh
@@ -24,7 +31,7 @@ python3 tools/gzip_webui.py      # writes src/webui.h
 ## Tests
 
 ```sh
-PYTHON=python3 sh tests/run_all.sh
+PYTHON=python3 sh tests/run_all.sh   # needs a `pio run` first (for ArduinoJson)
 ```
 
 runs every host test: the device screens, the apps' views, settings, the status
@@ -41,8 +48,20 @@ host-buildable.
 
 The firmware is called `geekmagic-<version>` (`FW_NAME`, `FW_VERSION` in
 `src/config.h`). The version goes up by 0.01 with every release: 1.36, 1.37, …
-Release images are attached to GitHub releases as `geekmagic-<version>.bin`, and
-every release gets an entry in [CHANGELOG.md](../CHANGELOG.md).
+and every release gets a section in [CHANGELOG.md](../CHANGELOG.md).
+
+GitHub Actions (`.github/workflows/build.yml`) builds the image and runs every
+test on each push and pull request. To release, raise `FW_VERSION`, add the
+CHANGELOG section, commit, and push a tag:
+
+```sh
+git tag v1.41 && git push origin v1.41
+```
+
+The workflow checks that the tag matches `FW_VERSION`, publishes the GitHub
+release with `geekmagic-<version>.bin` and the CHANGELOG section as its notes
+(`tools/release_notes.py`), and rewrites the `ota` branch (one commit:
+`latest.json` and the image) for the web page's update check.
 
 ## Conventions
 

@@ -1,0 +1,97 @@
+# Builds the firmware and runs every host test on each push and pull request.
+# A tag v<version> also publishes the release: the image as
+# geekmagic-<version>.bin with its CHANGELOG section, and the "ota" branch the
+# web page checks for updates (latest.json and the image).
+name: build
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/cache@v4
+        with:
+          path: ~/.platformio
+          key: pio-${{ runner.os }}-${{ hashFiles('platformio.ini') }}
+      - name: Install tools
+        run: |
+          sudo apt-get update -q && sudo apt-get install -yq g++-multilib
+          pip install -q platformio -r tools/requirements-theme.txt
+      - name: Build
+        run: pio run
+      - name: Test
+        run: sh tests/run_all.sh
+      - id: version
+        name: Name the image
+        run: |
+          v=$(sed -n 's/^#define FW_VERSION *"\(.*\)".*/\1/p' src/config.h)
+          test -n "$v"
+          mkdir out && cp .pio/build/geekmagic/firmware.bin "out/geekmagic-$v.bin"
+          echo "version=$v" >> "$GITHUB_OUTPUT"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: geekmagic-${{ steps.version.outputs.version }}
+          path: out/*.bin
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: build
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      VERSION: ${{ needs.build.outputs.version }}
+      TAG: ${{ github.ref_name }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: geekmagic-${{ needs.build.outputs.version }}
+          path: out
+      - name: Check the tag
+        run: |
+          if [ "$TAG" != "v$VERSION" ]; then
+            echo "tag $TAG does not match FW_VERSION $VERSION in src/config.h"; exit 1
+          fi
+      - name: Release
+        run: |
+          python3 tools/release_notes.py "$VERSION" > notes.md
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" "out/geekmagic-$VERSION.bin" --clobber
+          else
+            gh release create "$TAG" "out/geekmagic-$VERSION.bin" --verify-tag \
+              --title "geekmagic $VERSION" --notes-file notes.md
+          fi
+      - name: Update the ota branch
+        run: |
+          f="geekmagic-$VERSION.bin"
+          mkdir ota && cp "out/$f" ota/
+          python3 - "$VERSION" "$f" "https://github.com/$GITHUB_REPOSITORY/releases/tag/$TAG" > ota/latest.json <<'PY'
+          import hashlib, json, os, sys
+          v, f, notes = sys.argv[1:]
+          b = open(os.path.join("ota", f), "rb").read()
+          print(json.dumps({"version": v, "file": f, "size": len(b),
+                            "sha256": hashlib.sha256(b).hexdigest(), "notes": notes}, indent=1))
+          PY
+          cd ota
+          git init -q -b ota
+          git add -A
+          git -c user.name="github-actions[bot]" \
+              -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+              commit -q -m "geekmagic $VERSION"
+          git push -q --force "https://x-access-token:$GH_TOKEN@github.com/$GITHUB_REPOSITORY.git" ota

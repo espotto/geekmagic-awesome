@@ -2,6 +2,14 @@
 
 The firmware is `geekmagic-<version>`; every release adds 0.01.
 
+## 1.41 — 2026-11-13
+
+- **Software Update** checks for a new release when the web page opens and
+  installs it with one tap (*Download and Install*). The page, not the device,
+  fetches the image from this repository.
+- Releases are built, tested and published by GitHub Actions from a version
+  tag.
+
 ## 1.40 — 2026-11-13
 
 - Modular and Utility are built into the firmware: always on the device,

@@ -23,6 +23,8 @@ apps, styled after Apple's watch faces and settings.
   sunrise.
 - **Web page** at `http://geekmagic.local`, in English or Russian, that saves as
   you change things and installs as a home-screen app. Optional password.
+- **Updates** from the web page: it tells you when a new release is out and
+  installs it with one tap.
 - **Wi‑Fi:** up to four networks; a setup hotspot with a QR code; recovers from
   a silent network by itself.
 
