@@ -2,6 +2,11 @@
 
 The firmware is `geekmagic-<version>`; every release adds 0.01.
 
+## 1.39 — 2026-11-13
+
+- Web page on a phone: the Name row keeps its label, field and button apart
+  while a new name is typed; the tab bar fits a 375 px screen.
+
 ## 1.38 — 2026-11-13
 
 - Timer: minutes and seconds centred in their fields, without the step arrows;

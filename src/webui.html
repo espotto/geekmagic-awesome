@@ -221,6 +221,10 @@ button.btn.sm{height:32px;padding:0 12px}
 #tmMin,#tmSec{text-align:center;-moz-appearance:textfield}
 #tmMin::-webkit-inner-spin-button,#tmMin::-webkit-outer-spin-button,#tmSec::-webkit-inner-spin-button,#tmSec::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
 #tmLabel{text-align:left}
+#hostRow>.grow{flex:0 0 auto}
+#hostRow input{flex:1 1 auto;min-width:0;max-width:none;width:auto}
+#hostRow .btn{flex:0 0 auto}
+@media (max-width:420px){nav button{padding:5px 7px;font-size:13.5px}}
 .hero .st{padding-left:3px}
 </style>
 <script>
@@ -443,7 +447,7 @@ applyUiTheme();
  <section id="general" class="tab">
   <div class="sect">About</div>
   <div class="group" data-manual>
-   <div class="item"><div class="grow">Name</div><input id="hostname" class="inl" type="text" placeholder="geekmagic" autocomplete="off" spellcheck="false" oninput="hostChanged()"><button class="btn sm" type="button" id="hostBtn" onclick="saveHostname()" hidden>Rename</button></div>
+   <div class="item" id="hostRow"><div class="grow">Name</div><input id="hostname" class="inl" type="text" placeholder="geekmagic" autocomplete="off" spellcheck="false" oninput="hostChanged()"><button class="btn sm" type="button" id="hostBtn" onclick="saveHostname()" hidden>Rename</button></div>
   </div>
   <div class="group gap" id="statusBox"><div class="item muted">Loading…</div></div>
   <p class="hintx">http://<span id="hostHint">geekmagic</span>.local</p>
