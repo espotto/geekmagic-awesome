@@ -34,7 +34,15 @@ jobs:
       - name: Build
         run: pio run
       - name: Test
-        run: sh tests/run_all.sh
+        # The tests build with -Werror. GCC's format/stringop-truncation
+        # warnings flag snprintf calls that cut a string on purpose (clang, on
+        # the Mac where the tests are usually run, has no such check), so a
+        # c++ in front of the system one turns those two off.
+        run: |
+          mkdir -p "$RUNNER_TEMP/bin"
+          printf '#!/bin/sh\nexec /usr/bin/c++ "$@" -Wno-format-truncation -Wno-stringop-truncation\n' > "$RUNNER_TEMP/bin/c++"
+          chmod +x "$RUNNER_TEMP/bin/c++"
+          PATH="$RUNNER_TEMP/bin:$PATH" KEEP_GOING=1 sh tests/run_all.sh
       - id: version
         name: Name the image
         run: |
