@@ -3,6 +3,7 @@
 // inside the safe area; with a path argument sample screens go to a PPM.
 #include "timer/TimerView.h"
 #include "nightstand/NightstandView.h"
+#include "AppDraw.h"
 #include "ppm.h"
 #include <cassert>
 #include <cmath>
@@ -45,6 +46,12 @@ int main(int argc, char** argv) {
   // A second shows until it has fully passed.
   layout(State::Running, 59001, 60000, "", -1, 0, 0, l);
   assert(std::strcmp(l.digits, "01:00") == 0);
+  // A long name is cut with "..." to fit inside the ring.
+  layout(State::Running, 40000, 300000, "Позвонить маме вечером", 14, 35, 1, l);
+  assert(std::strstr(l.label, "...") && appdraw::width(gm::TextStyle::Caption, l.label) <= 124);
+  frames.push_back(frame(l));
+  layout(State::Running, 40000, 300000, "Tea", 14, 35, 0, l);
+  assert(std::strcmp(l.label, "Tea") == 0);
   char t[32], b[32];
   bannerWords(1, t, sizeof(t), b, sizeof(b));
   assert(std::strcmp(t, "Таймер") == 0 && std::strcmp(b, "Время вышло") == 0);

@@ -11,7 +11,7 @@
 // The firmware is called geekmagic-<version>; the version counts up by 0.01
 // with every flashed build (1.36, 1.37, ...).
 #define FW_NAME     "geekmagic"
-#define FW_VERSION  "1.43"
+#define FW_VERSION  "1.44"
 #define FW_VARIANT  "esp8266"
 
 // Display wiring + panel quirks: TFT_SCLK/MOSI/DC/RST/CS/BL, TFT_BGR,

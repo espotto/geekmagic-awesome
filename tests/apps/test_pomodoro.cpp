@@ -114,7 +114,7 @@ int main(int argc, char** argv) {
   pomoview::bannerWords(0, Phase::Long, title, sizeof(title), text, sizeof(text));
   assert(std::strcmp(text, "Time to focus") == 0);
   pomoview::phaseName(1, Phase::Long, name, sizeof(name));
-  assert(std::strcmp(name, "Длинный перерыв") == 0);
+  assert(std::strcmp(name, "Отдых") == 0);
   if (argc > 1) writeFrames(argv[1], frames);
   std::cout << "pomodoro tests passed\n";
 }

@@ -1,6 +1,7 @@
 #include "TimerView.h"
 #include <math.h>
 #include <stdio.h>
+#include <string.h>
 #include "../AppDraw.h"
 
 namespace timerview {
@@ -17,6 +18,9 @@ const char kWords[] PROGMEM =
 
 constexpr int kCx = 120, kCy = 120, kOuter = 98, kWidthPx = 12;
 constexpr int kMid16 = (kOuter - kWidthPx / 2) * 16;
+// The widest label above the time: the ring's inside at the label's top, less
+// a margin on each side.
+constexpr int kLabelMax = 124;
 const uint16_t kTrack = 0x31A6;       // #333333 with a warm cast
 const uint16_t kGrey = 0x8C72;
 const uint16_t kDot = 0x4208;         // #444444, a session still to do
@@ -59,6 +63,20 @@ void layout(State st, uint32_t leftMs, uint32_t totalMs, const char* label,
   char w[40];
   if (label && *label) gm::displayTextTo(out.label, sizeof(out.label), label);
   else appdraw::word(kWords, lang * 4, out.label, sizeof(out.label));
+  // A long name is cut, with "...", to fit inside the ring (and the buffer).
+  if (appdraw::width(TextStyle::Caption, out.label) > kLabelMax) {
+    const size_t len = strlen(out.label);
+    size_t n = len < sizeof(out.label) - 4 ? len : sizeof(out.label) - 4;
+    char cut[sizeof(out.label)];
+    for (;;) {
+      while (n && out.label[n - 1] == ' ') --n;   // no space before the dots
+      memcpy(cut, out.label, n);
+      memcpy(cut + n, "...", 4);
+      if (!n || appdraw::width(TextStyle::Caption, cut) <= kLabelMax) break;
+      --n;
+    }
+    memcpy(out.label, cut, sizeof(out.label));
+  }
   if (st == State::Paused) appdraw::word(kWords, lang * 4 + 2, out.sub, sizeof(out.sub));
   else if (st == State::Running && endHour >= 0) {
     appdraw::entry(kWords, lang * 4 + 1, w, sizeof(w));

@@ -5,9 +5,11 @@ namespace pomoview {
 namespace {
 
 // Per language (en ru): the three phases, then the banner's title and its two texts.
+// The names fit the ring (TimerView kLabelMax): "Длинный перерыв" did not, so
+// the long break is "Отдых" on the clock (its colour and full dots tell it apart).
 const char kWords[] PROGMEM =
   "Focus|Short Break|Long Break|Pomodoro|Time for a break|Time to focus|"
-  "Фокус|Перерыв|Длинный перерыв|Помодоро|Пора отдохнуть|Пора за работу";
+  "Фокус|Перерыв|Отдых|Помодоро|Пора отдохнуть|Пора за работу";
 constexpr int kPerLang = 6;
 
 struct Colours { uint16_t on, dim; };

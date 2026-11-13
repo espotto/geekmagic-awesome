@@ -2,6 +2,12 @@
 
 The firmware is `geekmagic-<version>`; every release adds 0.01.
 
+## 1.44 — 2026-11-13
+
+- Pomodoro: the long break is called *Отдых* on the Russian clock screen;
+  *Длинный перерыв* did not fit inside the ring.
+- Timer: a long name is cut with "..." to fit inside the ring.
+
 ## 1.43 — 2026-11-13
 
 - **Display → Notifications → Show for** now sets how long every banner stays,

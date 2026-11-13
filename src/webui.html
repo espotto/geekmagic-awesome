@@ -1501,7 +1501,7 @@ function heroPomo(g){var d=pmData;if(!d){pmLoad().then(function(){if(pmData)hero
  g.lineWidth=12;g.strokeStyle='#333';g.beginPath();g.arc(120,120,92,0,7);g.stroke();
  if(d.state!=='idle'){g.strokeStyle=c;g.globalAlpha=d.state==='paused'?.5:1;g.lineCap='round';g.beginPath();g.arc(120,120,92,-Math.PI/2,-Math.PI/2+fr*2*Math.PI);g.stroke();g.globalAlpha=1}
  g.fillStyle='#fff';g.textAlign='center';g.font='500 46px '+f;g.fillText(tmFmt(d.left),120,137);g.fillStyle=c;g.font='15px '+f;
- g.fillText((ru?{focus:'Фокус',short:'Перерыв',long:'Длинный перерыв'}:PMNAME)[d.phase]||'',120,92);
+ g.fillText((ru?{focus:'Фокус',short:'Перерыв',long:'Отдых'}:PMNAME)[d.phase]||'',120,92);
  for(var i=0;i<d.rounds;i++){g.fillStyle=i<on?c:'#444';g.beginPath();g.arc(120-(d.rounds-1)*7+i*14,180,4,0,7);g.fill()}}
 var remData=null;
 // The Reminders app in the device card, laid out as RemindersView does it.
