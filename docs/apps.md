@@ -112,7 +112,7 @@ back. Every field is optional; the smallest request is `{"label":"…"}`.
 | `label` | The message, wrapped over up to five lines |
 | `title` | A line above the label (up to 20 characters) |
 | `color` | `#rrggbb` or `white black red green blue yellow cyan magenta orange gray` |
-| `ttl` | Seconds on screen, 2–120; default from **Display → Notifications** |
+| `ttl` | Seconds on screen, 2–120; default from **Display → Notifications**, which also sets how long the Timer's and Pomodoro's own banners stay |
 | `priority` | 0–3; a higher one jumps the queue and takes the screen |
 
 Banners queue rather than overwrite. Answers `{"ok":true,"queued":N}`; an

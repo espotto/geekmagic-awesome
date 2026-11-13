@@ -66,7 +66,8 @@ struct DisplaySettings {
   uint8_t rGain;        // per-channel gain in percent, 50..150, 100 = untouched
   uint8_t gGain;
   uint8_t bGain;
-  // How long a notification without its own "ttl" stays up, in seconds:
+  // How long a notification stays up, in seconds: the apps' own banners
+  // (Timer, Pomodoro) and every /api/notify request without its own "ttl".
   // 0 keeps each type's own hold time (20-45 s), otherwise
   // NOTIFY_TTL_MIN_SEC..NOTIFY_TTL_MAX_SEC for every type.
   uint8_t notifySec;

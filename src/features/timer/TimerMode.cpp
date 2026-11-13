@@ -27,7 +27,7 @@ void TimerMode::tick(const Settings& s) {
   r.title = label_[0] ? label_ : title;
   r.label = text;
   r.color = "orange";
-  r.ttlSec = 30;
+  r.ttlSec = s.display.notifySec;   // Display → Notifications; 0: the "done" type's own
   r.prio = 2;   // over any other notice
   g_notifyMode.request(r);
 }

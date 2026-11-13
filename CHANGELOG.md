@@ -2,6 +2,12 @@
 
 The firmware is `geekmagic-<version>`; every release adds 0.01.
 
+## 1.43 — 2026-11-13
+
+- **Display → Notifications → Show for** now sets how long every banner stays,
+  the Timer's and Pomodoro's too (the Timer's was fixed at 30 seconds, the
+  Pomodoro's at 20). A script's own `ttl` still wins for its message.
+
 ## 1.42 — 2026-11-13
 
 - **Pomodoro**, a new app: focus sessions, short breaks and a long break after

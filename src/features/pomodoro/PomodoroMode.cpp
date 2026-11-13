@@ -30,7 +30,7 @@ void PomodoroMode::tick(const Settings& s) {
   r.title = title;
   r.label = text;
   r.color = ended == pomo::Phase::Focus ? "green" : "red";
-  r.ttlSec = 20;
+  r.ttlSec = s.display.notifySec;   // Display → Notifications; 0: the "done" type's own
   r.prio = 2;   // over any other notice
   g_notifyMode.request(r);
 }
