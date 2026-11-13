@@ -2,7 +2,7 @@
 //
 // Apps, each a self-contained DisplayMode (see Mode.h), picked in the web UI
 // and dispatched from the registry below: watch faces (features/theme),
-// Calendar, Reminders, Weather, Timer, Pomodoro and Exchange Rates;
+// Calendar, Reminders, Weather, Timer and Pomodoro;
 // notifications, the timer and the nightstand go over them.
 // Shared plumbing (WiFi, web UI, OTA, display core, settings) lives at src root.
 //
@@ -26,7 +26,6 @@
 #include "WeatherMode.h"
 #include "TimerMode.h"
 #include "PomodoroMode.h"
-#include "CurrencyMode.h"
 #include "Nightstand.h"
 
 
@@ -40,7 +39,6 @@ static DisplayMode* kModes[] = {
   &g_weatherMode,
   &g_timerMode,
   &g_pomodoroMode,
-  &g_currencyMode,
 };
 static const size_t kModeCount = sizeof(kModes) / sizeof(kModes[0]);
 
@@ -59,7 +57,6 @@ static bool carouselHas(const Settings& s, const DisplayMode* m) {
     case MODE_WEATHER: return s.carouselWeather;
     case MODE_TIMER: return s.carouselTimer;
     case MODE_POMODORO: return s.carouselPomodoro;
-    case MODE_CURRENCY: return s.carouselCurrency;
     default:          return true;
   }
 }

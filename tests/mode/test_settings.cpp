@@ -45,7 +45,6 @@ static void testNamesSetTheMode() {
   CHECK(after(MODE_THEME, "{\"mode\":\"weather\"}") == MODE_WEATHER, "weather");
   CHECK(after(MODE_THEME, "{\"mode\":\"carousel\"}") == MODE_CAROUSEL, "carousel");
   CHECK(after(MODE_THEME, "{\"mode\":\"pomodoro\"}") == MODE_POMODORO, "pomodoro");
-  CHECK(after(MODE_THEME, "{\"mode\":\"currency\"}") == MODE_CURRENCY, "currency");
   CHECK(after(MODE_WEATHER, "{\"mode\":\"Theme\"}") == MODE_THEME, "case is ignored");
   // Apps this firmware no longer has (ticker, radar, Home Assistant, Clawdmeter): the watch face.
   CHECK(after(MODE_WEATHER, "{\"mode\":\"stocks\"}") == MODE_THEME, "stocks");
@@ -119,22 +118,8 @@ static void testPomodoro() {
   CHECK(back.carouselPomodoro && back.pomodoro.longMin == 30 && back.pomodoro.focusMin == 1 && !back.pomodoro.autoNext, "round trip");
 }
 
-// The Exchange Rates currencies: up to four three-letter codes, kept tidy.
-static void testCurrency() {
-  Settings s;
-  s.setDefaults();
-  CHECK(s.currency.codes == "USD,EUR,CNY", "default %s", s.currency.codes.c_str());
-  apply(s, "{\"currency\":{\"codes\":\" gbp, usd ,GBP,X1Z,ABCD,JPY,CHF,TRY\"}}");
-  CHECK(s.currency.codes == "GBP,USD,JPY,CHF", "cleaned %s", s.currency.codes.c_str());
-  apply(s, "{\"currency\":{\"codes\":\"\"}}");
-  CHECK(s.currency.codes == "GBP,USD,JPY,CHF", "an empty list keeps the stored one");
-  apply(s, "{\"currency\":{\"codes\":42}}");
-  CHECK(s.currency.codes == "GBP,USD,JPY,CHF", "not a string");
-}
-
 int main() {
   testPomodoro();
-  testCurrency();
   wifiPasswords();
   testNamesSetTheMode();
   testEmptyMode();

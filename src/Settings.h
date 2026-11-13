@@ -104,15 +104,6 @@ struct PomodoroSettings {
   void fromJson(JsonObjectConst o);
 };
 
-// ---- Exchange Rates slice -------------------------------------------------
-struct CurrencySettings {
-  String codes;   // up to four ISO codes, "USD,EUR,CNY"
-
-  void setDefaults();
-  void toJson(JsonObject o) const;
-  void fromJson(JsonObjectConst o);
-};
-
 // ---- Top-level settings ----------------------------------------------------
 struct Settings {
   // --- WiFi station networks (the device joins one of these) ---
@@ -130,7 +121,7 @@ struct Settings {
 
   // --- Carousel (mode == MODE_CAROUSEL): dwell + which features rotate ---
   uint16_t carouselSec;
-  bool carouselTheme, carouselCalendar, carouselReminders, carouselWeather, carouselTimer, carouselPomodoro, carouselCurrency;
+  bool carouselTheme, carouselCalendar, carouselReminders, carouselWeather, carouselTimer, carouselPomodoro;
 
   // --- Shared HTTP / display ---
   uint16_t httpTimeout; // ms
@@ -145,7 +136,6 @@ struct Settings {
   AuthSettings    auth;      // optional web UI password
   ButtonSettings  button;    // physical button behaviour (boards with BTN_PIN)
   PomodoroSettings pomodoro; // the Pomodoro app's durations
-  CurrencySettings currency; // the Exchange Rates app's currencies
 
   void setDefaults();
 };

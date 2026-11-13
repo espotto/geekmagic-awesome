@@ -11,7 +11,7 @@
 // The firmware is called geekmagic-<version>; the version counts up by 0.01
 // with every flashed build (1.36, 1.37, ...).
 #define FW_NAME     "geekmagic"
-#define FW_VERSION  "1.45"
+#define FW_VERSION  "1.46"
 #define FW_VARIANT  "esp8266"
 
 // Display wiring + panel quirks: TFT_SCLK/MOSI/DC/RST/CS/BL, TFT_BGR,
@@ -68,7 +68,6 @@
 #define MODE_WEATHER   9             // the Weather app: Open-Meteo at the device location
 #define MODE_TIMER     10            // the Timer app: one countdown
 #define MODE_POMODORO  11            // the Pomodoro app: focus sessions and breaks
-#define MODE_CURRENCY  12            // the Exchange Rates app: the Bank of Russia's rates
 #define DEFAULT_MODE MODE_THEME
 #define DEFAULT_CAROUSEL_SEC 30      // per-mode dwell in carousel
 

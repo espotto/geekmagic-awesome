@@ -2,12 +2,10 @@
 
 The firmware is `geekmagic-<version>`; every release adds 0.01.
 
-## 1.45 — 2026-11-14
+## 1.46 — 2026-11-14
 
-- **Exchange Rates**, a new app in the manner of the Stocks app: the Bank of
-  Russia's rates for up to four currencies with the day's change on a green or
-  red pill. Currencies are chosen from twenty on its page; `/api/currency`.
-- A long label anywhere in the apps is cut with "..." by one shared rule.
+- The same as 1.44. (1.45, never released, tried an Exchange Rates app; it
+  was taken out again.)
 
 ## 1.44 — 2026-11-13
 

@@ -51,19 +51,6 @@ inline void text(gm::TextStyle st, const char* s, int x, int lineTop, int y, uin
     x += g.advance;
   }
 }
-// Cuts display bytes `s` (a buffer of `cap`) to at most `maxW` px in `st`,
-// ending in "..." when anything was cut (no space before the dots).
-inline void cutToWidth(gm::TextStyle st, char* s, size_t cap, int maxW) {
-  if (cap < 4 || width(st, s) <= maxW) return;
-  size_t n = strlen(s);
-  if (n > cap - 4) n = cap - 4;
-  for (;;) {
-    while (n && s[n - 1] == ' ') --n;
-    memcpy(s + n, "...", 4);
-    if (!n || width(st, s) <= maxW) return;
-    --n;
-  }
-}
 // Centred on `cx`; true when row `y` can touch the line (so callers can skip).
 inline bool lineNear(gm::TextStyle st, int lineTop, int y) {
   const int lh = gm::styleLineHeight(st);

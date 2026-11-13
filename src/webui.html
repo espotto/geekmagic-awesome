@@ -129,9 +129,6 @@ button.btn.ghost-danger{background:var(--in);border-color:var(--bd);color:var(--
 #hostname{text-align:left}
 .tmleft{font-size:44px;font-weight:600;letter-spacing:-.02em;font-variant-numeric:tabular-nums;line-height:1.1}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
-.pill{display:inline-block;min-width:64px;box-sizing:border-box;text-align:center;border-radius:6px;padding:2px 7px;color:#fff;font-size:13px;font-weight:600;font-variant-numeric:tabular-nums}
-.pill.up{background:#30d158}.pill.down{background:#ff453a}.pill.flat{background:#636366}
-.cxval{text-align:right;font-variant-numeric:tabular-nums;font-weight:600;display:flex;flex-direction:column;align-items:flex-end;gap:3px}
 .pmdots{display:flex;gap:8px;margin-top:10px;min-height:8px}.pmdots i{width:8px;height:8px;border-radius:50%;background:var(--bd)}.pmdots i.on{background:currentColor}
 .appicon.big{width:44px;height:44px;border-radius:11px}
 .onscr{color:var(--acc)!important;font-weight:500}
@@ -294,7 +291,6 @@ applyUiTheme();
     <div class="item chk"><input id="carouselWeather" class="sw" type="checkbox"></div>
     <div class="item chk"><input id="carouselTimer" class="sw" type="checkbox"></div>
     <div class="item chk"><input id="carouselPomodoro" class="sw" type="checkbox"></div>
-    <div class="item chk"><input id="carouselCurrency" class="sw" type="checkbox"></div>
    </div>
    <select id="mode" onchange="modeChanged()">
     <option value="theme">Watch face</option>
@@ -303,7 +299,6 @@ applyUiTheme();
     <option value="weather">Weather</option>
     <option value="timer">Timer</option>
     <option value="pomodoro">Pomodoro</option>
-    <option value="currency">Exchange Rates</option>
     <option value="carousel">Rotate</option>
    </select>
   </div>
@@ -335,17 +330,6 @@ applyUiTheme();
    <button class="item act blue" type="button" onclick="wxRefresh()">Refresh now</button>
   </div>
   <p class="hintx">Weather data: <a href="https://open-meteo.com" target="_blank" rel="noopener">Open-Meteo</a></p>
- </section>
-
- <!-- EXCHANGE RATES app -->
- <section id="currency" class="tab">
-  <div class="sect"><span>Bank of Russia</span><span class="val" id="cxDate"></span></div>
-  <div class="group" id="cxList"><div class="item muted">Loading…</div></div>
-  <div class="group gap"><button class="item act blue" type="button" onclick="cxRefresh()">Refresh now</button></div>
-  <div class="sect"><span>On the Clock</span><span class="val" id="cxCount"></span></div>
-  <div class="group" id="cxPick"></div>
-  <input id="cxCodes" type="hidden">
-  <p class="hintx">Official rates of the Bank of Russia, in roubles, with the change since the day before: <a href="https://www.cbr-xml-daily.ru" target="_blank" rel="noopener">cbr-xml-daily.ru</a></p>
  </section>
 
  <!-- TIMER app -->
@@ -615,10 +599,6 @@ var RU={
  'Starting a timer puts it on the clock over the current app; when it ends a banner says so and the screen goes back. From a script or an iPhone Shortcut (“Get Contents of URL”, POST, JSON):':'Запущенный таймер показывается на часах поверх текущего приложения. Когда он закончится, появится баннер, и экран вернётся. Из скрипта или Быстрой команды iPhone («Получить содержимое URL», POST, JSON):',
  'Running':'Идёт','Paused':'Пауза','Pause':'Пауза','Resume':'Продолжить','Set a time first':'Сначала задайте время',
  '{0} min':'{0} мин','1 h':'1 ч',
- // exchange rates
- 'Exchange Rates':'Курсы валют','Bank of Russia':'Банк России','On the Clock':'На часах','{0} of {1}':'{0} из {1}',
- 'Up to four currencies':'Не больше четырёх валют','Choose a currency':'Выберите валюту',
- 'Official rates of the Bank of Russia, in roubles, with the change since the day before:':'Официальные курсы Банка России в рублях и изменение за день:',
  // pomodoro
  'Pomodoro':'Помодоро','Focus':'Фокус','Short Break':'Перерыв','Long Break':'Длинный перерыв','Skip':'Пропустить','Reset':'Сбросить',
  'Durations':'Длительность','Sessions before a long break':'Сессий до длинного перерыва','Start the next one automatically':'Следующий этап сам',
@@ -824,7 +804,6 @@ function showTab(name,open){var b=document.querySelector('nav button[data-t="'+n
  try{history.replaceState(null,'','#'+name)}catch(e){}
  if(name==='reminders'&&$('remList'))loadReminders();
  if(name==='weather')wxLoad();
- if(name==='currency')cxLoad();
  clearInterval(tmPoll);if(name==='timer'){tmLoad();tmPoll=setInterval(tmLoad,1000)}
  clearInterval(pmPoll);if(name==='pomodoro'){pmLoad();pmPoll=setInterval(pmLoad,1000)}
  if(open){open.open=true;setTimeout(function(){open.scrollIntoView({behavior:'smooth',block:'center'})},60)}}
@@ -873,14 +852,13 @@ function modeChanged(){var m=$('mode');if(!m)return;var rot=m.value==='carousel'
 var APPINFO={theme:{sub:'Watch faces',bg:'#ff9f0a',icon:'<circle cx="12" cy="12" r="7" fill="none" stroke="#fff" stroke-width="2"/><path d="M12 8v4l3 2" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"/>'},
  reminders:{sub:'Your list',bg:'#0a84ff',icon:'<circle cx="7" cy="8" r="1.6" fill="#fff"/><circle cx="7" cy="16" r="1.6" fill="#fff"/><path d="M11 8h7M11 16h7" stroke="#fff" stroke-width="2" stroke-linecap="round"/>'},
  weather:{sub:'Open-Meteo',bg:'#0a84ff',icon:'<circle cx="9" cy="9" r="3.2" fill="#ffd60a"/><path d="M8 18h8.5a3.5 3.5 0 0 0 .3-7 4.5 4.5 0 0 0-8.6 1.2A2.9 2.9 0 0 0 8 18z" fill="#fff"/>'},
- currency:{sub:'Bank of Russia',bg:'#1c1c1e',icon:'<path d="M4.5 15.5l4.2-4.4 3.3 3 6.2-6.6" fill="none" stroke="#30d158" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4.5 19h15" stroke="#8e8e93" stroke-width="1.6" stroke-linecap="round"/>'},
  pomodoro:{sub:'Focus sessions',bg:'#ff453a',icon:'<circle cx="12" cy="13.5" r="6.5" fill="#fff"/><path d="M12 7.2V4.6M9.2 6.4c1.1 1 4.5 1 5.6 0" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/>'},
  timer:{sub:'Not running',bg:'#ff9f0a',icon:'<circle cx="12" cy="13" r="7" fill="none" stroke="#fff" stroke-width="2"/><path d="M12 13V9.5M10 3.5h4" stroke="#fff" stroke-width="2" stroke-linecap="round"/>'},
  calendar:{sub:'This month',bg:'#ff453a',icon:'<rect x="5" y="6" width="14" height="13" rx="2.5" fill="none" stroke="#fff" stroke-width="2"/><path d="M5 10h14M9 4v4M15 4v4" stroke="#fff" stroke-width="2" stroke-linecap="round"/>'}};
 // An app's mode value, its page (section id) and its rotation flag.
-var APPPAGE={theme:'theme',calendar:'calendar',reminders:'reminders',weather:'weather',timer:'timer',pomodoro:'pomodoro',currency:'currency'};
+var APPPAGE={theme:'theme',calendar:'calendar',reminders:'reminders',weather:'weather',timer:'timer',pomodoro:'pomodoro'};
 var PAGEAPP={};Object.keys(APPPAGE).forEach(function(k){PAGEAPP[APPPAGE[k]]=k});
-var APPROT={theme:'carouselTheme',calendar:'carouselCalendar',reminders:'carouselReminders',weather:'carouselWeather',timer:'carouselTimer',pomodoro:'carouselPomodoro',currency:'carouselCurrency'};
+var APPROT={theme:'carouselTheme',calendar:'carouselCalendar',reminders:'carouselReminders',weather:'carouselWeather',timer:'carouselTimer',pomodoro:'carouselPomodoro'};
 var lastApp='';
 function appList(){var m=$('mode');return m?Array.prototype.filter.call(m.options,function(o){return o.value!=='carousel'}):[]}
 function rotCount(){return appList().filter(function(o){return $(APPROT[o.value])&&gc(APPROT[o.value])}).length}
@@ -890,7 +868,6 @@ function appSummary(v){if(v==='theme'){var t=themeEntries.find(function(x){retur
  if(v==='reminders'&&remData)return remData.items&&remData.items.length?lz('{0} open',[remData.open]):lz('Empty');
  if(v==='weather'&&wxData&&wxData.valid)return Math.round(wxData.temp)+'°, '+wxCond(wxData.cond,true);
  if(v==='timer'&&tmData&&tmData.state!=='idle')return lz(tmData.state==='paused'?'{0} · paused':'{0} left',[tmFmt(tmData.left)]);
- if(v==='currency'&&cxData&&cxData.valid){var r0=(cxData.rates||[]).find(function(r){return r.value>0});if(r0)return r0.code+' '+cxNum(r0.value,true)}
  if(v==='pomodoro'&&pmData&&pmData.state!=='idle')return pmData.state==='paused'?lz('{0} · paused',[tmFmt(pmData.left)]):lz('{0} · {1} left',[lz(PMNAME[pmData.phase]||'Focus'),tmFmt(pmData.left)]);
  return lz((APPINFO[v]||{}).sub||'')}
 // The list works like the Wi-Fi list on a phone: tapping a row is the choice
@@ -989,7 +966,6 @@ function loadConfig(){return j('/api/config').then(function(c){C=c;
  sc('carouselTheme',c.carouselTheme===true); sc('carouselCalendar',c.carouselCalendar===true);
  sc('carouselReminders',c.carouselReminders===true); sc('carouselWeather',c.carouselWeather===true); sc('carouselTimer',c.carouselTimer===true);
  sc('carouselPomodoro',c.carouselPomodoro===true); pmConfig(c.pomodoro);
- sc('carouselCurrency',c.carouselCurrency===true); sv('cxCodes',(c.currency&&c.currency.codes)||'USD,EUR,CNY'); cxPick();
  var au=c.auth||{};
  sv('authUser',au.user||'admin'); authShow(!!au.passSet);
  var ap=$('apPass'); if(ap){ap.value='';ap.placeholder=c.apPassSet?lz('(unchanged)'):lz('(open)');}
@@ -1031,7 +1007,6 @@ function collect(){
   wifi:collectWifi()};
  if($('pmFocus'))o.pomodoro={focusMin:parseInt(gv('pmFocus'))||25,shortMin:parseInt(gv('pmShort'))||5,longMin:parseInt(gv('pmLong'))||15,
   rounds:parseInt(gv('pmRounds'))||4,autoNext:gc('pmAuto')};
- if($('cxCodes')&&gv('cxCodes'))o.currency={codes:gv('cxCodes')};
  // Rotation flags, one per app.
  Object.keys(APPROT).forEach(function(k){var id=APPROT[k]; if($(id))o[id]=gc(id)});
  // A stored mode the list does not offer (one of a removed app) shows as
@@ -1196,7 +1171,7 @@ function showStatus(s){
 function statusExtras(s){curSsid=s.connected?(s.ssid||''):'';
  document.querySelectorAll('#scanList .net').forEach(function(b){if(b.dataset.s===curSsid)b.remove()});
  var t=themeEntries.find(function(x){return x.id===themeSelected}),hn=$('heroNow');
- if(hn)hn.textContent=[C.mode==='theme'&&t&&t.valid!==false?t.name:lz({calendar:'Calendar',reminders:'Reminders',weather:'Weather',timer:'Timer',pomodoro:'Pomodoro',currency:'Exchange Rates'}[C.mode]||''),s.synced&&s.time?s.time.slice(11):''].filter(Boolean).join(' · ');
+ if(hn)hn.textContent=[C.mode==='theme'&&t&&t.valid!==false?t.name:lz({calendar:'Calendar',reminders:'Reminders',weather:'Weather',timer:'Timer',pomodoro:'Pomodoro'}[C.mode]||''),s.synced&&s.time?s.time.slice(11):''].filter(Boolean).join(' · ');
  $('wnName').textContent=s.mode==='ap'?lz('Setup hotspot'):(s.ssid||lz('Not connected'));
  $('wnSub').textContent=s.connected?lz('Connected · {0}',[s.ip||'']):(s.mode==='ap'?lz('Join a network below to leave setup mode'):(s.wifiFail||lz('Not connected')));
  $('wnBars').innerHTML=s.connected&&s.rssi?bars(s.rssi)+'<span class="tick">✓</span>':'';
@@ -1447,7 +1422,6 @@ function heroOther(){var c=$('heroCanvas'),m=$('mode');if(!c||!m)return;var g=c.
  if(m.value==='weather'){heroWeather(g);return}
  if(m.value==='timer'){heroTimer(g);return}
  if(m.value==='pomodoro'){heroPomo(g);return}
- if(m.value==='currency'){heroCurrency(g);return}
  if(m.value!=='calendar')return;var d=new Date(),y=d.getFullYear(),mo=d.getMonth(),today=d.getDate(),ru=(C.clock&&C.clock.lang)==='ru',sun=!ru&&(!C.clock||!C.clock.lang||C.clock.lang==='en');
  var name=d.toLocaleString(ru?'ru-RU':((C.clock&&C.clock.lang)||'en'),{month:'long'});name=name.charAt(0).toUpperCase()+name.slice(1);
  var ini=ru?['П','В','С','Ч','П','С','В']:(sun?['S','M','T','W','T','F','S']:['M','T','W','T','F','S','S']);
@@ -1503,49 +1477,6 @@ function heroTimer(g){var d=tmData;if(!d){tmLoad().then(function(){if(tmData)her
  g.lineWidth=12;g.strokeStyle='#333';g.beginPath();g.arc(120,120,92,0,7);g.stroke();
  if(d.state!=='idle'){g.strokeStyle=d.state==='paused'?'#7a4a00':'#ff9f0a';g.lineCap='round';g.beginPath();g.arc(120,120,92,-Math.PI/2,-Math.PI/2+fr*2*Math.PI);g.stroke()}
  g.fillStyle='#fff';g.textAlign='center';g.font='500 46px '+f;g.fillText(tmFmt(d.left),120,137);g.fillStyle='#8e8e93';g.font='15px '+f;g.fillText(d.label||'Timer',120,92)}
-// Exchange Rates: the device's last Bank of Russia reading (/api/currency); the
-// currencies on the clock are a setting (currency.codes), up to four.
-var cxData=null,CXMAX=4,CX={USD:['US Dollar','Доллар США'],EUR:['Euro','Евро'],CNY:['Chinese Yuan','Юань'],GBP:['British Pound','Фунт стерлингов'],
- JPY:['Japanese Yen','Иена'],CHF:['Swiss Franc','Швейцарский франк'],TRY:['Turkish Lira','Турецкая лира'],AED:['UAE Dirham','Дирхам ОАЭ'],
- KZT:['Kazakh Tenge','Тенге'],BYN:['Belarusian Ruble','Белорусский рубль'],UAH:['Ukrainian Hryvnia','Гривна'],GEL:['Georgian Lari','Лари'],
- AMD:['Armenian Dram','Драм'],UZS:['Uzbek Sum','Сум'],THB:['Thai Baht','Бат'],INR:['Indian Rupee','Индийская рупия'],HKD:['Hong Kong Dollar','Гонконгский доллар'],
- CAD:['Canadian Dollar','Канадский доллар'],AUD:['Australian Dollar','Австралийский доллар'],PLN:['Polish Zloty','Злотый']};
-// panel: in the panel language; else as the clock writes it.
-function cxName(c,panel){var n=CX[c],ru=panel?UI_LANG==='ru':(C.clock&&C.clock.lang)==='ru';return n?n[ru?1:0]:c}
-function cxNum(v,panel,dec){var ru=panel?UI_LANG==='ru':(C.clock&&C.clock.lang)==='ru',t=v.toFixed(dec!=null?dec:(v<1?4:2));return ru?t.replace('.',','):t}
-function cxChange(r,panel){var p=r.prev>0?Math.round((r.value-r.prev)/r.prev*10000)/100:0;return {t:(p>0?'+':p<0?'-':'')+cxNum(Math.abs(p),panel,2)+'%',k:p>0?'up':p<0?'down':'flat'}}
-function cxShow(d){cxData=d;renderApps();var m=$('mode');if(m&&m.value==='currency')heroOther();var l=$('cxList');if(!l)return;l.textContent='';
- $('cxDate').textContent=d.valid&&d.date?d.date:'';
- if(!d.valid){l.appendChild(el('div','item muted',d.error?lz('Not loaded: {0}',[d.error]):lz('Loads when the app is on the screen')));return}
- (d.rates||[]).forEach(function(r){var row=el('div','item');row.innerHTML='<div class="grow"><div class="strong" translate="no"></div><div class="sub"></div></div><div class="cxval"><span></span><span class="pill"></span></div>';
-  row.querySelector('.strong').textContent=r.code;row.querySelector('.sub').textContent=cxName(r.code,true);
-  var v=row.querySelectorAll('.cxval span');if(r.value>0){var ch=cxChange(r,true);v[0].textContent=cxNum(r.value,true);v[1].textContent=ch.t;v[1].className='pill '+ch.k}else{v[0].textContent='--';v[1].remove()}
-  l.appendChild(row)})}
-function cxLoad(){return j('/api/currency').then(cxShow).catch(function(){})}
-function cxRefresh(){j('/api/currency',{method:'POST'}).then(function(d){cxShow(d);toast(lz('Refreshes when the app is on the screen'))}).catch(function(e){toast(e.message)})}
-function cxCodes(){return (gv('cxCodes')||'').split(',').filter(function(c){return c})}
-// The currencies as switches, the chosen ones first in their order.
-function cxPick(){var p=$('cxPick');if(!p)return;var on=cxCodes();p.textContent='';
- $('cxCount').textContent=lz('{0} of {1}',[on.length,CXMAX]);
- on.concat(Object.keys(CX).filter(function(c){return on.indexOf(c)<0})).forEach(function(c){
-  var row=el('label','item');row.innerHTML='<div class="grow"><span class="strong" translate="no"></span> <span class="sub"></span></div><input class="sw" type="checkbox" data-nosave>';
-  row.querySelector('.strong').textContent=c;row.querySelector('.sub').textContent=cxName(c,true);var cb=row.querySelector('input');cb.checked=on.indexOf(c)>=0;
-  cb.onchange=function(){var cur=cxCodes();
-   if(cb.checked){if(cur.length>=CXMAX){cb.checked=false;toast(lz('Up to four currencies'));return}cur.push(c)}
-   else{if(cur.length<=1){cb.checked=true;toast(lz('Choose a currency'));return}cur=cur.filter(function(x){return x!==c})}
-   sv('cxCodes',cur.join(','));$('cxCount').textContent=lz('{0} of {1}',[cur.length,CXMAX]);autoSave()};
-  p.appendChild(row)})}
-// Exchange Rates in the device card, as CurrencyView draws it.
-function heroCurrency(g){var d=cxData;if(!d){cxLoad().then(function(){if(cxData)heroOther()});return}
- var f='-apple-system,"SF Compact Text","SF Pro Text",system-ui,sans-serif',ru=(C.clock&&C.clock.lang)==='ru';
- g.textBaseline='alphabetic';g.textAlign='left';g.fillStyle='#fff';g.font='500 21px '+f;g.fillText(ru?'Курсы ЦБ':'Rates',22,38);
- g.fillStyle='#2c2c2e';g.fillRect(22,48,196,1);
- if(!d.valid){g.fillStyle='#8e8e93';g.font='16px '+f;g.textAlign='center';g.fillText(ru?'Загрузка курсов...':'Loading rates...',120,128);return}
- (d.rates||[]).slice(0,4).forEach(function(r,i){var t=54+i*42;g.textAlign='left';g.fillStyle='#fff';g.font='500 21px '+f;g.fillText(r.code,22,t+17);
-  g.fillStyle='#8e8e93';g.font='15px '+f;g.fillText(cxName(r.code),22,t+35);g.textAlign='right';g.fillStyle='#fff';g.font='500 21px '+f;
-  if(!(r.value>0)){g.fillText('--',218,t+17);return}g.fillText(cxNum(r.value),218,t+17);
-  var ch=cxChange(r);g.font='15px '+f;var w=Math.max(62,g.measureText(ch.t).width+12);g.fillStyle={up:'#30d158',down:'#ff453a',flat:'#48484a'}[ch.k];
-  g.beginPath();g.roundRect?g.roundRect(218-w,t+21,w,19,5):g.rect(218-w,t+21,w,19);g.fill();g.fillStyle='#fff';g.textAlign='center';g.fillText(ch.t,218-w/2,t+36)})}
 // Pomodoro: /api/pomodoro, polled every second while its page is open; the
 // durations are settings (pomodoro.*), saved like any other field.
 var pmData=null,pmPoll=0,PMCOL={focus:'#ff453a',short:'#30d158',long:'#0a84ff'},PMNAME={focus:'Focus',short:'Short Break',long:'Long Break'};

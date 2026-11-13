@@ -11,7 +11,6 @@
 #include "WeatherMode.h"
 #include "TimerMode.h"
 #include "PomodoroMode.h"
-#include "CurrencyMode.h"
 #include "StatusJson.h"
 #include "Net.h"
 #include "Gfx.h"
@@ -523,15 +522,6 @@ static void handlePomodoro() {
   sendObject(200, doc);
 }
 
-// GET: the last rates; POST {"refresh":true}: fetch again on the next pass.
-static void handleCurrency() {
-  if (!requireAuth()) return;
-  if (server.method() == HTTP_POST) g_currencyMode.refresh();
-  JsonDocument doc;
-  g_currencyMode.toJson(doc.to<JsonObject>());
-  sendObject(200, doc);
-}
-
 // ---- OTA ------------------------------------------------------------------
 static void handleUpdateDone() {
   if (!requireAuth()) return;
@@ -600,8 +590,6 @@ void webPortalBegin(Settings& settings) {
   server.on("/api/timer", HTTP_POST, handleTimer);
   server.on("/api/pomodoro", HTTP_GET, handlePomodoro);
   server.on("/api/pomodoro", HTTP_POST, handlePomodoro);
-  server.on("/api/currency", HTTP_GET, handleCurrency);
-  server.on("/api/currency", HTTP_POST, handleCurrency);
   server.on("/api/reminders", HTTP_GET, handleRemindersGet);
   server.on("/api/reminders", HTTP_POST, handleRemindersPost);
   server.on("/apple-touch-icon.png", HTTP_GET, handleAppleIcon);
