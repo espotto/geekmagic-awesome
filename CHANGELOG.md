@@ -2,6 +2,15 @@
 
 The firmware is `geekmagic-<version>`; every release adds 0.01.
 
+## 1.47 — 2026-11-14
+
+- The crash record says more: what the firmware was doing (network, a web
+  request, the apps, the weather or a watch face's data request), the free
+  heap then and its low since start, the Wi-Fi sleep type, and the first code
+  addresses on the stack, so a fault inside the Wi-Fi driver (the software
+  watchdog in `pm_send_nullfunc`, seen twice) can be traced to its cause.
+  A record from an older version is not read.
+
 ## 1.46 — 2026-11-14
 
 - The same as 1.44. (1.45, never released, tried an Exchange Rates app; it

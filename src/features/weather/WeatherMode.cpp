@@ -4,6 +4,8 @@
 #include <WiFiClient.h>
 #include "Gfx.h"
 #include "Net.h"
+#include "Platform.h"
+#include "CrashRecord.h"
 #include "../theme/Languages.h"
 
 WeatherMode g_weatherMode;
@@ -42,6 +44,10 @@ int WeatherMode::fetchFrom(const Settings& s, const char* host) {
   http.setTimeout(4000);
   http.useHTTP10(true);   // no chunked transfer: the body streams straight into the parser
   if (!http.begin(client, url)) { error_ = F("bad request"); return 0; }
+  struct PhaseMark {   // for the crash record, until this request is done
+    PhaseMark() { g_loopPhase = PHASE_WEATHER; }
+    ~PhaseMark() { g_loopPhase = PHASE_APPS; }
+  } mark;
   const int code = http.GET();
   if (code != HTTP_CODE_OK) {
     error_ = code < 0 ? HTTPClient::errorToString(code) : String(F("HTTP ")) + code;

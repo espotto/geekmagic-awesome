@@ -1,5 +1,6 @@
 #include "ThemeDataClient.h"
 #include "Platform.h"
+#include "CrashRecord.h"
 #include <ArduinoJson.h>
 #include <new>
 
@@ -102,6 +103,11 @@ JsonVariantConst jsonPath(JsonVariantConst root, const std::string& path) {
 }
 bool fetchThemeSource(gm::DataFetch& request) {
   if (request.cancelled()) return false;
+  struct PhaseMark {   // for the crash record, until this request is done
+    uint8_t was = g_loopPhase;
+    PhaseMark() { g_loopPhase = PHASE_FACEDATA; }
+    ~PhaseMark() { g_loopPhase = was; }
+  } mark;
   Deadline deadline(request);
   std::unique_ptr<NetClient> client;
   if (request.source.url.rfind("https://", 0) == 0) {

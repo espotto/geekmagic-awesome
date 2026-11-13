@@ -49,6 +49,10 @@ struct StatusCrash {
   const char *exccause = "", *epc = "", *addr = "";
   bool hasUptime = false;
   uint32_t uptime = 0;
+  const char* phase = "";   // what the firmware was doing; left out when empty
+  const char* sleep = "";   // the Wi-Fi sleep type; left out when empty
+  uint32_t heap = 0, minHeap = 0;   // left out when 0
+  const char* trace = "";   // "0x40212345 0x40234567"; left out when empty
 };
 namespace statusout {
 // `,"key":` (the key is a PSTR literal with its comma and quotes), then the value.
@@ -110,6 +114,11 @@ template <class Out> void writeStatusCrash(Out& out, const StatusCrash& k) {
   if (k.epc[0]) member(out, PSTR(",\"epc\":"), k.epc);
   if (k.addr[0]) member(out, PSTR(",\"addr\":"), k.addr);
   if (k.hasUptime) member(out, PSTR(",\"uptime\":"), k.uptime);
+  if (k.phase[0]) member(out, PSTR(",\"phase\":"), k.phase);
+  if (k.sleep[0]) member(out, PSTR(",\"sleep\":"), k.sleep);
+  if (k.heap) member(out, PSTR(",\"heap\":"), k.heap);
+  if (k.minHeap) member(out, PSTR(",\"minHeap\":"), k.minHeap);
+  if (k.trace[0]) member(out, PSTR(",\"trace\":"), k.trace);
   jsonout::raw(out, PSTR("}"));
 }
 

@@ -103,7 +103,15 @@ struct PlatformCrashRecord {
   uint32_t excvaddr;       // faulting address
   uint32_t uptimeS;        // seconds up before the crash, valid iff uptimeKnown
   bool     uptimeKnown;    // false for the hardware watchdog (no callback runs)
+  uint8_t  phase;          // LoopPhase (CrashRecord.h); 0 unknown
+  uint8_t  wifiSleep;      // 0 none, 1 light, 2 modem; 255 unknown
+  uint32_t heap, minHeap;  // free heap then and the lowest since boot; 0 unknown
+  uint32_t trace[4];       // code addresses from the stack; 0 none
 };
+// Kept up to date by the main loop for the crash callback.
+extern volatile uint8_t g_loopPhase;
+extern volatile uint8_t g_wifiSleep;
+extern volatile uint32_t g_minHeapSeen;
 // Call once at boot, before anything can reset the chip again.
 void platformCrashRecordBegin();
 bool platformCrashRecordGet(PlatformCrashRecord& out);

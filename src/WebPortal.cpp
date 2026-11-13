@@ -2,6 +2,7 @@
 #include "SysText.h"
 #include "DefaultFaces.h"
 #include "Platform.h"
+#include "CrashRecord.h"
 #include "WebGuard.h"
 #include <ArduinoJson.h>
 #include <LittleFS.h>
@@ -214,6 +215,14 @@ static void handleStatus() {
     if (cr.hasRegisters) { k.exccause = cause; k.epc = epc; k.addr = addr; }
     k.hasUptime = cr.uptimeKnown;
     k.uptime = cr.uptimeS;
+    k.phase = loopPhaseLabel(cr.phase);
+    k.sleep = cr.wifiSleep == 0 ? "none" : cr.wifiSleep == 1 ? "light" : cr.wifiSleep == 2 ? "modem" : "";
+    k.heap = cr.heap;
+    k.minHeap = cr.minHeap;
+    char trace[48] = "";
+    for (int i = 0; i < 4 && cr.trace[i]; i++)
+      snprintf(trace + strlen(trace), sizeof(trace) - strlen(trace), i ? " 0x%08x" : "0x%08x", (unsigned)cr.trace[i]);
+    k.trace = trace;
     gm::writeStatusCrash(out, k);
   }
   gm::writeStatusEnd(out);

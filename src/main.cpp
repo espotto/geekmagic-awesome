@@ -9,6 +9,7 @@
 // License: WTFPL
 #include <Arduino.h>
 #include "Platform.h"
+#include "CrashRecord.h"
 #include "config.h"
 #include "Settings.h"
 #include "SysText.h"
@@ -390,8 +391,15 @@ void setup() {
 void loop() {
   const uint32_t freeHeap = ESP.getFreeHeap();
   if (freeHeap < g_minHeap) g_minHeap = freeHeap;
+  // For the crash record (Platform.cpp): what the loop is doing, the heap low
+  // and the Wi-Fi sleep type, as the callback cannot safely ask for them.
+  g_minHeapSeen = g_minHeap;
+  g_wifiSleep = (uint8_t)WiFi.getSleepMode();
+  g_loopPhase = PHASE_NET;
   netLoop();
+  g_loopPhase = PHASE_WEB;
   webPortalLoop();
+  g_loopPhase = PHASE_APPS;
   // The words of the device's own screens follow a saved language change.
   sys::setLanguage(gm::languageFromCode(g_settings.clock.lang.c_str()));
 

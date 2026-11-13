@@ -15,9 +15,22 @@ static CrashRtc sample() {
   return r;
 }
 
+static void testTrace() {
+  // Code addresses only, newest first, at most four, without the fault itself.
+  const uint32_t stack[] = {0x3ffffa00, 0x4027d7b6, 0x40212340, 7, 0x40100abc, 0x60000000, 0x40234560, 0x40245670, 0x40256780};
+  uint32_t t[4] = {0, 0, 0, 0};
+  crashTrace(stack, stack + 9, 0x4027d7b6, t);
+  assert(t[0] == 0x40212340 && t[1] == 0x40100abc && t[2] == 0x40234560 && t[3] == 0x40245670);
+  uint32_t none[4] = {0, 0, 0, 0};
+  crashTrace(stack, stack, 0, none);
+  assert(!none[0]);
+  assert(!strcmp(loopPhaseLabel(PHASE_WEATHER), "weather fetch") && !strcmp(loopPhaseLabel(0), ""));
+}
+
 int main() {
-  // The record is 12 words and must end inside the 128 user words from word 96.
-  assert(sizeof(CrashRtc) == 48);
+  testTrace();
+  // The record is 18 words and must end inside the 128 user words from word 96.
+  assert(sizeof(CrashRtc) == 72);
   assert(96 + sizeof(CrashRtc) / 4 <= 128);
 
   // Labels: 253/254 get their own, the hardware watchdog is only REASON_WDT_RST.

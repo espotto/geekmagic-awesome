@@ -16,6 +16,30 @@ enum CrashReasonCode : uint8_t {
   CRASH_RST_SW_EXC      = 254,  // core: abort(), panic(), out of memory
 };
 
+// What the main loop was doing, kept in a global the crash callback reads: a
+// fault inside the SDK (the Wi-Fi driver's own watchdog loops) shows only an
+// SDK address, and this says what the firmware had asked of it.
+enum LoopPhase : uint8_t {
+  PHASE_UNKNOWN = 0,
+  PHASE_NET,       // netLoop(): joining, the gateway ping, mDNS
+  PHASE_WEB,       // a web request
+  PHASE_APPS,      // drawing an app, notices, the night clock, or waiting
+  PHASE_WEATHER,   // the Weather app's HTTP request
+  PHASE_FACEDATA,  // a watch face's own HTTP data request
+  PHASE_SETUP,     // setup(), before the first loop
+};
+static inline const char* loopPhaseLabel(uint8_t p) {
+  switch (p) {
+    case PHASE_NET:      return "network";
+    case PHASE_WEB:      return "web request";
+    case PHASE_APPS:     return "apps";
+    case PHASE_WEATHER:  return "weather fetch";
+    case PHASE_FACEDATA: return "watch face data";
+    case PHASE_SETUP:    return "start";
+    default:             return "";
+  }
+}
+
 static const uint32_t CRASH_MAGIC   = 0x43525348;   // "CRSH"
 static const uint32_t CRASH_PENDING = 1;            // written by the callback, not yet adopted
 
@@ -27,9 +51,25 @@ struct CrashRtc {
   uint32_t uptimeS;
   uint8_t  rstReason;   // CrashReasonCode
   uint8_t  uptimeKnown;
-  uint16_t pad;
+  uint8_t  phase;       // LoopPhase then; 0 unknown
+  uint8_t  wifiSleep;   // the Wi-Fi sleep type then: 0 none, 1 light, 2 modem; 255 unknown
   char     fw[16];
+  uint32_t heap;        // free heap then; 0 unknown
+  uint32_t minHeap;     // the lowest free heap since boot; 0 unknown
+  uint32_t trace[4];    // the first code addresses on the stack, for addr2line; 0 none
 };
+
+// Flash code (irom) and IRAM code: what a return address on the stack can be.
+static inline bool crashIsCode(uint32_t a) {
+  return (a >= 0x40200000u && a < 0x40300000u) || (a >= 0x40100000u && a < 0x40108000u);
+}
+// Fills `trace` with the first code addresses in the words [p, end), leaving
+// out `epc` (the fault itself): the callers that led to the fault, newest first.
+static inline void crashTrace(const uint32_t* p, const uint32_t* end, uint32_t epc, uint32_t trace[4]) {
+  int n = 0;
+  for (int words = 0; p < end && n < 4 && words < 512; ++p, ++words)
+    if (crashIsCode(*p) && *p != epc) trace[n++] = *p;
+}
 
 static inline uint32_t crashCheck(const CrashRtc& r) {
   const uint8_t* p = reinterpret_cast<const uint8_t*>(&r) + 8;

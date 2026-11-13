@@ -203,6 +203,13 @@ int main() {
     StringSink s2;
     { PieceWriter<128> out(s2); writeStatusCrash(out, a); out.flush(); }
     assert(s2.text == ",\"lastCrash\":{\"reason\":\"Abort/out of memory\",\"fw\":\"1.35\"}");
+    StatusCrash w;   // what the firmware was doing, the heap and the stack's code addresses
+    w.reason = "Software watchdog"; w.fw = "1.47"; w.phase = "weather fetch"; w.sleep = "none";
+    w.heap = 21000; w.minHeap = 9000; w.trace = "0x40212340 0x40234560";
+    StringSink s3;
+    { PieceWriter<7> out(s3); writeStatusCrash(out, w); out.flush(); }
+    assert(s3.text == ",\"lastCrash\":{\"reason\":\"Software watchdog\",\"fw\":\"1.47\",\"phase\":\"weather fetch\",\"sleep\":\"none\","
+                      "\"heap\":21000,\"minHeap\":9000,\"trace\":\"0x40212340 0x40234560\"}");
   }
   std::printf("status reply tests passed (%d replies, byte for byte)\n", checked);
   return 0;

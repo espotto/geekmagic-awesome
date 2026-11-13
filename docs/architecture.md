@@ -130,6 +130,9 @@ save. Writes are atomic (`AtomicJson.h`).
 
 ## Known issues
 
-- A software watchdog reset was once recorded inside the Wi‑Fi driver
-  (`pm_send_nullfunc`), after 13 minutes of uptime. It has not repeated; the
-  crash record shows in **General → About** until cleared.
+- A software watchdog reset inside the Wi‑Fi driver (`pm_send_nullfunc`) was
+  recorded twice, after 13 minutes and after 1 h 40 min. The SDK has many
+  places that print a message and loop forever on an internal error (out of
+  memory among them, see esp8266/Arduino#8918), and the device has no serial
+  console to show it, so since 1.47 the crash record also keeps the loop
+  phase, the heap and a stack trace (see recovery.md).

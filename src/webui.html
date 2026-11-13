@@ -1177,7 +1177,8 @@ function statusExtras(s){curSsid=s.connected?(s.ssid||''):'';
  $('wnBars').innerHTML=s.connected&&s.rssi?bars(s.rssi)+'<span class="tick">✓</span>':'';
  document.querySelectorAll('#wifiTable .wrow').forEach(function(r){var sub=r.querySelector('.sub'),cur=!!curSsid&&r.querySelector('.ws').value===curSsid;
   if(cur===!!r.dataset.cur)return;if(cur)r.dataset.cur='1';else delete r.dataset.cur;sub.textContent=wifiRowState(r)})}
-function crashLine(x){return x.reason+(x.epc?', cause '+x.exccause+', epc '+x.epc+', addr '+x.addr:'')+', fw '+x.fw+(x.uptime!=null?', up '+fmtUp(x.uptime):'')}
+function crashLine(x){return x.reason+(x.epc?', cause '+x.exccause+', epc '+x.epc+', addr '+x.addr:'')+', fw '+x.fw+(x.uptime!=null?', up '+fmtUp(x.uptime):'')+
+ (x.phase?', in '+x.phase:'')+(x.heap?', heap '+Math.round(x.heap/1024)+' KB'+(x.minHeap?' (min '+Math.round(x.minHeap/1024)+' KB)':''):'')+(x.sleep?', sleep '+x.sleep:'')+(x.trace?', stack '+x.trace:'')}
 function clearCrash(){j('/api/crash/clear',{method:'POST'}).then(function(){toast(lz('Crash record cleared'));loadStatus()}).catch(function(e){toast(e.message)})}
 function kv(k,v){return '<div class="item"><span class="grow">'+k+'</span><span class="val">'+v+'</span></div>'}
 // A long value (a crash record) goes under its name rather than beside it.

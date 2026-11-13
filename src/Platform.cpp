@@ -22,8 +22,8 @@ void platformOnTimeSync(void (*cb)()) {
 // (struct eboot_command at 0x60001200) takes the first 32 of them (128 bytes,
 // see the note in the core's Esp.cpp): anything written there between
 // Update.end() and the reboot corrupts the command and eboot boots the old
-// image. The record sits at word 96, well clear of it. It is 12 words, ending
-// at word 107.
+// image. The record sits at word 96, well clear of it. It is 18 words, ending
+// at word 113.
 //
 // Written only on an abnormal reset: custom_crash_callback() covers exceptions,
 // the software watchdog, abort()/out of memory and stack smashes, and is the
@@ -51,7 +51,11 @@ static void crashStore(CrashRtc& r) {
 // The core calls this from its exception, software-watchdog, abort and stack-smash handlers, with
 // the heap and the flash cache in whatever state the fault left them. So no
 // allocation and no Arduino String in here: static buffers and plain stores.
-extern "C" void custom_crash_callback(struct rst_info* ri, uint32_t, uint32_t) {
+volatile uint8_t g_loopPhase = PHASE_SETUP;
+volatile uint8_t g_wifiSleep = 255;
+volatile uint32_t g_minHeapSeen = 0;
+
+extern "C" void custom_crash_callback(struct rst_info* ri, uint32_t stack, uint32_t stackEnd) {
   CrashRtc r;
   memset(&r, 0, sizeof(r));
   r.flags       = CRASH_PENDING;
@@ -62,6 +66,12 @@ extern "C" void custom_crash_callback(struct rst_info* ri, uint32_t, uint32_t) {
   r.rstReason   = ri->reason;
   r.uptimeKnown = 1;
   strlcpy(r.fw, FW_VERSION, sizeof(r.fw));
+  r.phase       = g_loopPhase;
+  r.wifiSleep   = g_wifiSleep;
+  r.heap        = ESP.getFreeHeap();   // a counter read: no walk of a heap that may be broken
+  r.minHeap     = g_minHeapSeen;
+  if (stack && stackEnd > stack)
+    crashTrace(reinterpret_cast<const uint32_t*>(stack), reinterpret_cast<const uint32_t*>(stackEnd), r.epc1, r.trace);
   crashStore(r);
 }
 
@@ -86,6 +96,7 @@ void platformCrashRecordBegin() {
       r.excvaddr  = ri->excvaddr;
       r.rstReason = ri->reason;
       strlcpy(r.fw, FW_VERSION, sizeof(r.fw));   // the booted image, not necessarily the crashed one
+      r.wifiSleep = 255;
       crashStore(r);
       return;
   }
@@ -103,6 +114,11 @@ bool platformCrashRecordGet(PlatformCrashRecord& out) {
   out.excvaddr    = r.excvaddr;
   out.uptimeS     = r.uptimeS;
   out.uptimeKnown = r.uptimeKnown != 0;
+  out.phase       = r.phase;
+  out.wifiSleep   = r.wifiSleep;
+  out.heap        = r.heap;
+  out.minHeap     = r.minHeap;
+  memcpy(out.trace, r.trace, sizeof(out.trace));
   return true;
 }
 

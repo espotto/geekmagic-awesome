@@ -10,7 +10,10 @@
 - **A crash** restarts the device in safe mode: the screen shows the crash
   address and the web server stays up, so a fixed image can be uploaded. The
   record (`lastCrash` in `/api/status`) stays in General → About until cleared.
-  Decode an address with the ELF of the same build:
+  Besides the registers it keeps what the firmware was doing (`phase`), the
+  free heap then and its low since start (`heap`, `minHeap`), the Wi‑Fi sleep
+  type (`sleep`) and the first code addresses on the stack (`trace`). Decode
+  the addresses with the ELF of the same build:
   `xtensa-lx106-elf-addr2line -pfiaC -e .pio/build/geekmagic/firmware.elf 0x…`.
 - **A forgotten password** can only be removed by flashing over USB/UART.
 - **Back to stock.** Keep a backup of the stock flash from before the first
