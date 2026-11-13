@@ -2,6 +2,11 @@
 
 The firmware is `geekmagic-<version>`; every release adds 0.01.
 
+## 1.38 — 2026-11-13
+
+- Timer: minutes and seconds centred in their fields, without the step arrows;
+  the label field is aligned left.
+
 ## 1.37 — 2026-11-13
 
 First release.
