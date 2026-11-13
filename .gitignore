@@ -1,0 +1,20 @@
+# PlatformIO
+.pio/
+.vscode/
+*.elf
+*.map
+
+# Built images: published as GitHub release assets, not committed
+/firmware/
+
+# Python
+__pycache__/
+*.pyc
+
+# OS and editor
+.DS_Store
+Thumbs.db
+*.swp
+
+# Local tool configuration
+/.claude/

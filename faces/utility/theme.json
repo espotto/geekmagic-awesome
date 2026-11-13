@@ -1,0 +1,240 @@
+{
+  "spec": 2,
+  "theme": {
+    "id": "utility",
+    "name": "Utility",
+    "author": "GeekMagic",
+    "version": "3.0.0"
+  },
+  "display": {
+    "width": 240,
+    "height": 240,
+    "background": "#000000"
+  },
+  "layers": [
+    {
+      "id": "minor",
+      "type": "shape",
+      "shape": "ticks",
+      "x": 120,
+      "y": 120,
+      "radius": 99,
+      "count": 60,
+      "length": 4,
+      "stroke": "#48484a",
+      "strokeWidth": 1
+    },
+    {
+      "id": "major",
+      "type": "shape",
+      "shape": "ticks",
+      "x": 120,
+      "y": 120,
+      "radius": 99,
+      "count": 12,
+      "length": 10,
+      "stroke": "#f5f5f7",
+      "strokeWidth": 3
+    },
+    {
+      "id": "n12",
+      "type": "text",
+      "x": 120,
+      "y": 44,
+      "anchor": "center",
+      "value": "12",
+      "font": "body",
+      "color": "#f5f5f7"
+    },
+    {
+      "id": "n3",
+      "type": "text",
+      "x": 196,
+      "y": 120,
+      "anchor": "center",
+      "value": "3",
+      "font": "body",
+      "color": "#f5f5f7"
+    },
+    {
+      "id": "n6",
+      "type": "text",
+      "x": 120,
+      "y": 196,
+      "anchor": "center",
+      "value": "6",
+      "font": "body",
+      "color": "#f5f5f7"
+    },
+    {
+      "id": "n9",
+      "type": "text",
+      "x": 44,
+      "y": 120,
+      "anchor": "center",
+      "value": "9",
+      "font": "body",
+      "color": "#f5f5f7"
+    },
+    {
+      "id": "date",
+      "type": "text",
+      "x": 120,
+      "y": 80,
+      "anchor": "center",
+      "value": "{WD} {DD}",
+      "font": "caption",
+      "color": "#ff9f0a"
+    },
+    {
+      "id": "temp",
+      "type": "text",
+      "x": 120,
+      "y": 160,
+      "anchor": "center",
+      "value": "{device.weatherTemp}°",
+      "font": "caption",
+      "color": "#8e8e93"
+    },
+    {
+      "id": "hour-am",
+      "type": "shape",
+      "shape": "hand",
+      "x": 120,
+      "y": 120,
+      "length": 52,
+      "tail": 0,
+      "angle": 0,
+      "stroke": "#f5f5f7",
+      "strokeWidth": 7,
+      "bind": {
+        "angle": {
+          "source": "time.secondOfDay",
+          "input": [
+            0,
+            43200
+          ],
+          "output": [
+            0,
+            360
+          ]
+        },
+        "x": {
+          "source": "time.hour",
+          "input": [
+            11,
+            12
+          ],
+          "output": [
+            120,
+            479
+          ]
+        }
+      }
+    },
+    {
+      "id": "hour-pm",
+      "type": "shape",
+      "shape": "hand",
+      "x": -240,
+      "y": 120,
+      "length": 52,
+      "tail": 0,
+      "angle": 0,
+      "stroke": "#f5f5f7",
+      "strokeWidth": 7,
+      "bind": {
+        "angle": {
+          "source": "time.secondOfDay",
+          "input": [
+            43200,
+            86400
+          ],
+          "output": [
+            0,
+            360
+          ]
+        },
+        "x": {
+          "source": "time.hour",
+          "input": [
+            11,
+            12
+          ],
+          "output": [
+            -240,
+            120
+          ]
+        }
+      }
+    },
+    {
+      "id": "minute",
+      "type": "shape",
+      "shape": "hand",
+      "x": 120,
+      "y": 120,
+      "length": 84,
+      "tail": 0,
+      "angle": 0,
+      "stroke": "#f5f5f7",
+      "strokeWidth": 5,
+      "bind": {
+        "angle": {
+          "source": "time.minute",
+          "input": [
+            0,
+            60
+          ],
+          "output": [
+            0,
+            360
+          ]
+        }
+      }
+    },
+    {
+      "id": "second",
+      "type": "shape",
+      "shape": "hand",
+      "x": 120,
+      "y": 120,
+      "length": 92,
+      "tail": 18,
+      "angle": 0,
+      "stroke": "#ff9f0a",
+      "strokeWidth": 2,
+      "bind": {
+        "angle": {
+          "source": "time.second",
+          "input": [
+            0,
+            60
+          ],
+          "output": [
+            0,
+            360
+          ]
+        }
+      }
+    },
+    {
+      "id": "cap",
+      "type": "shape",
+      "shape": "circle",
+      "x": 120,
+      "y": 120,
+      "radius": 5,
+      "fill": "#ff9f0a"
+    },
+    {
+      "id": "pin",
+      "type": "shape",
+      "shape": "circle",
+      "x": 120,
+      "y": 120,
+      "radius": 2,
+      "fill": "#000000"
+    }
+  ]
+}

@@ -1,0 +1,104 @@
+{
+  "spec": 2,
+  "theme": {
+    "id": "modular",
+    "name": "Modular",
+    "author": "GeekMagic",
+    "version": "3.0.0"
+  },
+  "display": {
+    "width": 240,
+    "height": 240,
+    "background": "#000000"
+  },
+  "layers": [
+    {
+      "id": "weekday",
+      "type": "text",
+      "x": 28,
+      "y": 28,
+      "anchor": "top-left",
+      "value": "{WEEKDAY}",
+      "font": "caption",
+      "color": "#ff9f0a"
+    },
+    {
+      "id": "date",
+      "type": "text",
+      "x": 28,
+      "y": 48,
+      "anchor": "top-left",
+      "value": "{DD} {MONTH}",
+      "font": "body",
+      "color": "#f5f5f7"
+    },
+    {
+      "id": "wlabel",
+      "type": "text",
+      "x": 212,
+      "y": 28,
+      "anchor": "top-right",
+      "value": {
+        "en": "Weather",
+        "ru": "Погода"
+      },
+      "font": "caption",
+      "color": "#8e8e93"
+    },
+    {
+      "id": "temp",
+      "type": "text",
+      "x": 212,
+      "y": 48,
+      "anchor": "top-right",
+      "value": "{device.weatherTemp}°",
+      "font": "body",
+      "color": "#64d2ff"
+    },
+    {
+      "id": "time",
+      "type": "text",
+      "x": 120,
+      "y": 128,
+      "anchor": "center",
+      "value": "{HH}:{MM}",
+      "font": "display-m",
+      "color": "#f5f5f7"
+    },
+    {
+      "id": "track",
+      "type": "shape",
+      "shape": "rectangle",
+      "x": 28,
+      "y": 194,
+      "width": 184,
+      "height": 4,
+      "cornerRadius": 2,
+      "fill": "#2c2c2e"
+    },
+    {
+      "id": "sec",
+      "type": "shape",
+      "shape": "rectangle",
+      "x": 28,
+      "y": 194,
+      "width": 4,
+      "height": 4,
+      "cornerRadius": 2,
+      "fill": "#ff9f0a",
+      "bind": {
+        "width": {
+          "source": "time.second",
+          "input": [
+            0,
+            59
+          ],
+          "output": [
+            4,
+            184
+          ]
+        }
+      }
+    }
+  ]
+}

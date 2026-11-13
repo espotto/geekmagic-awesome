@@ -1,0 +1,1523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>GeekMagic</title>
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="GeekMagic">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#09090b">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PGcgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMjJjNTVlIiBzdHJva2Utd2lkdGg9IjMiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHJlY3QgeD0iNyIgeT0iMTMiIHdpZHRoPSI1MCIgaGVpZ2h0PSIzOCIgcng9IjYiLz48cG9seWxpbmUgcG9pbnRzPSIxNSwzOCAyMywzMCAzMCwzNCAzNywyMiA0NCwyOCA1MCwyMCIvPjxwYXRoIGQ9Ik0yNCA1MXY2TTQwIDUxdjZNMjAgNTdoOE0zNiA1N2g4Ii8+PC9nPjwvc3ZnPg==">
+<style>
+/* Look after shadcn/ui (zinc palette, new-york style) in plain CSS: the page is served from the ESP8266's flash, so no framework. */
+:root{color-scheme:dark;--bg:#09090b;--fg:#fafafa;--card:#0c0c0e;--pop:#18181b;--mut:#a1a1aa;--muted:#27272a;--bd:#27272a;--in:rgba(39,39,42,.35);--pri:#fafafa;--pri-fg:#18181b;--sec:#27272a;--hov:#2f2f33;--ring:rgba(212,212,216,.45);--red:#e5484d;--acc:#22c55e;--acc2:#60a5fa;
+--chev:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%23a1a1aa' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m4 6 4 4 4-4'/%3E%3C/svg%3E");
+--tick:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%2318181b' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m4 8.5 2.5 2.5L12 5.5'/%3E%3C/svg%3E")}
+/* light: set by the theme switch (data-theme), which follows the OS unless the user picks one */
+:root[data-theme=light]{color-scheme:light;--bg:#fff;--fg:#09090b;--card:#fff;--pop:#fff;--mut:#71717a;--muted:#f4f4f5;--bd:#e4e4e7;--in:transparent;--pri:#18181b;--pri-fg:#fafafa;--sec:#f4f4f5;--hov:#e9e9eb;--ring:rgba(161,161,170,.5);--red:#dc2626;--acc:#16a34a;--acc2:#2563eb;
+--tick:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%23fafafa' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m4 8.5 2.5 2.5L12 5.5'/%3E%3C/svg%3E")}
+*{box-sizing:border-box}
+body{margin:0;font:14px/1.5 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--fg);-webkit-font-smoothing:antialiased}
+/* Opened from the home screen: the page runs under the status bar (black-translucent), so it
+   keeps clear of the notch and the home indicator, and a dark band sits behind the status bar's
+   white text whichever theme the page is in. */
+@media (display-mode: standalone){body{padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+body::before{content:"";position:fixed;top:0;left:0;right:0;height:env(safe-area-inset-top);background:#09090b;z-index:100}}
+a{color:var(--fg);text-underline-offset:3px}
+code{font:12.5px ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--muted);padding:1px 5px;border-radius:4px}
+header{padding:14px 16px;display:flex;align-items:center;gap:10px;max-width:712px;margin:0 auto;flex-wrap:wrap}
+header h1{font-size:16px;margin:0;font-weight:600;letter-spacing:-.01em}
+header .logo{width:24px;height:24px;flex:0 0 auto}
+header .dot{width:8px;height:8px;border-radius:50%;background:var(--mut)}
+header .dot.ok{background:var(--acc);box-shadow:0 0 0 3px color-mix(in srgb,var(--acc) 25%,transparent)}
+nav{display:flex;gap:2px;padding:3px;margin:0 auto 4px;width:max-content;max-width:calc(100% - 32px);overflow-x:auto;background:var(--muted);border-radius:10px;position:sticky;top:8px;z-index:5;scrollbar-width:none}
+nav::-webkit-scrollbar{display:none}
+nav button{background:none;border:1px solid transparent;color:var(--mut);padding:5px 12px;border-radius:7px;font:inherit;font-size:14px;font-weight:500;line-height:1.4;cursor:pointer;white-space:nowrap;transition:color .15s,background .15s}
+nav button:hover{color:var(--fg)}
+nav button.active{background:var(--bg);color:var(--fg);border-color:var(--bd);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+main{padding:16px;max-width:712px;margin:0 auto}
+.tab{display:none}.tab.active{display:block}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:20px;margin-bottom:16px;box-shadow:0 1px 2px rgba(0,0,0,.05)}
+h2{font-size:16px;font-weight:600;letter-spacing:-.01em;color:var(--fg);margin:0 0 14px;line-height:1.2}
+label{display:block;margin:14px 0 6px;font-size:14px;font-weight:500;color:var(--fg);line-height:1.2}
+input[type=text],input[type=password],input[type=number],input[type=url],input[type=time],input[type=file],select{
+ width:100%;height:36px;padding:0 12px;background:var(--in);border:1px solid var(--bd);border-radius:8px;color:var(--fg);font:inherit;font-size:14px;outline:0;box-shadow:0 1px 2px rgba(0,0,0,.05);transition:border-color .15s,box-shadow .15s}
+select{appearance:none;-webkit-appearance:none;background:var(--in) var(--chev) no-repeat right 10px center;padding-right:34px;cursor:pointer}
+select option{background:var(--pop);color:var(--fg)}
+input[type=file]{padding:0 4px 0 0;line-height:34px;color:var(--mut);cursor:pointer}
+input[type=file]+button.btn{margin-top:10px}
+input[type=file]::file-selector-button{height:34px;margin-right:10px;padding:0 12px;border:0;border-right:1px solid var(--bd);background:transparent;color:var(--fg);font:inherit;font-size:14px;font-weight:500;cursor:pointer}
+input::placeholder{color:var(--mut)}
+input:focus-visible,select:focus-visible,button:focus-visible{border-color:var(--mut);box-shadow:0 0 0 3px var(--ring);outline:0}
+input:disabled,select:disabled{opacity:.5;cursor:not-allowed}
+input[type=range]{width:100%;accent-color:var(--pri);margin:6px 0;cursor:pointer}
+input[type=checkbox]{appearance:none;-webkit-appearance:none;flex:0 0 auto;width:16px;height:16px;margin:0;border:1px solid var(--mut);border-radius:4px;background:var(--in) center/14px no-repeat;cursor:pointer;transition:background-color .15s}
+input[type=checkbox]:checked{background-color:var(--pri);border-color:var(--pri);background-image:var(--tick)}
+.row{display:flex;gap:12px}.row>*{flex:1;min-width:0}.row+.row{margin-top:8px}
+.chk{display:flex;align-items:center;gap:10px;margin:12px 0}
+.chk label{margin:0;font-weight:400;line-height:1.4;cursor:pointer}
+.req{border:1px solid var(--bd);background:var(--card);border-radius:10px;padding:12px 16px;margin:0 0 16px;font-size:14px;line-height:1.55;color:var(--mut)}
+.req b{color:var(--fg);font-weight:600}
+button.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:36px;background:var(--pri);color:var(--pri-fg);border:1px solid transparent;padding:0 16px;border-radius:8px;font:inherit;font-size:14px;font-weight:500;cursor:pointer;white-space:nowrap;box-shadow:0 1px 2px rgba(0,0,0,.08);transition:opacity .15s,background .15s}
+button.btn:hover{opacity:.9}
+button.btn.sec{background:var(--in);color:var(--fg);border-color:var(--bd)}
+button.btn.sec:hover{background:var(--hov);opacity:1}
+button.btn.danger{background:var(--red);color:#fff}
+button.btn:disabled{opacity:.5;pointer-events:none}
+.muted{color:var(--mut);font-size:14px}
+table{width:100%;border-collapse:collapse}
+td{padding:4px}
+td:first-child{padding-left:0}td:last-child{padding-right:0}
+.kv{display:flex;justify-content:space-between;gap:16px;padding:9px 0;border-bottom:1px solid var(--bd)}
+.kv:last-child{border:0}.kv b{font-weight:500;color:var(--fg);text-align:right;overflow-wrap:anywhere}
+.toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,8px);max-width:calc(100% - 32px);background:var(--pop);color:var(--fg);border:1px solid var(--bd);padding:12px 16px;border-radius:10px;font-size:14px;box-shadow:0 10px 24px -6px rgba(0,0,0,.35);opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;z-index:9}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.net{padding:10px 12px;border:1px solid var(--bd);border-radius:8px;margin:6px 0;cursor:pointer;display:flex;justify-content:space-between;gap:12px;transition:background .15s}
+.net:hover{background:var(--hov)}
+.bar{height:8px;background:var(--muted);border-radius:99px;overflow:hidden;margin-top:10px}
+.bar>div{height:100%;width:0;background:var(--pri);border-radius:99px;transition:width .2s}
+small.hint{display:block;color:var(--mut);margin-top:6px;font-size:13px;line-height:1.5}
+.icon-btn{margin-left:auto;display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;padding:0;border:1px solid var(--bd);border-radius:8px;background:var(--in);color:var(--fg);cursor:pointer;transition:background .15s}
+.icon-btn:hover{background:var(--hov)}
+.faces{display:flex;gap:16px;overflow-x:auto;padding:6px 4px 12px;margin:0 -4px;scroll-snap-type:x mandatory;scrollbar-width:none}
+.faces::-webkit-scrollbar{display:none}
+.face{flex:0 0 auto;width:124px;scroll-snap-align:start;text-align:center;cursor:pointer;background:none;border:0;color:inherit;font:inherit;padding:0}
+.bezel{position:relative;width:124px;height:124px;border-radius:28px;background:#000;padding:8px;box-shadow:inset 0 0 0 1px #2c2c2e,0 6px 16px -6px rgba(0,0,0,.6);transition:box-shadow .2s,transform .2s}
+.bezel canvas{width:100%;height:100%;border-radius:20px;display:block}
+.bezel .bad{position:absolute;inset:8px;border-radius:20px;display:flex;align-items:center;justify-content:center;color:#ff453a;font-size:28px;font-weight:600}
+.face:hover .bezel{transform:translateY(-2px)}
+.face.sel .bezel{box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--fg),0 6px 16px -6px rgba(0,0,0,.6)}
+.fname{margin-top:10px;font-size:13px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fmeta{font-size:12px;color:var(--mut)}
+.fmeta.now{color:#30d158;font-weight:600}
+.face.add .bezel{background:transparent;box-shadow:inset 0 0 0 1.5px var(--bd);display:flex;align-items:center;justify-content:center;color:var(--mut)}
+.detail{display:flex;gap:20px;align-items:center;border-top:1px solid var(--bd);margin-top:4px;padding-top:18px}
+.detail .bezel{width:184px;height:184px;border-radius:40px;padding:11px;flex:0 0 auto}
+.detail .bezel canvas{border-radius:30px}
+.dname{font-size:20px;font-weight:600;letter-spacing:-.01em}
+.dmeta{color:var(--mut);font-size:13px;margin:4px 0 14px;line-height:1.5}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+button.btn.ghost-danger{background:var(--in);border-color:var(--bd);color:var(--red)}
+.sheet-wrap{position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(0,0,0,.55);backdrop-filter:blur(2px)}
+.sheet-wrap[hidden]{display:none}
+.sheet{width:100%;max-width:340px;background:var(--pop);border:1px solid var(--bd);border-radius:18px;padding:22px;text-align:center;box-shadow:0 24px 48px -12px rgba(0,0,0,.6)}
+.sheet .bezel{margin:4px auto 16px;width:208px;height:208px;border-radius:46px;padding:12px}
+.sheet .bezel canvas{border-radius:34px}
+.sheet .actions{justify-content:center}
+@media (max-width:520px){.detail{flex-direction:column;text-align:center}.detail .actions{justify-content:center}}
+.rem .grow{word-break:break-word}.rem.done .grow{color:var(--mut)}
+.rring{width:22px;height:22px;border-radius:50%;border:2px solid var(--mut);background:none;padding:0;flex:0 0 auto;cursor:pointer}
+.rring.on{border-color:#0a84ff;background:radial-gradient(circle,#0a84ff 0 5px,transparent 5.5px)}
+.rdel{background:none;border:0;color:var(--mut);font-size:20px;line-height:1;padding:0 2px;cursor:pointer}.rdel:hover{color:var(--red)}
+#remNew{flex:1;min-width:0}
+.item.app{gap:12px;transition:background .15s}
+/* The chosen app: the row filled with the accent, as a selected item is in a sidebar. */
+.item.app.on,.item.app.on:hover{background:color-mix(in srgb,var(--acc2) 16%,transparent)}
+.item.app.on .strong{color:var(--acc2)}
+.item.app .info{background:none;border:0;padding:4px;margin:-4px -6px -4px 0;color:var(--acc2);cursor:pointer;display:inline-flex;border-radius:50%}
+.item.app .info:hover{background:var(--hov)}
+.item.app:focus-visible{outline:2px solid var(--ring);outline-offset:-2px}
+.apphead{margin-top:4px}
+.apphead .back{background:none;border:0;padding:4px 0;font:inherit;font-size:14px;font-weight:500;color:var(--acc2);cursor:pointer;display:inline-flex;align-items:center;gap:2px}
+.apphead .back::before{content:"";width:16px;height:16px;background:var(--chev) no-repeat center;transform:rotate(90deg);filter:none}
+.apptitle{display:flex;align-items:center;gap:12px;margin:10px 4px 18px}.apptitle h2{margin:0;font-size:22px;font-weight:600;letter-spacing:-.02em}
+#carouselSec{text-align:center}
+#hostname{text-align:left}
+.tmleft{font-size:44px;font-weight:600;letter-spacing:-.02em;font-variant-numeric:tabular-nums;line-height:1.1}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.appicon.big{width:44px;height:44px;border-radius:11px}
+.onscr{color:var(--acc)!important;font-weight:500}
+.appicon{width:30px;height:30px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto}
+.chip{display:inline-flex;align-items:center;margin-left:4px;padding:1px 8px;border:1px solid var(--bd);border-radius:6px;font-size:12px;font-weight:500;background:var(--sec);color:var(--fg);vertical-align:middle}
+@media (max-width:520px){.card{padding:16px}.row{flex-wrap:wrap}.row>*{flex-basis:100%}}
+/* Settings in the way of an Apple settings app, drawn with the shadcn tokens above:
+   a device card on top, a few tabs, and grouped lists that save as you change them. */
+:root{--swtrack:#3f3f46;--swoff:#fafafa;--swon:#18181b}
+:root[data-theme=light]{--swtrack:#e4e4e7;--swoff:#fff;--swon:#fff}
+.hero{display:flex;gap:16px;align-items:center;max-width:712px;margin:0 auto;padding:20px 16px 10px}
+.hero .bezel{width:96px;height:96px;border-radius:24px;padding:7px;flex:0 0 auto}
+.hero .bezel canvas{border-radius:17px}
+.hero .grow{flex:1;min-width:0}
+.hero h1{font-size:22px;margin:0 0 4px;font-weight:600;letter-spacing:-.02em;display:flex;align-items:center;gap:6px}
+.hero .st{color:var(--mut);font-size:13px;line-height:1.5;display:flex;align-items:center;gap:7px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hero .icon-btn{align-self:flex-start}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--mut);flex:0 0 auto}
+.dot.ok{background:var(--acc);box-shadow:0 0 0 3px color-mix(in srgb,var(--acc) 25%,transparent)}
+nav{width:calc(100% - 32px);max-width:680px;margin:6px auto 0}
+nav button{flex:1 0 auto}
+.sect{font-size:12px;font-weight:600;color:var(--mut);text-transform:uppercase;letter-spacing:.04em;margin:22px 4px 8px;display:flex;align-items:center;justify-content:space-between;min-height:18px}
+.group{border:1px solid var(--bd);border-radius:12px;background:var(--card);overflow:hidden;box-shadow:0 1px 2px rgba(0,0,0,.05)}
+.group.gap{margin-top:22px}
+.group [hidden]{display:none!important}
+.item{display:flex;align-items:center;gap:12px;min-height:48px;padding:10px 16px;border-top:1px solid var(--bd);font-size:14px;width:100%;text-align:left;background:none;color:inherit;font-family:inherit;line-height:1.4}
+.group>.item:first-child,.group>div:first-child>.item:first-child,.group>details:first-child,.group>div:first-child>details:first-child{border-top:0}
+#nightRows>.item:first-child,#sunRows>.item:first-child,#carouselRow>.item:first-child{border-top:1px solid var(--bd)}
+.grow{flex:1;min-width:0}
+.item .val,label .val{color:var(--mut);font-weight:400}
+.sub{color:var(--mut);font-size:12.5px;margin-top:2px;line-height:1.4}
+.item.col{flex-direction:column;align-items:stretch;gap:4px}
+.item.muted{color:var(--mut)}
+.item .strong{font-weight:500}
+button.item{border-left:0;border-right:0;border-bottom:0;cursor:pointer;transition:background .15s}
+button.item:first-child{border-top:0}
+.item.click{cursor:pointer;transition:background .15s}
+button.item:hover,.item.click:hover{background:var(--hov)}
+.item.act{justify-content:flex-start;font-size:14px;font-weight:500}
+.blue{color:var(--acc2)!important}.red{color:var(--red)!important}
+.item select.inl,.item input.inl{width:auto;max-width:58%;flex:0 1 auto;height:32px}
+.item select.inl{text-align:right}
+.item input.inl{text-align:right}
+.item input.num{width:76px}
+.item input[type=range]{flex:1}
+.item.chk{margin:0}
+.chk.line{display:flex;align-items:center;gap:12px;margin:16px 0 0}
+.chev,details.more>summary::after{width:16px;height:16px;flex:0 0 auto;background:var(--chev) no-repeat center;transform:rotate(-90deg);transition:transform .2s}
+details.more{border-top:1px solid var(--bd)}
+details.more>summary{list-style:none;display:flex;align-items:center;gap:12px;min-height:48px;padding:10px 16px;cursor:pointer;transition:background .15s}
+details.more>summary::-webkit-details-marker{display:none}
+details.more>summary::after{content:""}
+details.more>summary:hover{background:var(--hov)}
+details.more[open]>summary::after{transform:rotate(0)}
+details.more>.body{padding:0 16px 16px}
+.slide{display:flex;align-items:center;gap:12px;width:100%}
+.slide .ic{color:var(--mut);flex:0 0 auto}
+.slide .pct{min-width:42px;text-align:right;font-variant-numeric:tabular-nums}
+input[type=range]{-webkit-appearance:none;appearance:none;height:22px;margin:4px 0;background:transparent;accent-color:auto}
+input[type=range]::-webkit-slider-runnable-track{height:6px;border-radius:99px;background:linear-gradient(var(--pri),var(--pri)) 0/var(--p,50%) 100% no-repeat,var(--swtrack)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;margin-top:-6px;border-radius:50%;background:var(--bg);border:1px solid var(--pri);box-shadow:0 1px 3px rgba(0,0,0,.3)}
+input[type=range]::-moz-range-track{height:6px;border-radius:99px;background:var(--swtrack)}
+input[type=range]::-moz-range-progress{height:6px;border-radius:99px;background:var(--pri)}
+input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:var(--bg);border:1px solid var(--pri);box-shadow:0 1px 3px rgba(0,0,0,.3)}
+input[type=checkbox].sw{width:36px;height:20px;border:0;border-radius:99px;background:var(--swtrack) radial-gradient(circle,var(--swoff) 0 7px,transparent 7.5px) no-repeat 1px 50%/18px 18px;transition:background .2s;box-shadow:none}
+input[type=checkbox].sw:checked{background:var(--pri) radial-gradient(circle,var(--swon) 0 7px,transparent 7.5px) no-repeat calc(100% - 1px) 50%/18px 18px}
+.seg{display:flex;gap:2px;padding:3px;background:var(--muted);border-radius:9px;width:100%}
+.seg button{flex:1;border:1px solid transparent;background:none;color:var(--mut);padding:5px 8px;border-radius:6px;font:inherit;font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap;transition:color .15s,background .15s}
+.seg button:hover{color:var(--fg)}
+.seg button.on{background:var(--bg);color:var(--fg);border-color:var(--bd);box-shadow:0 1px 2px rgba(0,0,0,.12)}
+button.link{background:none;border:0;padding:0;font:inherit;font-size:13px;font-weight:500;text-transform:none;letter-spacing:0;color:var(--acc2);cursor:pointer}
+button.link.red{font-size:13px}
+button.btn.sm{height:32px;padding:0 12px}
+.hintx{color:var(--mut);font-size:12.5px;margin:8px 4px 0;line-height:1.5}
+.bars{display:inline-flex;align-items:flex-end;gap:2px;height:12px;vertical-align:middle}
+.bars i{width:3px;border-radius:1px;background:var(--bd)}
+.bars i:nth-child(1){height:4px}.bars i:nth-child(2){height:7px}.bars i:nth-child(3){height:10px}.bars i:nth-child(4){height:12px}
+.bars.b1 i:nth-child(-n+1),.bars.b2 i:nth-child(-n+2),.bars.b3 i:nth-child(-n+3),.bars.b4 i{background:var(--fg)}
+.net .val{display:inline-flex;align-items:center;gap:8px}
+.tick{color:var(--acc2);margin-left:10px;font-weight:600}
+.sheet.left{text-align:left}
+.sheet.left .actions{justify-content:flex-end;margin-top:18px}
+.sheet label:first-child{margin-top:4px}
+.foot{text-align:center;font-size:12px;color:var(--mut);margin:24px 0 8px}
+.foot a{color:var(--acc2);text-decoration:none;margin-right:6px}
+#themeCard{padding:16px 16px 18px}
+@media (max-width:520px){.hero{padding-top:16px}.hero .bezel{width:80px;height:80px;border-radius:20px;padding:6px}.hero .bezel canvas{border-radius:14px}.seg button{padding:5px 4px;font-size:12.5px}}
+#locLat,#locLon{width:132px;text-align:right}
+#locLat::-webkit-inner-spin-button,#locLat::-webkit-outer-spin-button,#locLon::-webkit-inner-spin-button,#locLon::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+#locLat,#locLon{-moz-appearance:textfield}
+.hero .st{padding-left:3px}
+</style>
+<script>
+// Panel colour theme: 'system' (follow the OS), 'light' or 'dark'. Kept in this
+// browser only (localStorage) and applied before the first paint.
+var uiTheme='system',uiThemeMQ=window.matchMedia?matchMedia('(prefers-color-scheme: light)'):null;
+try{uiTheme=localStorage.getItem('gm.uiTheme')||'system'}catch(e){}
+var UI_THEME_ICON={system:'<rect width="20" height="14" x="2" y="3" rx="2"/><path d="M8 21h8M12 17v4"/>',
+ light:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>',
+ dark:'<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>'};
+var UI_THEME_NAME={system:'System',light:'Light',dark:'Dark'};
+function applyUiTheme(){
+ if(!UI_THEME_ICON[uiTheme])uiTheme='system';
+ var light=uiTheme==='light'||(uiTheme==='system'&&!!uiThemeMQ&&uiThemeMQ.matches);
+ document.documentElement.setAttribute('data-theme',light?'light':'dark');
+ var tc=document.querySelector('meta[name=theme-color]');if(tc)tc.setAttribute('content',light?'#ffffff':'#09090b');
+ var b=document.getElementById('themeToggle');if(!b)return;
+ b.innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+UI_THEME_ICON[uiTheme]+'</svg>';
+ b.title='Theme: '+UI_THEME_NAME[uiTheme]+' (click to change)';b.setAttribute('aria-label',b.title);
+}
+function cycleUiTheme(){
+ uiTheme={system:'light',light:'dark',dark:'system'}[uiTheme]||'system';
+ try{localStorage.setItem('gm.uiTheme',uiTheme)}catch(e){}
+ applyUiTheme();
+}
+if(uiThemeMQ&&uiThemeMQ.addEventListener)uiThemeMQ.addEventListener('change',applyUiTheme);
+applyUiTheme();
+</script></head>
+<body>
+<header class="hero">
+ <div class="bezel" id="heroFace"><canvas id="heroCanvas" width="240" height="240"></canvas></div>
+ <div class="grow">
+  <h1><span id="heroName" translate="no">GeekMagic</span><span id="chip" class="chip" style="display:none"></span></h1>
+  <div class="st"><span id="dot" class="dot"></span><span id="hi">Connecting…</span></div>
+  <div class="st" id="heroNow"></div>
+ </div>
+ <button id="themeToggle" class="icon-btn" type="button" onclick="cycleUiTheme()"></button><script>applyUiTheme()</script>
+</header>
+<nav>
+ <button data-t="apps" class="active">Apps</button>
+ <button data-t="display">Display</button>
+ <button data-t="wifi">Wi&#8209;Fi</button>
+ <button data-t="general">General</button>
+</nav>
+<main>
+ <!-- APPS: what the screen shows, and every app's own page (openApp) -->
+ <section id="apps" class="tab active">
+  <div class="sect">On screen</div>
+  <div class="group">
+   <div class="item col"><div class="seg" id="screenSeg"><button type="button" data-v="one" onclick="screenMode('one')">One app</button><button type="button" data-v="rotate" onclick="screenMode('rotate')">Rotate</button></div></div>
+   <div class="item" id="rotSecRow"><div class="grow">Switch every</div><input id="carouselSec" class="inl num" type="number" min="5" max="3600"><span class="val">s</span></div>
+  </div>
+  <div class="sect">Apps</div>
+  <div class="group" id="appList"></div>
+  <p class="hintx" id="screenHint"></p>
+  <!-- The model the list and the app pages show: the stored mode and rotation flags. -->
+  <div id="appModel" hidden>
+   <div id="carouselRow">
+    <div class="item chk"><input id="carouselTheme" class="sw" type="checkbox"></div>
+    <div class="item chk"><input id="carouselCalendar" class="sw" type="checkbox"></div>
+    <div class="item chk"><input id="carouselReminders" class="sw" type="checkbox"></div>
+    <div class="item chk"><input id="carouselWeather" class="sw" type="checkbox"></div>
+    <div class="item chk"><input id="carouselTimer" class="sw" type="checkbox"></div>
+   </div>
+   <select id="mode" onchange="modeChanged()">
+    <option value="theme">Watch face</option>
+    <option value="calendar">Calendar</option>
+    <option value="reminders">Reminders</option>
+    <option value="weather">Weather</option>
+    <option value="timer">Timer</option>
+    <option value="carousel">Rotate</option>
+   </select>
+  </div>
+ </section>
+
+ <!-- WATCH FACE app -->
+ <section id="theme" class="tab">
+  <div class="sect" id="facesSect">My faces</div>
+  <div class="card" id="themeCard">
+   <div id="faceList" class="faces" role="list" aria-label="Installed watch faces"></div>
+   <div id="faceDetail" class="detail"></div>
+   <input id="themeFile" type="file" accept=".stheme" hidden onchange="themeFileChosen()">
+  </div>
+  <p class="hintx"><span id="themeStatus">Loading watch faces…</span></p>
+ </section>
+
+ <!-- CALENDAR app -->
+ <section id="calendar" class="tab">
+  <p class="hintx">This month as a grid, today on a red circle.</p>
+ </section>
+
+ <!-- WEATHER app -->
+ <section id="weather" class="tab">
+  <div class="sect">Now</div>
+  <div class="group">
+   <div class="item"><div class="grow strong" id="wxNow">Loading…</div><span class="val" id="wxAge"></span></div>
+   <div class="item" id="wxMore" hidden><div class="grow sub" id="wxMoreText"></div></div>
+   <div class="item click" onclick="showTab('general',$('locSect'))"><div class="grow">Location<div class="sub" id="wxLoc">Not set</div></div><span class="chev"></span></div>
+   <button class="item act blue" type="button" onclick="wxRefresh()">Refresh now</button>
+  </div>
+  <p class="hintx">Weather data: <a href="https://open-meteo.com" target="_blank" rel="noopener">Open-Meteo</a></p>
+ </section>
+
+ <!-- TIMER app -->
+ <section id="timer" class="tab">
+  <div class="group">
+   <div class="item col" style="align-items:center;padding:18px 16px"><div id="tmLeft" class="tmleft">05:00</div><div class="sub" id="tmState">Not running</div></div>
+   <div class="item" id="tmCtl"><button class="btn sec sm" type="button" id="tmCancel" onclick="tmSend({cancel:true})">Cancel</button><div class="grow"></div><button class="btn sm" type="button" id="tmMain" onclick="tmMainClick()">Start</button></div>
+  </div>
+  <div class="sect">Start</div>
+  <div class="group">
+   <div class="item col"><div class="chips" id="tmPresets"></div></div>
+   <div class="item"><div class="grow">Minutes</div><input id="tmMin" class="inl num" type="number" min="0" max="1439" value="5" data-nosave></div>
+   <div class="item"><div class="grow">Seconds</div><input id="tmSec" class="inl num" type="number" min="0" max="59" value="0" data-nosave></div>
+   <div class="item"><div class="grow">Label</div><input id="tmLabel" class="inl" type="text" maxlength="23" placeholder="Timer" data-nosave></div>
+  </div>
+ </section>
+
+ <!-- REMINDERS app -->
+ <section id="reminders" class="tab">
+  <div class="sect"><span>List</span><span class="val" id="remCount"></span></div>
+  <div class="group" id="remList"><div class="item muted">Loading…</div></div>
+  <div class="group gap"><div class="item"><input id="remNew" type="text" class="grow" maxlength="63" placeholder="New reminder" enterkeyhint="done" onkeydown="if(event.key==='Enter')remAdd()"><button class="btn sm" type="button" onclick="remAdd()">Add</button></div></div>
+  <div class="group gap">
+   <button class="item act blue" type="button" onclick="remSend({clearDone:true},lz('Completed cleared'))">Clear completed</button>
+   <button class="item act red" type="button" onclick="remClearAll()">Clear all</button>
+  </div>
+ </section>
+
+ <!-- DISPLAY -->
+ <section id="display" class="tab">
+  <div class="sect">Brightness</div>
+  <div class="group">
+   <div class="item"><div class="slide"><svg class="ic" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/></svg><input id="brightness" type="range" min="0" max="100" aria-label="Brightness" oninput="brVal.textContent=this.value"><svg class="ic" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M6.3 17.7l-1.4 1.4M19.1 4.9l-1.4 1.4"/></svg><span class="val pct"><span id="brVal"></span>%</span></div></div>
+   <div class="item chk"><div class="grow">Auto&#8209;brightness<div class="sub">Follows the light sensor on A0</div></div><input id="autoBrightness" class="sw" type="checkbox" onchange="autoToggled();syncNight()"></div>
+  </div>
+
+  <div class="sect">Night</div>
+  <div class="group">
+   <div class="item"><div class="seg" id="nightSeg"><button type="button" data-v="off">Off</button><button type="button" data-v="schedule">Schedule</button><button type="button" data-v="sun">Sunset to sunrise</button></div></div>
+   <input id="nightEnabled" type="checkbox" hidden><input id="sunEnabled" type="checkbox" hidden>
+   <select id="sunOverlap" hidden><option value="0">Night mode first</option><option value="1">Sun schedule first</option><option value="2">The darker of the two</option></select>
+   <div id="nightRows">
+    <div class="item"><div class="grow">From</div><input id="nightStart" class="inl" type="time"></div>
+    <div class="item"><div class="grow">To</div><input id="nightEnd" class="inl" type="time"></div>
+    <div class="item col"><div>Night brightness <span class="val">· <span id="nlVal"></span>%, 0 turns the screen off</span></div><input id="nightLevel" type="range" min="0" max="100" aria-label="Night brightness" oninput="nlVal.textContent=this.value"></div>
+   </div>
+   <div id="sunRows">
+    <div class="item col"><div>Lowest brightness <span class="val">· <span id="slVal"></span>%, 0 turns the screen off</span></div><input id="sunLow" type="range" min="0" max="100" aria-label="Lowest brightness" oninput="slVal.textContent=this.value"></div>
+    <div class="item"><div class="grow">Sunrise fade</div><input id="sunRise" class="inl num" type="number" min="0" max="120"><span class="val">min</span></div>
+    <div class="item"><div class="grow">Sunset fade</div><input id="sunSet" class="inl num" type="number" min="0" max="120"><span class="val">min</span></div>
+    <div class="item click" onclick="showTab('general',$('locSect'))"><div class="grow">Location<div class="sub" id="sunLoc">Not set</div></div><span class="chev"></span></div>
+   </div>
+  </div>
+  <div class="group gap" id="nsGroup"><div class="item chk"><div class="grow">Nightstand<div class="sub">At night, a large dim amber clock over every app</div></div><input id="nightstand" class="sw" type="checkbox"></div></div>
+  <p class="hintx" id="sunNow"></p>
+
+  <div class="sect">Screen orientation</div>
+  <div class="group"><div class="item">
+   <select id="rotation" class="segsrc" hidden><option value="0">0&deg;</option><option value="1">90&deg;</option><option value="2">180&deg;</option><option value="3">270&deg;</option></select>
+  </div></div>
+
+  <div class="sect">Notifications</div>
+  <div class="group"><div class="item"><div class="grow">Show for</div>
+   <select id="notifySec" class="inl">
+    <option value="0">By type (20&ndash;45 s)</option><option value="5">5 seconds</option><option value="10">10 seconds</option><option value="15">15 seconds</option><option value="20">20 seconds</option><option value="30">30 seconds</option><option value="45">45 seconds</option><option value="60">1 minute</option><option value="90">90 seconds</option><option value="120">2 minutes</option>
+   </select></div></div>
+
+  <div class="sect">Advanced</div>
+  <div class="group">
+   <details class="more"><summary><div class="grow">Panel calibration<div class="sub">Colour order, inversion, channel gains</div></div></summary><div class="body">
+    <label>Colour order</label>
+    <select id="colorOrder"><option value="auto">Panel default</option><option value="rgb">RGB</option><option value="bgr">BGR (swap red and blue)</option></select>
+    <div class="chk line"><div class="grow">Invert the panel</div><input id="colorInvert" class="sw" type="checkbox"></div>
+    <label>Red <span class="val">· <span id="rgVal"></span>%</span></label>
+    <input id="rGain" type="range" min="50" max="150" oninput="rgVal.textContent=this.value">
+    <label>Green <span class="val">· <span id="ggVal"></span>%</span></label>
+    <input id="gGain" type="range" min="50" max="150" oninput="ggVal.textContent=this.value">
+    <label>Blue <span class="val">· <span id="bgVal"></span>%</span></label>
+    <input id="bGain" type="range" min="50" max="150" oninput="bgVal.textContent=this.value">
+    <div class="chk line"><div class="grow">Backlight is active&#8209;low<div class="sub">Try it if the screen stays dark</div></div><input id="backlightInverted" class="sw" type="checkbox"></div>
+    <div style="margin-top:12px"><button class="btn sec" type="button" onclick="resetColors()">Reset gains to 100%</button></div>
+   </div></details>
+   <details class="more" id="buttonCard" style="display:none"><summary><div class="grow">Button<div class="sub">Short and long press, sensitivity</div></div></summary><div class="body">
+    <label>Short press</label>
+    <select id="btnShort"><option value="0">Nothing</option><option value="1">Screen off (~1s)</option><option value="2">Home (first page)</option><option value="3">Next page (pause carousel)</option><option value="4">Show network / IP</option><option value="5">Wake screen</option><option value="6">Acknowledge notification</option></select>
+    <label>Long press</label>
+    <select id="btnLong"><option value="0">Nothing</option><option value="1">Screen off (~1s)</option><option value="2">Home (first page)</option><option value="3">Next page (pause carousel)</option><option value="4">Show network / IP</option><option value="5">Wake screen</option><option value="6">Acknowledge notification</option></select>
+    <label>Touch sensitivity <span class="val">· <span id="btnSensVal"></span>%</span></label>
+    <input id="btnSens" type="range" min="50" max="99" oninput="btnSensVal.textContent=this.value">
+   </div></details>
+  </div>
+ </section>
+
+ <!-- WI-FI: every change here restarts the device, so nothing saves by itself -->
+ <section id="wifi" class="tab" data-manual>
+  <div class="group" style="margin-top:16px"><div class="item">
+   <div class="grow"><b class="strong" id="wnName">Wi&#8209;Fi</b><div class="sub" id="wnSub">-</div></div><span class="val" id="wnBars"></span>
+  </div></div>
+  <div class="sect">Networks <button class="link" type="button" onclick="scan()">Scan</button></div>
+  <div class="group" id="scanList"><div class="item muted">Tap Scan to look for networks</div></div>
+  <div class="sect">Saved networks</div>
+  <div class="group" id="wifiTable"></div>
+  <p class="hintx">2.4&nbsp;GHz networks only. Joining or forgetting a network restarts the device.</p>
+
+  <div class="sect">Advanced</div>
+  <div class="group">
+   <details class="more"><summary><div class="grow">Setup hotspot<div class="sub" id="apSub">-</div></div></summary><div class="body">
+    <label>Hotspot name</label><input id="apSsid" type="text">
+    <label>Password <span class="val">· at least 8 characters</span></label>
+    <input id="apPass" type="text" placeholder="(unchanged)">
+    <div class="chk line"><div class="grow">No password (open hotspot)</div><input id="apOpen" class="sw" type="checkbox" onchange="apOpenChanged()"></div>
+    <div style="margin-top:12px"><button class="btn" type="button" onclick="saveHotspot()">Save hotspot</button></div>
+    <small class="hint">Appears when no Wi&#8209;Fi network can be joined.</small>
+   </div></details>
+  </div>
+ </section>
+
+ <!-- GENERAL: in the order of a phone's General settings -->
+ <section id="general" class="tab">
+  <div class="sect">About</div>
+  <div class="group" data-manual>
+   <div class="item"><div class="grow">Name</div><input id="hostname" class="inl" type="text" placeholder="geekmagic" autocomplete="off" spellcheck="false" oninput="hostChanged()"><button class="btn sm" type="button" id="hostBtn" onclick="saveHostname()" hidden>Rename</button></div>
+  </div>
+  <div class="group gap" id="statusBox"><div class="item muted">Loading…</div></div>
+  <p class="hintx">http://<span id="hostHint">geekmagic</span>.local</p>
+
+  <div class="group gap" data-manual>
+   <details class="more" id="updMore"><summary><div class="grow">Software Update<div class="sub">Installed <span id="fwVer">-</span></div></div></summary><div class="body">
+    <label>Install from a file</label>
+    <input id="fw" type="file" accept=".bin">
+    <div style="margin-top:12px"><button class="btn" type="button" onclick="upload()" id="upBtn">Install</button></div>
+    <div class="bar"><div id="upBar"></div></div>
+    <div id="upMsg" class="muted" style="margin-top:8px"></div>
+   </div></details>
+  </div>
+
+  <div class="sect">Date &amp; Time</div>
+  <div class="group">
+   <div class="item"><div class="grow">Time Zone</div><select id="tz" class="inl"></select></div>
+   <div class="item"><div class="grow">Clock<div class="sub" id="clockNow">-</div></div></div>
+  </div>
+
+  <div class="sect" id="locSect">Location</div>
+  <div class="group" id="locGroup">
+   <div class="item"><input id="locQ" class="grow" type="text" placeholder="Search a place" data-nosave enterkeyhint="search" onkeydown="if(event.key==='Enter')placeSearch().then(locChanged)"><button class="btn sec sm" type="button" onclick="placeSearch().then(locChanged)">Search</button></div>
+   <div class="item" id="locResRow" hidden><select id="locRes" class="grow" onchange="placePick();locChanged()"></select></div>
+   <div class="item"><div class="grow">Latitude</div><input id="locLat" class="inl num" type="number" step="0.0001" placeholder="52.3676"></div>
+   <div class="item"><div class="grow">Longitude</div><input id="locLon" class="inl num" type="number" step="0.0001" placeholder="4.9041"></div>
+  </div>
+  <p class="hintx" id="locMsg">For the weather, the watch faces and the brightness from sunset to sunrise.</p>
+
+  <div class="sect">Language</div>
+  <div class="group">
+   <div class="item"><div class="grow">Language<div class="sub">On the clock and on this page</div></div>
+    <select id="lang" class="inl" translate="no"><option value="en">English</option><option value="ru">&#1056;&#1091;&#1089;&#1089;&#1082;&#1080;&#1081;</option></select></div>
+  </div>
+
+  <div class="sect">Privacy &amp; Security</div>
+  <div class="group" data-manual>
+   <details class="more"><summary><div class="grow">Password<div class="sub" id="pwSub">-</div></div></summary><div class="body">
+    <div id="authState" class="muted" style="margin-top:12px"></div>
+    <label>Username</label><input id="authUser" type="text" autocomplete="off" placeholder="admin">
+    <label>Password</label><input id="authPass" type="password" autocomplete="new-password" placeholder="(unchanged)">
+    <label>Password again</label><input id="authPass2" type="password" autocomplete="new-password" placeholder="(unchanged)">
+    <div class="actions" style="margin-top:12px"><button class="btn" type="button" onclick="saveAll()">Save password</button><button id="authRemoveBtn" class="btn ghost-danger" style="display:none" type="button" onclick="authRemove()">Remove password</button></div>
+    <small class="hint">There is no way to recover a forgotten password other than reflashing over USB.</small>
+   </div></details>
+  </div>
+
+  <div class="sect">Transfer or Reset</div>
+  <div class="group" data-manual>
+   <details class="more"><summary><div class="grow">Back Up Settings<div class="sub">Export or restore config.json</div></div></summary><div class="body">
+    <div style="margin-top:12px"><button class="btn sec" type="button" onclick="location.href='/api/export'">Export settings</button></div>
+    <label>Restore from a file</label>
+    <input id="cfgFile" type="file" accept=".json,application/json">
+    <div style="margin-top:10px"><button class="btn" type="button" onclick="importCfg()">Restore and restart</button></div>
+    <small class="hint">The file holds the Wi&#8209;Fi passwords.</small>
+   </div></details>
+   <button class="item act blue" type="button" onclick="reboot()">Restart</button>
+   <button class="item act red" type="button" onclick="factory()">Erase All Settings</button>
+  </div>
+  <p class="foot"><span id="footVer"></span></p>
+ </section>
+</main>
+
+<div id="faceSheet" class="sheet-wrap" hidden><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetName">
+ <div class="bezel"><canvas id="sheetCanvas" width="240" height="240"></canvas></div>
+ <div class="dname" id="sheetName"></div><div class="dmeta" id="sheetMeta"></div>
+ <div class="actions"><button class="btn sec" onclick="closeSheet()">Cancel</button><button class="btn sec" id="sheetAdd" onclick="installTheme(false)">Add</button><button class="btn" id="sheetUse" onclick="installTheme(true)">Add and use</button></div>
+</div></div>
+<div id="joinSheet" class="sheet-wrap" hidden><form class="sheet left" role="dialog" aria-modal="true" aria-labelledby="joinTitle" onsubmit="joinNetwork();return false">
+ <div class="dname" id="joinTitle">Join a network</div>
+ <div class="dmeta" id="joinMeta">The device restarts to join it.</div>
+ <div id="joinSsidRow"><label>Network name</label><input id="joinSsid" type="text" autocomplete="off" spellcheck="false"></div>
+ <div id="joinPassRow"><label>Password</label><input id="joinPass" type="password" autocomplete="off"></div>
+ <div class="actions"><button class="btn sec" type="button" onclick="closeJoin()">Cancel</button><button class="btn" type="submit">Join</button></div>
+</form></div>
+<div id="toast" class="toast"></div>
+
+<script>
+var C={};
+function $(id){return document.getElementById(id)}
+// null-safe field helpers: a lean build removes some feature tabs entirely
+function sv(id,v){var e=$(id);if(e)e.value=(v!=null?v:'')}
+function sc(id,v){var e=$(id);if(e)e.checked=!!v}
+function gv(id){var e=$(id);return e?e.value:''}
+function gc(id){var e=$(id);return e?e.checked:false}
+// i18n begin (panel language; tested by tests/i18n/test_webui_i18n.js)
+// The page is written in English and follows the device language (settings
+// clock.lang, General → Language): syncUiLang(). In Russian, lzPage() swaps the
+// static text once, and every message the code builds goes through lz(). Rules
+// that keep this safe: nothing ever reads a translated text back (state lives
+// in values and data-*), values sent to the device are never translated, and
+// user data (network names, reminders, face names) is never looked up.
+var UI_LANG=(function(){try{if(localStorage.getItem('gm.lang')==='ru')return 'ru'}catch(e){}return 'en'})();
+var RU={
+ // nav, hero, apps
+ 'Connecting…':'Подключение…','Apps':'Приложения','Display':'Экран','Wi‑Fi':'Wi‑Fi','General':'Основные',
+ 'On screen':'На экране','One app':'Одно','Rotate':'По очереди','Switch every':'Менять каждые',
+ 'Watch face':'Циферблат','Calendar':'Календарь','Reminders':'Напоминания','Weather':'Погода','Timer':'Таймер',
+ 'Tap apps to add them to the rotation or take them out. ⓘ opens an app’s settings.':'Нажмите на приложение, чтобы добавить его в очередь или убрать. ⓘ открывает настройки приложения.',
+ 'Tap an app to show it on the screen. ⓘ opens its settings.':'Нажмите на приложение, чтобы показать его на экране. ⓘ открывает его настройки.',
+ 'Watch faces':'Циферблаты','Your list':'Ваш список','Not running':'Не запущен','This month':'Этот месяц',
+  '{0} open':'{0} открыто','Empty':'Пусто','{0} · paused':'{0} · пауза','{0} left':'осталось {0}',
+ '{0} settings':'Настройки: {0}','At least one app stays in the rotation':'В очереди должно остаться хотя бы одно приложение',
+ // watch faces
+ 'My faces':'Мои циферблаты','Installed watch faces':'Установленные циферблаты','Loading watch faces…':'Загрузка циферблатов…',
+ 'Invalid package':'Повреждённый пакет','● On device':'● На часах','Add face':'Добавить','.stheme file':'файл .stheme',
+ 'No watch faces yet. Add one with the + tile.':'Циферблатов пока нет. Добавьте его плиткой «+».',
+ 'Invalid package: {0}. Remove it and install a corrected package.':'Повреждённый пакет: {0}. Удалите его и установите исправленный.',
+ 'could not read theme':'не удалось прочитать тему','version {0}':'версия {0}','On device':'На часах','Use on device':'Включить на часах',
+ 'Remove':'Удалить','{0} installed · {1} KB free':'Установлено: {0} · свободно {1} КБ','{0} B':'{0} Б','{0} KB':'{0} КБ',
+ 'Choose a valid installed theme first':'Сначала выберите исправный циферблат','Watch face set':'Циферблат выбран',
+ 'Remove this watch face from the device?':'Удалить этот циферблат с часов?','Watch face removed':'Циферблат удалён',
+ 'Not a valid watch face: {0}':'Это не циферблат: {0}','Choose a .stheme package':'Выберите пакет .stheme','Installing…':'Установка…',
+ 'Install failed':'Не удалось установить','Watch face added':'Циферблат добавлен','Could not load the font':'Не удалось загрузить шрифт',
+ 'Add and use':'Добавить и включить',
+ // calendar
+ 'About':'Об устройстве','About the app':'О приложении','This month as a grid, today on a red circle.':'Текущий месяц сеткой, сегодняшний день в красном круге.',
+ 'Names follow the language in General, the date its time zone. The clock is set over the internet; until then the screen says it is waiting.':'Названия следуют языку из раздела «Основные», дата — его часовому поясу. Время берётся из интернета, до этого экран показывает ожидание.',
+ // weather
+ 'Now':'Сейчас','Loading…':'Загрузка…','Location':'Местоположение','Not set':'Не задано','Refresh now':'Обновить',
+ 'Feels like {0}° · Humidity {1}% · Wind {2} m/s':'Ощущается как {0}° · Влажность {1}% · Ветер {2} м/с',
+ 'H {0}°  L {1}°':'Макс. {0}°  мин. {1}°','just now':'только что','{0} min ago':'{0} мин назад','Not loaded: {0}':'Не загружено: {0}',
+ 'Loads when the app is on the screen':'Загрузится, когда приложение будет на экране','Set the location first':'Сначала задайте местоположение',
+ 'Refreshes when the app is on the screen':'Обновится, когда приложение будет на экране',
+ // timer
+ 'Cancel':'Отмена','Start':'Старт','Minutes':'Минуты','Seconds':'Секунды','Label':'Название',
+ 'Starting a timer puts it on the clock over the current app; when it ends a banner says so and the screen goes back. From a script or an iPhone Shortcut (“Get Contents of URL”, POST, JSON):':'Запущенный таймер показывается на часах поверх текущего приложения. Когда он закончится, появится баннер, и экран вернётся. Из скрипта или Быстрой команды iPhone («Получить содержимое URL», POST, JSON):',
+ 'Running':'Идёт','Paused':'Пауза','Pause':'Пауза','Resume':'Продолжить','Set a time first':'Сначала задайте время',
+ '{0} min':'{0} мин','1 h':'1 ч',
+ // reminders
+ 'List':'Список','New reminder':'Новое напоминание','Add':'Добавить','Clear completed':'Удалить выполненные','Clear all':'Удалить все',
+ 'The list stays on the clock until it is cleared, and survives a restart. Up to 12 items; a full list makes room by dropping its oldest completed one. To add from a script or an iPhone Shortcut (“Get Contents of URL”, method POST, JSON body):':'Список остаётся на часах, пока его не очистят, и сохраняется после перезагрузки. До 12 пунктов; в полном списке место освобождается за счёт самого старого выполненного. Добавить из скрипта или Быстрой команды iPhone («Получить содержимое URL», метод POST, тело JSON):',
+ 'No reminders':'Нет напоминаний','Mark as not done':'Отметить как невыполненное','Mark as done':'Отметить как выполненное','Delete':'Удалить',
+ 'Clear every reminder from the clock?':'Удалить все напоминания с часов?','Reminders cleared':'Напоминания удалены','Completed cleared':'Выполненные удалены',
+ // display
+ 'Brightness':'Яркость','Auto‑brightness':'Автояркость','Follows the light sensor on A0':'По датчику освещённости на A0',
+ 'Night':'Ночь','Off':'Выкл.','Schedule':'По расписанию','Sunset to sunrise':'От заката до рассвета',
+ 'Night mode first':'Сначала ночной режим','Sun schedule first':'Сначала закат и рассвет','The darker of the two':'Темнее из двух',
+ 'From':'С','To':'До','Night brightness':'Ночная яркость','%, 0 turns the screen off':'%, 0 выключает экран',
+ 'Lowest brightness':'Минимальная яркость','Sunrise fade':'Рассвет','min':'мин','Sunset fade':'Закат',
+ 'Nightstand':'Ночник','At night, a large dim amber clock over every app':'Ночью — крупные тусклые янтарные часы поверх любого приложения',
+ 'The screen dims or turns off between the two times, in the time zone set in General. Needs the internet once to set the clock.':'Между этими временами экран тускнеет или гаснет, по часовому поясу из раздела «Основные». Чтобы выставить время, один раз нужен интернет.',
+ 'The screen rises from the lowest to the normal brightness over the sunrise fade and falls back over the sunset fade. Sunrise and sunset are worked out on the device from its location. Replaces auto‑brightness.':'За время рассвета яркость плавно поднимается от минимальной до обычной, за время заката опускается обратно. Восход и закат часы рассчитывают сами по местоположению. Заменяет автояркость.',
+ 'Waiting for the clock (NTP)...':'Ожидание точного времени (NTP)…','Set the device location above.':'Задайте местоположение устройства.',
+ 'Today: {0}. Fades start at sunrise and at sunset.':'Сегодня: {0}. Переходы начинаются на восходе и на закате.','Brightness now: {0}%.':'Сейчас яркость {0}%.',
+ 'Notifications':'Уведомления','Show for':'Показывать','By type (20–45 s)':'По типу (20–45 с)',
+ '5 seconds':'5 секунд','10 seconds':'10 секунд','15 seconds':'15 секунд','20 seconds':'20 секунд','30 seconds':'30 секунд',
+ '45 seconds':'45 секунд','1 minute':'1 минута','90 seconds':'90 секунд','2 minutes':'2 минуты','{0} seconds':'{0} с',
+ 'How long a notification sent to':'Сколько уведомление, отправленное на','stays on screen. A request with its own':', остаётся на экране. Запрос со своим',
+ 'keeps it.':'сохраняет своё время.',
+ 'Advanced':'Дополнительно','Panel calibration':'Калибровка экрана','Colour order, inversion, channel gains':'Порядок цветов, инверсия, усиление каналов',
+ 'Colour order':'Порядок цветов','Panel default':'Как у экрана','BGR (swap red and blue)':'BGR (поменять красный и синий)',
+ 'Invert the panel':'Инвертировать экран','Red':'Красный','Green':'Зелёный','Blue':'Синий',
+ 'Backlight is active‑low':'Подсветка с инверсией','Try it if the screen stays dark':'Включите, если экран остаётся тёмным',
+ 'Reset gains to 100%':'Сбросить усиление на 100%',
+ 'The panels in these devices are not all the same part: one unit looks warm, another green. Turn a channel down to pull the cast out. Swapped red and blue: change the colour order. A negative image: invert. Changes show on the screen right away.':'Экраны в этих устройствах бывают разные: один отдаёт в тёплый оттенок, другой в зелёный. Уменьшите канал, чтобы убрать оттенок. Красный и синий перепутаны — смените порядок цветов. Негатив — инвертируйте. Изменения сразу видны на экране.',
+ 'Button':'Кнопка','Short and long press, sensitivity':'Короткое и долгое нажатие, чувствительность','Short press':'Короткое нажатие',
+ 'Nothing':'Ничего','Screen off (~1s)':'Выключить экран (~1 с)','Home (first page)':'Домой (первая страница)',
+ 'Next page (pause carousel)':'Следующая страница (пауза очереди)','Show network / IP':'Показать сеть и IP','Wake screen':'Включить экран',
+ 'Acknowledge notification':'Закрыть уведомление','Long press':'Долгое нажатие','Touch sensitivity':'Чувствительность касания',
+ 'The button reads pressed when its touch value drops below this percent of the idle baseline. Lower needs a firmer touch. Next page freezes the carousel on the current page; Home resumes it.':'Кнопка считается нажатой, когда значение касания падает ниже этого процента от уровня покоя. Чем меньше, тем сильнее нужно нажать. «Следующая страница» останавливает очередь на текущей странице, «Домой» запускает её снова.',
+ // wi-fi
+ 'Networks':'Сети','Scan':'Найти','Tap Scan to look for networks':'Нажмите «Найти», чтобы поискать сети','Saved networks':'Сохранённые сети',
+ '2.4 GHz only. Up to 4 networks; at start the device joins the strongest one in range. Joining or forgetting a network restarts the device.':'Только 2,4 ГГц. До 4 сетей; при запуске устройство подключается к самой сильной из доступных. Подключение к сети или её удаление перезагружает устройство.',
+ 'Name':'Имя','Device name':'Имя устройства','Rename':'Переименовать','Open this page at':'Эта страница открывается по адресу',
+ '. Several devices need a name each. Renaming restarts the device.':'. Если устройств несколько, у каждого должно быть своё имя. Переименование перезагружает устройство.',
+ 'Setup hotspot':'Точка доступа для настройки','Hotspot name':'Имя точки доступа','Password':'Пароль','· at least 8 characters':'· не меньше 8 символов',
+ '(unchanged)':'(без изменений)','(open)':'(открытая)','No password (open hotspot)':'Без пароля (открытая точка)','Save hotspot':'Сохранить точку доступа',
+ 'The hotspot appears when no Wi‑Fi is set up or joining fails. A blank password keeps the stored one.':'Точка доступа включается, когда Wi‑Fi не настроен или подключиться не удалось. Пустой пароль оставляет сохранённый.',
+ 'No saved networks':'Нет сохранённых сетей','Connected':'Подключено','Password saved':'Пароль сохранён','Open':'Открытая','Forget':'Забыть',
+ 'Forget “{0}”? The device restarts.':'Забыть «{0}»? Устройство перезагрузится.',
+ 'Forget “{0}”? The device restarts and, with no other saved network in range, opens its setup hotspot.':'Забыть «{0}»? Устройство перезагрузится и, если других сохранённых сетей рядом нет, включит точку доступа для настройки.',
+ 'Enter the password for “{0}”':'Пароль для «{0}»','Join “{0}”':'Подключиться к «{0}»','Join another network':'Другая сеть',
+ 'Type the network name':'Введите имя сети','A Wi‑Fi password has at least 8 characters':'Пароль Wi‑Fi — не меньше 8 символов',
+ 'Up to 4 networks: forget one first':'Не больше 4 сетей: сначала забудьте одну','Scanning…':'Поиск…','Other…':'Другая…',
+ 'No other networks found':'Других сетей не найдено','Could not scan. Tap Scan to try again.':'Поиск не удался. Нажмите «Найти» ещё раз.',
+ 'Join a network':'Подключение к сети','The device restarts to join it.':'Чтобы подключиться, устройство перезагрузится.','Network name':'Имя сети','Join':'Подключиться',
+ 'Type a name first':'Сначала введите имя','Rename the device to “{0}”? It restarts.':'Переименовать устройство в «{0}»? Оно перезагрузится.',
+ 'Renamed — restarting…':'Переименовано, перезагрузка…','Renamed':'Переименовано','Not renamed: {0}':'Не переименовано: {0}',
+ 'password set':'пароль задан','open':'открытая','The password needs at least 8 characters':'Пароль — не меньше 8 символов',
+ 'Hotspot saved':'Точка доступа сохранена','Not saved: {0}':'Не сохранено: {0}',
+ 'Save failed':'Не удалось сохранить','Save failed: {0}':'Не удалось сохранить: {0}','Saved, rebooting to connect...':'Сохранено, перезагрузка для подключения…',
+ 'Saved — rebooting...':'Сохранено, перезагрузка…','Saved':'Сохранено','Request failed':'Запрос не выполнен',
+ // status
+ 'Setup hotspot is on':'Включена точка доступа для настройки','Connected to {0}':'Подключено к {0}','Not connected':'Нет подключения',
+ 'Connected · {0}':'Подключено · {0}','Join a network below to leave setup mode':'Подключитесь к сети ниже, чтобы выйти из режима настройки',
+ ' · night mode active':' · ночной режим',
+ 'synced':'синхронизировано','Waiting for NTP…':'Ожидание NTP…',' · night mode waiting for NTP':' · ночной режим ждёт NTP',
+ 'Software':'Прошивка','IP address':'IP-адрес','Address':'Адрес','Signal':'Сигнал','Last join failure':'Последняя ошибка подключения',
+ 'Free memory':'Свободная память','{0} KB block':'блок {0} КБ','Up for':'Работает','Last start':'Последний запуск','Last crash':'Последний сбой',
+ 'clear':'очистить','off':'выкл.','Crash record cleared':'Запись о сбое очищена',
+ '{0} d':'{0} д','{0} h':'{0} ч',
+ // general
+ 'Installed':'Установлена','Install from a file':'Установить из файла','Install':'Установить',
+ 'Time zone':'Часовой пояс','Language':'Язык','On the clock and on this page':'На часах и на этой странице',
+ 'Clock':'Время','Search a place':'Найти место','Search':'Найти','Latitude':'Широта','Longitude':'Долгота',
+ 'Searching...':'Поиск…','No place found. Try another spelling, or type the numbers.':'Место не найдено. Попробуйте другое написание или введите координаты.',
+ 'Search failed (no internet in this browser?). Type the numbers instead.':'Поиск не удался (нет интернета в браузере?). Введите координаты вручную.',
+ 'Username':'Имя пользователя','Password again':'Пароль ещё раз',
+ 'Save password':'Сохранить пароль','Remove password':'Удалить пароль',
+ 'There is no recovery:':'Восстановить пароль нельзя:','forget it and the only way back is to reflash over USB or UART, so write it down.':'если забудете, вернуть доступ можно только перепрошивкой по USB или UART, поэтому запишите его.',
+ 'The two passwords are not the same. Nothing was saved.':'Пароли не совпадают. Ничего не сохранено.','set a password':'задайте пароль','type it again':'повторите пароль',
+ 'On':'Вкл.','A password is set: this page asks for it.':'Пароль задан: страница его запрашивает.',
+ 'No password is set: anyone on your network can open this page.':'Пароль не задан: эту страницу может открыть любой в вашей сети.',
+ 'Remove the password? Anyone on your network will be able to open this page.':'Удалить пароль? Эту страницу сможет открыть любой в вашей сети.',
+ 'Password removed: the page is open again':'Пароль удалён: страница снова открыта','Could not remove the password: {0}':'Не удалось удалить пароль: {0}',
+ 'Export or restore config.json':'Сохранить или восстановить config.json','Export settings':'Сохранить настройки',
+ 'Restore from a file':'Восстановить из файла','Restore and restart':'Восстановить и перезагрузить',
+ 'Pick a config .json first':'Сначала выберите файл .json','Not valid JSON':'Это не JSON','Apply this configuration and reboot?':'Применить эти настройки и перезагрузить?',
+ 'Imported, rebooting...':'Загружено, перезагрузка…','Import failed':'Не удалось загрузить',
+ 'Restart':'Перезагрузить','Restart the device?':'Перезагрузить устройство?','Restarting…':'Перезагрузка…',
+ 'Erase all settings? Wi‑Fi, watch face choice and every option go back to factory values, and the device restarts into its setup hotspot. This cannot be undone.':'Стереть все настройки? Wi‑Fi, выбор циферблата и все параметры вернутся к заводским, устройство перезагрузится в режим точки доступа. Это нельзя отменить.',
+ 'Erased, restarting…':'Стёрто, перезагрузка…',
+ // why the device last started (ESP.getResetReason())
+ 'Power On':'Включение питания','Hardware Watchdog':'Аппаратный сторожевой таймер','Exception':'Исключение',
+ 'Software Watchdog':'Программный сторожевой таймер','Software/System restart':'Программная перезагрузка',
+ 'Deep-Sleep Wake':'Выход из глубокого сна','External System':'Внешний сброс',
+ // the device's replies about watch faces (ThemeWeb.cpp) and the page's own checks of a package
+ 'Upload exactly one package':'Загрузите один пакет','Expected a .stheme file':'Нужен файл .stheme',
+ 'Remove a theme first (limit 16)':'Сначала удалите циферблат (не больше 16)','Not enough storage; remove a theme first':'Не хватает места, сначала удалите циферблат',
+ 'Cannot create staging file':'Не удалось создать временный файл','Package exceeds available storage or 3 MiB':'Пакет больше свободного места или 3 МБ',
+ 'Not enough storage':'Не хватает места','Incomplete upload':'Загрузка не завершилась','Upload aborted':'Загрузка прервана',
+ 'No complete package uploaded':'Пакет не загружен целиком','Cannot read uploaded package':'Не удалось прочитать загруженный пакет',
+ 'Theme ID already installed; remove it or use a new ID':'Такой циферблат уже установлен: удалите его или смените ID',
+ 'Cannot publish package':'Не удалось сохранить пакет','Expected JSON with id':'Нужен JSON с id','Invalid theme ID':'Неверный ID циферблата',
+ 'Theme not installed':'Циферблат не установлен','Invalid installed theme':'Установленный циферблат повреждён',
+ 'Could not save selection':'Не удалось сохранить выбор','Theme not found':'Циферблат не найден',
+ 'Switch away from theme mode or untick it in the carousel before removing this theme':'Перед удалением выберите другое приложение или уберите циферблат из очереди',
+ 'Could not clear saved selection':'Не удалось сбросить выбор','Theme not found or could not be removed':'Циферблат не найден или не удалён',
+ 'Not a .stheme package':'Это не пакет .stheme','Package has no theme.json':'В пакете нет theme.json','Bad font':'Неверный шрифт',
+ 'Theme request failed':'Запрос не выполнен','Waiting for free memory':'Ожидание свободной памяти','Select an installed theme':'Выберите установленный циферблат',
+ 'Theme file not found':'Файл циферблата не найден','Theme ID mismatch':'ID циферблата не совпадает','Could not read theme asset':'Не удалось прочитать файл циферблата',
+ 'The face did not pass the check: {0}':'Циферблат не прошёл проверку: {0}',
+ 'Pick a .bin first':'Сначала выберите файл .bin','Uploading {0}%':'Загрузка {0}%','Done. Rebooting...':'Готово. Перезагрузка…','Failed: {0}':'Ошибка: {0}','Upload error':'Ошибка загрузки',
+ // the layout of 3.5.0-ru.35
+ 'Software Update':'Обновление ПО','Date & Time':'Дата и время','Time Zone':'Часовой пояс',
+ 'Privacy & Security':'Конфиденциальность и безопасность','Transfer or Reset':'Перенос или сброс','Back Up Settings':'Резервная копия',
+ 'Erase All Settings':'Стереть все настройки','Screen orientation':'Ориентация экрана',
+ 'of this project. The device restarts when done.':'этого проекта. По окончании устройство перезагрузится.',
+ 'Off by default: anyone on your network can open this page. A password locks the page, the API and firmware installs behind HTTP digest auth, so the password itself never crosses the network.':'По умолчанию выключен: эту страницу может открыть любой в вашей сети. Пароль закрывает страницу, API и установку прошивки через HTTP digest, сам пароль по сети не передаётся.',
+ 'The export holds the Wi‑Fi passwords in clear text; keep the file safe. Restoring applies everything and restarts.':'В файле открытым текстом лежат пароли Wi‑Fi, храните его надёжно. Восстановление применяет все настройки и перезагружает устройство.',
+ 'Set over the internet once night mode, sunset to sunrise or an app that shows the time is on':'Время берётся из интернета, когда включён ночной режим, закат и рассвет или приложение со временем',
+ 'Found. The numbers are filled in and can still be edited.':'Найдено. Координаты заполнены, их можно поправить.',
+ 'Pick the right place. The numbers are filled in and can still be edited.':'Выберите нужное место. Координаты заполнены, их можно поправить.',
+ '. Previews show 10:09 and the current weather. Faces follow the time zone and language in General and the location in Weather; notifications appear on top of them.':'. В превью время 10:09 и текущая погода. Циферблаты используют часовой пояс и язык из раздела «Основные» и местоположение из «Погоды», уведомления появляются поверх них.',
+ 'The weather, the watch faces and the sunset-to-sunrise brightness use this place. The search runs in your browser (open-meteo.com); the device never sends the name anywhere. 0 and 0 mean none.':'Это место используют погода, циферблаты и яркость от заката до рассвета. Поиск идёт в вашем браузере (open-meteo.com), устройство никуда не отправляет название. 0 и 0 — не задано.',
+ 'Weather from':'Погода от',
+ ', updated every 15 minutes while the app or a watch face showing it is on the screen. Names follow the language in General.':', обновляется раз в 15 минут, пока на экране приложение или циферблат с погодой. Названия следуют языку из раздела «Основные».',
+ 'For the weather, the watch faces and the brightness from sunset to sunrise.':'Для погоды, циферблатов и яркости от заката до рассвета.',
+ 'Weather data:':'Данные о погоде:','2.4 GHz networks only. Joining or forgetting a network restarts the device.':'Только сети 2,4 ГГц. Подключение к сети или её удаление перезагружает устройство.',
+ 'Appears when no Wi‑Fi network can be joined.':'Включается, когда не удаётся подключиться к Wi‑Fi.',
+ 'There is no way to recover a forgotten password other than reflashing over USB.':'Забытый пароль можно сбросить только перепрошивкой по USB.',
+ 'The file holds the Wi‑Fi passwords.':'В файле хранятся пароли Wi‑Fi.'
+};
+// The text in the panel language; {0}, {1} take a[0], a[1].
+function lz(s,a){var r=UI_LANG==='ru'&&Object.prototype.hasOwnProperty.call(RU,s)?RU[s]:s;
+ return a?r.replace(/\{(\d)\}/g,function(_,i){return a[i]}):r}
+// A message from the device or a package check, in the page language: a
+// known one is translated; an installation's detailed check (layers[0]...)
+// stays as written, after a sentence that says what it is.
+function lzMsg(m,install){m=String(m||'');if(UI_LANG!=='ru'||Object.prototype.hasOwnProperty.call(RU,m))return lz(m);
+ return install&&/[:\[]/.test(m)?lz('The face did not pass the check: {0}',[m]):m}
+// Why the device last started; a crash adds its address ("Exception epc ...").
+function lzReset(r){r=String(r||'-');var m=/^(.+?)( epc .*)?$/.exec(r);return lz(m[1])+(m[2]||'')}
+// Swaps the page's own English once: text and placeholder, aria-label, title.
+// Skips scripts, code samples and anything marked translate="no".
+function lzPage(root){if(UI_LANG!=='ru'||!root)return;document.documentElement.lang='ru';
+ var key=function(t){return t.replace(/\s+/g,' ').trim()},w=document.createTreeWalker(root,4),n,list=[];
+ while((n=w.nextNode()))list.push(n);
+ list.forEach(function(n){var p=n.parentNode;if(!p||p.closest('script,style,code,[translate="no"]'))return;
+  if(p.tagName==='OPTION'&&!p.hasAttribute('value'))return;   // its text is its value
+  var k=key(n.nodeValue);if(!k||!Object.prototype.hasOwnProperty.call(RU,k))return;
+  var m=n.nodeValue.match(/^\s*/)[0],e=n.nodeValue.match(/\s*$/)[0];n.nodeValue=m+RU[k]+e});
+ root.querySelectorAll('[placeholder],[aria-label],[title]').forEach(function(x){if(x.closest('[translate="no"]'))return;
+  ['placeholder','aria-label','title'].forEach(function(a){var v=x.getAttribute(a);if(v&&Object.prototype.hasOwnProperty.call(RU,v))x.setAttribute(a,RU[v])})})}
+// The page follows the device language. The browser remembers it so the next
+// visit opens in it at once. English to Russian is swapped in place; back to
+// English needs the page's own text, so the page reloads (only when the
+// browser can remember the choice, or it would reload for ever).
+// Returns true when the page is about to reload.
+function syncUiLang(code,reload){var want=code==='ru'?'ru':'en',kept=false;
+ try{localStorage.setItem('gm.lang',want);kept=localStorage.getItem('gm.lang')===want}catch(e){}
+ if(want===UI_LANG)return false;
+ if(want==='ru'&&!reload){UI_LANG='ru';lzPage(document.body);if(typeof tmPresets==='function')tmPresets();return false}
+ if(kept||reload){location.reload();return true}
+ return false}
+// i18n end
+// sun begin (device location, sun schedule; tested by tests/sun/test_webui.js)
+var PLACES=[];
+function placeLabel(p){return [p.name,p.admin1,p.country].filter(Boolean).join(', ')}
+function placeSearch(){var q=gv('locQ').trim(); if(!q)return Promise.resolve();
+ $('locMsg').textContent=lz('Searching...');
+ return fetch('https://geocoding-api.open-meteo.com/v1/search?name='+encodeURIComponent(q)+'&count=5&language=en&format=json')
+ .then(function(r){return r.json()}).then(function(d){
+  PLACES=d.results||[]; var sel=$('locRes'),row=$('locResRow'); sel.innerHTML='';
+  if(!PLACES.length){row.hidden=true;$('locMsg').textContent=lz('No place found. Try another spelling, or type the numbers.');return}
+  PLACES.forEach(function(p,i){var o=document.createElement('option');o.value=i;o.textContent=placeLabel(p);sel.appendChild(o)});
+  row.hidden=PLACES.length<2;sel.value='0';placePick();
+  $('locMsg').textContent=lz(PLACES.length<2?'Found. The numbers are filled in and can still be edited.':'Pick the right place. The numbers are filled in and can still be edited.');
+ }).catch(function(){$('locMsg').textContent=lz('Search failed (no internet in this browser?). Type the numbers instead.')})}
+function placePick(){var p=PLACES[parseInt(gv('locRes'))]; if(!p)return;
+ sv('locLat',p.latitude.toFixed(4)); sv('locLon',p.longitude.toFixed(4))}
+function sunToggled(){if(gc('sunEnabled'))sc('autoBrightness',false)}
+function autoToggled(){if(gc('autoBrightness'))sc('sunEnabled',false)}
+// The line under the schedule, from the settings (c) and the status reply (s).
+// null: the schedule is off, leave the hint alone. s.bl is the backlight level
+// 0..255; it reads -1 until the first write after boot (and is missing on an
+// older firmware), so it is left out until then instead of showing "-1%".
+function sunNowText(c,s){
+ if(!c||!c.sunEnabled)return null;
+ if(!s.sun)return (c.lat||c.lon)?lz('Waiting for the clock (NTP)...'):lz('Set the device location above.');
+ var t=lz('Today: {0}. Fades start at sunrise and at sunset.',[s.sun]);
+ if(s.bl>=0)t+=' '+lz('Brightness now: {0}%.',[Math.round(s.bl*100/255)]);
+ return t}
+function numIn(v,def,lo,hi){var n=parseInt(v); return isNaN(n)?def:Math.min(hi,Math.max(lo,n))}
+// sun end
+function toast(m){var t=$('toast');t.textContent=m;t.classList.add('show');setTimeout(function(){t.classList.remove('show')},2200)}
+function j(url,opt){return fetch(url,opt).then(function(r){return r.json().then(function(d){if(!r.ok)throw new Error(d.error||lz('Request failed'));return d})})}
+
+// tabs: the open one is kept in the address (#display), so a reload stays there.
+// `open` is a disclosure row to open and bring into view (Location from Display).
+function showTab(name,open){var b=document.querySelector('nav button[data-t="'+name+'"]'),sec=$(name);
+ if(!b&&sec&&PAGEAPP[name]){b=document.querySelector('nav button[data-t="apps"]');appHead(name)}
+ if(!b||!sec)return;
+ document.querySelectorAll('nav button').forEach(function(x){x.classList.toggle('active',x===b)});
+ document.querySelectorAll('.tab').forEach(function(x){x.classList.toggle('active',x===sec)});
+ try{history.replaceState(null,'','#'+name)}catch(e){}
+ if(name==='reminders'&&$('remList'))loadReminders();
+ if(name==='weather')wxLoad();
+ clearInterval(tmPoll);if(name==='timer'){tmLoad();tmPoll=setInterval(tmLoad,1000)}
+ if(open){open.open=true;setTimeout(function(){open.scrollIntoView({behavior:'smooth',block:'center'})},60)}}
+document.querySelectorAll('nav button').forEach(function(b){b.onclick=function(){showTab(b.dataset.t)}});
+
+// field groups by their location in the nested config
+// IANA -> POSIX TZ. The device stores/uses the POSIX rule; this map lives in the
+// browser so the firmware carries no tz database (same idea as the cash finder).
+var TZMAP={
+ '':'UTC0','UTC':'UTC0',
+ 'Europe/London':'GMT0BST,M3.5.0/1,M10.5.0','Europe/Dublin':'GMT0IST,M3.5.0/1,M10.5.0',
+ 'Europe/Lisbon':'WET0WEST,M3.5.0/1,M10.5.0',
+ 'Europe/Rome':'CET-1CEST,M3.5.0,M10.5.0/3','Europe/Paris':'CET-1CEST,M3.5.0,M10.5.0/3',
+ 'Europe/Berlin':'CET-1CEST,M3.5.0,M10.5.0/3','Europe/Madrid':'CET-1CEST,M3.5.0,M10.5.0/3',
+ 'Europe/Amsterdam':'CET-1CEST,M3.5.0,M10.5.0/3','Europe/Brussels':'CET-1CEST,M3.5.0,M10.5.0/3',
+ 'Europe/Zurich':'CET-1CEST,M3.5.0,M10.5.0/3','Europe/Vienna':'CET-1CEST,M3.5.0,M10.5.0/3',
+ 'Europe/Warsaw':'CET-1CEST,M3.5.0,M10.5.0/3','Europe/Prague':'CET-1CEST,M3.5.0,M10.5.0/3',
+ 'Europe/Stockholm':'CET-1CEST,M3.5.0,M10.5.0/3','Europe/Oslo':'CET-1CEST,M3.5.0,M10.5.0/3',
+ 'Europe/Copenhagen':'CET-1CEST,M3.5.0,M10.5.0/3',
+ 'Europe/Athens':'EET-2EEST,M3.5.0/3,M10.5.0/4','Europe/Helsinki':'EET-2EEST,M3.5.0/3,M10.5.0/4',
+ 'Europe/Bucharest':'EET-2EEST,M3.5.0/3,M10.5.0/4','Europe/Kyiv':'EET-2EEST,M3.5.0/3,M10.5.0/4',
+ 'Europe/Istanbul':'<+03>-3','Europe/Moscow':'MSK-3',
+ 'America/New_York':'EST5EDT,M3.2.0,M11.1.0','America/Toronto':'EST5EDT,M3.2.0,M11.1.0',
+ 'America/Chicago':'CST6CDT,M3.2.0,M11.1.0','America/Denver':'MST7MDT,M3.2.0,M11.1.0',
+ 'America/Phoenix':'MST7','America/Los_Angeles':'PST8PDT,M3.2.0,M11.1.0',
+ 'America/Anchorage':'AKST9AKDT,M3.2.0,M11.1.0','America/Sao_Paulo':'<-03>3',
+ 'America/Mexico_City':'CST6','America/Bogota':'<-05>5','America/Argentina/Buenos_Aires':'<-03>3',
+ 'Asia/Dubai':'<+04>-4','Asia/Karachi':'PKT-5','Asia/Kolkata':'IST-5:30',
+ 'Asia/Dhaka':'<+06>-6','Asia/Bangkok':'<+07>-7','Asia/Jakarta':'WIB-7',
+ 'Asia/Shanghai':'CST-8','Asia/Hong_Kong':'HKT-8','Asia/Singapore':'<+08>-8',
+ 'Asia/Taipei':'CST-8','Asia/Tokyo':'JST-9','Asia/Seoul':'KST-9',
+ 'Australia/Perth':'AWST-8','Australia/Sydney':'AEST-10AEDT,M10.1.0,M4.1.0/3',
+ 'Australia/Adelaide':'ACST-9:30ACDT,M10.1.0,M4.1.0/3','Australia/Brisbane':'AEST-10',
+ 'Pacific/Auckland':'NZST-12NZDT,M9.5.0,M4.1.0/3','Pacific/Honolulu':'HST10'};
+function fillTz(){var s=$('tz');if(!s)return;var keys=Object.keys(TZMAP).filter(function(k){return k!==''});
+ keys.sort();s.innerHTML='<option value="">UTC</option>'+keys.map(function(k){return '<option value="'+k+'">'+k+'</option>'}).join('');}
+
+function modeChanged(){var m=$('mode');if(!m)return;var rot=m.value==='carousel';
+ var sg=$('screenSeg');if(sg)sg.querySelectorAll('button').forEach(function(b){b.classList.toggle('on',b.dataset.v===(rot?'rotate':'one'))});
+ var rs=$('rotSecRow');if(rs)rs.hidden=!rot;
+ var h=$('screenHint');if(h)h.textContent=rot?lz('Tap apps to add them to the rotation or take them out. ⓘ opens an app’s settings.')
+  :lz('Tap an app to show it on the screen. ⓘ opens its settings.');
+ renderApps();var open=document.querySelector('.tab.active');if(open&&PAGEAPP[open.id])appHead(open.id)}
+// Apps: the list on the Apps tab, and a page per app (its section) with the
+// same head on each: back, title, and what the app has to do with the screen.
+var APPINFO={theme:{sub:'Watch faces',bg:'#ff9f0a',icon:'<circle cx="12" cy="12" r="7" fill="none" stroke="#fff" stroke-width="2"/><path d="M12 8v4l3 2" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"/>'},
+ reminders:{sub:'Your list',bg:'#0a84ff',icon:'<circle cx="7" cy="8" r="1.6" fill="#fff"/><circle cx="7" cy="16" r="1.6" fill="#fff"/><path d="M11 8h7M11 16h7" stroke="#fff" stroke-width="2" stroke-linecap="round"/>'},
+ weather:{sub:'Open-Meteo',bg:'#0a84ff',icon:'<circle cx="9" cy="9" r="3.2" fill="#ffd60a"/><path d="M8 18h8.5a3.5 3.5 0 0 0 .3-7 4.5 4.5 0 0 0-8.6 1.2A2.9 2.9 0 0 0 8 18z" fill="#fff"/>'},
+ timer:{sub:'Not running',bg:'#ff9f0a',icon:'<circle cx="12" cy="13" r="7" fill="none" stroke="#fff" stroke-width="2"/><path d="M12 13V9.5M10 3.5h4" stroke="#fff" stroke-width="2" stroke-linecap="round"/>'},
+ calendar:{sub:'This month',bg:'#ff453a',icon:'<rect x="5" y="6" width="14" height="13" rx="2.5" fill="none" stroke="#fff" stroke-width="2"/><path d="M5 10h14M9 4v4M15 4v4" stroke="#fff" stroke-width="2" stroke-linecap="round"/>'}};
+// An app's mode value, its page (section id) and its rotation flag.
+var APPPAGE={theme:'theme',calendar:'calendar',reminders:'reminders',weather:'weather',timer:'timer'};
+var PAGEAPP={};Object.keys(APPPAGE).forEach(function(k){PAGEAPP[APPPAGE[k]]=k});
+var APPROT={theme:'carouselTheme',calendar:'carouselCalendar',reminders:'carouselReminders',weather:'carouselWeather',timer:'carouselTimer'};
+var lastApp='';
+function appList(){var m=$('mode');return m?Array.prototype.filter.call(m.options,function(o){return o.value!=='carousel'}):[]}
+function rotCount(){return appList().filter(function(o){return $(APPROT[o.value])&&gc(APPROT[o.value])}).length}
+function appIcon(v,big){var i=APPINFO[v]||{bg:'#8e8e93',icon:''},n=big?26:20;
+ return '<span class="appicon'+(big?' big':'')+'" style="background:'+i.bg+'"><svg viewBox="0 0 24 24" width="'+n+'" height="'+n+'">'+i.icon+'</svg></span>'}
+function appSummary(v){if(v==='theme'){var t=themeEntries.find(function(x){return x.id===themeSelected});return t?t.name:lz('Watch faces')}
+ if(v==='reminders'&&remData)return remData.items&&remData.items.length?lz('{0} open',[remData.open]):lz('Empty');
+ if(v==='weather'&&wxData&&wxData.valid)return Math.round(wxData.temp)+'°, '+wxCond(wxData.cond,true);
+ if(v==='timer'&&tmData&&tmData.state!=='idle')return lz(tmData.state==='paused'?'{0} · paused':'{0} left',[tmFmt(tmData.left)]);
+ return lz((APPINFO[v]||{}).sub||'')}
+// The list works like the Wi-Fi list on a phone: tapping a row is the choice
+// (one filled row with One app, any number with Rotate), and the info button
+// at its right opens the app's own page.
+function renderApps(){var l=$('appList'),m=$('mode');if(!l||!m)return;l.innerHTML='';
+ var cur=m.value,rot=cur==='carousel';if(cur&&!rot)lastApp=cur;
+ appList().forEach(function(o){var v=o.value,on=rot?!!($(APPROT[v])&&gc(APPROT[v])):v===cur;
+  var row=el('div','item app click'+(on?' on':''));row.setAttribute('role',rot?'checkbox':'radio');row.setAttribute('aria-checked',on?'true':'false');row.tabIndex=0;
+  row.innerHTML=appIcon(v)+'<div class="grow"><div class="strong"></div><div class="sub"></div></div>'+
+   '<button type="button" class="info" aria-label=""><svg viewBox="0 0 24 24" width="22" height="22"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M12 10.5v6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="7.6" r="1.1" fill="currentColor"/></svg></button>';
+  row.querySelector('.strong').textContent=o.textContent;row.querySelector('.sub').textContent=appSummary(v);
+  var info=row.querySelector('.info');info.setAttribute('aria-label',lz('{0} settings',[o.textContent]));
+  info.onclick=function(e){e.stopPropagation();openApp(v)};
+  row.onclick=function(){pickApp(v)};
+  row.onkeydown=function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();pickApp(v)}};
+  l.appendChild(row)})}
+// A tap on a row: with One app it goes on the screen; with Rotate it joins or
+// leaves the rotation, which always keeps at least one app.
+function pickApp(v){var m=$('mode');if(!m)return;
+ if(m.value!=='carousel'){setApp(v);return}
+ var id=APPROT[v];if(!$(id))return;var on=gc(id);
+ if(on&&rotCount()<=1){toast(lz('At least one app stays in the rotation'));return}
+ sc(id,!on);autoSave();modeChanged()}
+function openApp(v){if($(APPPAGE[v]))showTab(APPPAGE[v])}
+// The head of an app page: back to the list and the title. What is on the
+// screen is chosen in the list itself, so the page holds only settings.
+function appHead(page){var sec=$(page),v=PAGEAPP[page];if(!sec||!v)return;
+ var h=sec.querySelector(':scope > .apphead');if(!h){h=el('div','apphead');sec.insertBefore(h,sec.firstChild)}
+ var o=appList().find(function(x){return x.value===v});
+ h.innerHTML='<button type="button" class="back">'+lz('Apps')+'</button><div class="apptitle">'+appIcon(v,true)+'<h2></h2></div>';
+ h.querySelector('.back').onclick=function(){showTab('apps')};h.querySelector('h2').textContent=o?o.textContent:v}
+function setApp(v){var m=$('mode');if(!m||m.value===v)return;m.value=v;C.mode=v;modeChanged();if(v==='theme')heroPaint();else heroOther();autoSave()}
+function screenMode(w){var m=$('mode');if(!m)return;var first=appList()[0],keep=lastApp||(first&&first.value)||'theme';
+ // Rotation never starts empty: the app on the screen joins it.
+ if(w==='rotate'&&!rotCount()&&$(APPROT[keep]))sc(APPROT[keep],true);
+ setApp(w==='rotate'?'carousel':keep)}
+
+// The AP password is never read back into the form, so a blank field cannot be
+// told apart from "the user cleared it". Blank therefore keeps the stored one,
+// as the WiFi rows do, and the checkbox is the explicit way to clear it.
+function apOpenChanged(){var o=$('apOpen'),p=$('apPass');if(!o||!p)return;
+ p.disabled=o.checked; if(o.checked)p.value='';}
+
+// panel colour gains: slider + its live percentage label
+function setGain(id,lab,v){var n=(v!=null?v:100);sv(id,n);var e=$(lab);if(e)e.textContent=n}
+// Gains only: colour order and invert describe how the panel is wired, so a
+// unit that needs them keeps needing them after the sliders are put back.
+// A stored hold time the list does not offer (set over the API) gets its own option.
+function setNotifySec(v){var sel=$('notifySec');if(!sel)return;v=String(v>0?v:0);
+ var has=false;for(var i=0;i<sel.options.length;i++)if(sel.options[i].value===v)has=true;
+ if(!has){var o=document.createElement('option');o.value=v;o.textContent=lz('{0} seconds',[v]);sel.appendChild(o)}
+ sel.value=v}
+function resetColors(){setGain('rGain','rgVal',100);setGain('gGain','ggVal',100);setGain('bGain','bgVal',100);
+ paintRanges();autoSave()}
+function loadConfig(){return j('/api/config').then(function(c){C=c;
+ if(syncUiLang((c.clock||{}).lang))return;
+ var f=c.features||{};
+ document.querySelectorAll('.remHost').forEach(function(h){if(location.host)h.textContent=location.host});
+ wxLoad();tmLoad();loadReminders();loadThemes();
+ // Physical button card: only on boards that wire one
+ if(f.button===true){var bc=$('buttonCard'); if(bc)bc.style.display='block';
+  var b=c.button||{};
+  sv('btnShort',b.shortAction!=null?b.shortAction:3);
+  sv('btnLong',b.longAction!=null?b.longAction:4);
+  sv('btnSens',b.sensitivity!=null?b.sensitivity:85);
+  $('btnSensVal')&&($('btnSensVal').textContent=(b.sensitivity!=null?b.sensitivity:85));
+ }
+ // shared
+ ['apSsid','hostname'].forEach(function(k){$(k).value=c[k]!=null?c[k]:''});
+ showName();
+ renderWifi(c.wifi||(c.staSsid?[{ssid:c.staSsid,passSet:c.staPassSet}]:[]));
+ $('brightness').value=c.brightness; $('brVal').textContent=c.brightness;
+ $('rotation').value=c.rotation;
+ $('autoBrightness').checked=!!c.autoBrightness;
+ $('backlightInverted').checked=!!c.backlightInverted;
+ // panel colour slice
+ var dp=c.display||{};
+ sv('colorOrder',dp.colorOrder||'auto'); sc('colorInvert',!!dp.invert);
+ setGain('rGain','rgVal',dp.rGain); setGain('gGain','ggVal',dp.gGain); setGain('bGain','bgVal',dp.bGain);
+ setNotifySec(dp.notifySec);
+ // header chip = which chip this firmware was built for
+ var chipName={esp8266:'ESP8266',esp32c2:'ESP32-C2',esp32:'ESP32'}[c.chip]||'';
+ var chE=$('chip'); if(chE&&chipName){chE.textContent=chipName;chE.style.display='inline-block';}
+ // clock slice
+ fillTz(); var ck=c.clock||{};
+ if(ck.tz && !(ck.tz in TZMAP)){var _ts=$('tz'); if(_ts){var _o=document.createElement('option');_o.value=ck.tz;_o.textContent=ck.tz;_ts.appendChild(_o);}}
+ sv('tz',ck.tz||''); sv('lang',ck.lang||'en'); sc('nightEnabled',!!ck.nightEnabled);
+ sv('nightStart',ck.nightStart||'22:00'); sv('nightEnd',ck.nightEnd||'07:00');
+ sv('nightLevel',ck.nightLevel!=null?ck.nightLevel:0); $('nlVal')&&($('nlVal').textContent=(ck.nightLevel!=null?ck.nightLevel:0));
+ sv('locLat',ck.lat||''); sv('locLon',ck.lon||'');
+ sc('sunEnabled',!!ck.sunEnabled); sv('sunLow',ck.sunLow!=null?ck.sunLow:5); $('slVal')&&($('slVal').textContent=(ck.sunLow!=null?ck.sunLow:5));
+ sv('sunRise',ck.sunRise!=null?ck.sunRise:60); sv('sunSet',ck.sunSet!=null?ck.sunSet:60); sv('sunOverlap',ck.sunOverlap||0); sc('nightstand',ck.nightstand===true);
+ $('mode').value=c.mode||'theme'; modeChanged();
+ sv('carouselSec',c.carouselSec||30);
+ sc('carouselTheme',c.carouselTheme===true); sc('carouselCalendar',c.carouselCalendar===true);
+ sc('carouselReminders',c.carouselReminders===true); sc('carouselWeather',c.carouselWeather===true); sc('carouselTimer',c.carouselTimer===true);
+ var au=c.auth||{};
+ sv('authUser',au.user||'admin'); authShow(!!au.passSet);
+ var ap=$('apPass'); if(ap){ap.value='';ap.placeholder=c.apPassSet?lz('(unchanged)'):lz('(open)');}
+ sc('apOpen',!c.apPassSet); apOpenChanged();
+ afterConfig();
+})}
+
+function esc(s){return (''+(s==null?'':s)).replace(/[<>&"]/g,function(c){return {'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c]})}
+// password begin (the Password card; tested by tests/auth/test_webui.js)
+function authProblem(){
+ if(gv('authPass')!==gv('authPass2'))return lz('The two passwords are not the same. Nothing was saved.');
+ return ''}
+// Shows what the device says: is a password set? Clears both fields.
+function authShow(set){
+ var b=$('authRemoveBtn');if(b)b.style.display=set?'':'none';
+ sv('authPass','');sv('authPass2','');
+ var p=$('authPass');if(p)p.placeholder=set?lz('(unchanged)'):lz('set a password');
+ var p2=$('authPass2');if(p2)p2.placeholder=set?lz('(unchanged)'):lz('type it again');
+ var ps=$('pwSub');if(ps)ps.textContent=set?lz('On'):lz('Off');
+ var s=$('authState');if(s)s.textContent=set?lz('A password is set: this page asks for it.'):lz('No password is set: anyone on your network can open this page.')}
+// Its own request: a blank field only ever keeps the stored password.
+function authRemove(){
+ if(!confirm(lz('Remove the password? Anyone on your network will be able to open this page.')))return;
+ j('/api/config',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({auth:{removePass:true}})})
+  .then(function(){authShow(false);toast(lz('Password removed: the page is open again'))})
+  .catch(function(e){toast(lz('Could not remove the password: {0}',[e.message]))})}
+// password end
+function collect(){
+ var o={
+  carouselSec:parseInt(gv('carouselSec'))||30,
+  brightness:parseInt(gv('brightness'))||0,
+  rotation:parseInt(gv('rotation')),
+  autoBrightness:gc('autoBrightness'),
+  backlightInverted:gc('backlightInverted'),
+  hostname:gv('hostname'), apSsid:gv('apSsid'),
+  display:{colorOrder:gv('colorOrder')||'auto', invert:gc('colorInvert'),
+   rGain:parseInt(gv('rGain'))||100, gGain:parseInt(gv('gGain'))||100, bGain:parseInt(gv('bGain'))||100,
+   notifySec:parseInt(gv('notifySec'))||0},
+  wifi:collectWifi()};
+ // Rotation flags, one per app.
+ Object.keys(APPROT).forEach(function(k){var id=APPROT[k]; if($(id))o[id]=gc(id)});
+ // A stored mode the list does not offer (one of a removed app) shows as
+ // nothing selected: then no mode is sent, and the save keeps the stored one.
+ var md=gv('mode'); if(md)o.mode=md;
+ // Web UI password: same blank-keeps-stored rule as everywhere else. A saved
+ // password is the lock, so there is no "enabled" to send; removing it is its
+ // own request (authRemove). saveAll() checks the two fields match first.
+ if($('authUser')){var _a={user:gv('authUser')||'admin'};
+  var _ap2=gv('authPass'); if(_ap2)_a.pass=_ap2; o.auth=_a;}
+ // Only send apPass when there is something to say: the typed value, or an
+ // explicit empty string when the user asked for an open hotspot. Sending the
+ // blank field unconditionally used to wipe the stored password on every save.
+ if(gc('apOpen')) o.apPass='';
+ else { var _ap=gv('apPass'); if(_ap) o.apPass=_ap; }
+ // Physical button: only send when the board exposes one (card visible).
+ if($('buttonCard') && $('buttonCard').style.display!=='none'){
+  o.button={shortAction:parseInt(gv('btnShort')), longAction:parseInt(gv('btnLong')),
+   sensitivity:parseInt(gv('btnSens'))||85};
+ }
+ // clock slice
+ if($('tz')){var _tzn=gv('tz'); var _tzp=(_tzn in TZMAP)?TZMAP[_tzn]:((C.clock&&C.clock.tz===_tzn&&C.clock.tzPosix)?C.clock.tzPosix:'UTC0');
+  o.clock={tz:_tzn,tzPosix:_tzp,lang:gv('lang')||'en',
+  nightEnabled:gc('nightEnabled'),nightStart:gv('nightStart')||'22:00',
+  nightEnd:gv('nightEnd')||'07:00',nightLevel:parseInt(gv('nightLevel'))||0,
+  lat:parseFloat(gv('locLat'))||0,lon:parseFloat(gv('locLon'))||0,
+  sunEnabled:gc('sunEnabled'),sunLow:numIn(gv('sunLow'),5,0,100),sunRise:numIn(gv('sunRise'),60,0,120),
+  sunSet:numIn(gv('sunSet'),60,0,120),sunOverlap:numIn(gv('sunOverlap'),0,0,2),nightstand:gc('nightstand')};}
+ return o;
+}
+function saveAll(){var bad=authProblem();if(bad){toast(bad);return}
+ var typed=!!gv('authPass');
+ j('/api/config',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(collect())})
+ .then(function(r){if(!r.ok){toast(r.error||lz('Save failed'));return}if(typed)authShow(true);toast(r.reboot?lz('Saved — rebooting...'):lz('Saved'));if(r.reboot)setTimeout(function(){location.reload()},6000);loadStatus()})
+ .catch(function(e){toast(lz('Save failed: {0}',[e.message]))})}
+
+function saveWifi(){
+ var o={wifi:collectWifi()};
+ j('/api/config',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(o)}).then(function(r){
+  if(!r.ok){toast(r.error||lz('Save failed'));return}
+  toast(lz('Saved, rebooting to connect...'));j('/api/reboot',{method:'POST'});
+ }).catch(function(e){toast(lz('Save failed: {0}',[e.message]))});
+}
+
+// Settings that apply without a restart save as they change, Apple style: no
+// Save button. A change waits AUTOSAVE_MS for the next one (a slider being
+// dragged), and saves never overlap: the device answers one request at a time.
+// The Wi-Fi list, the name, the hotspot, the tunnel and the password are left
+// out; each has its own button, because they restart the device or lock the page.
+var AUTOSAVE_MS=500,saveT=0,saving=null,saveMore=false;
+function liveSettings(){var o=collect();
+ ['wifi','hostname','apSsid','apPass','auth'].forEach(function(k){delete o[k]});return o}
+function autoSave(){clearTimeout(saveT);saveT=setTimeout(saveLive,AUTOSAVE_MS)}
+function saveLive(){if(saving){saveMore=true;return saving}
+ var o=liveSettings();
+ saving=j('/api/config',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(o)})
+  .then(function(r){if(o.clock){C.clock=Object.assign(C.clock||{},o.clock);if((o.clock.lang==='ru'?'ru':'en')!==UI_LANG){syncUiLang(o.clock.lang,true);return}}if(o.mode)C.mode=o.mode;if(o.display)C.display=o.display;})
+  .catch(function(e){toast(lz('Not saved: {0}',[e.message]))})
+  .then(function(){saving=null;if(saveMore){saveMore=false;saveLive()}});
+ return saving}
+function postCfg(o){return j('/api/config',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(o)})}
+// The device's name (General → Name) heads the page and its tab, as a phone's
+// name heads its own settings; until it is known, GeekMagic.
+function showName(){var n=(C.hostname||'').trim()||'GeekMagic';var e=$('heroName');if(e)e.textContent=n;document.title=n}
+function hostChanged(){var h=gv('hostname'),b=$('hostBtn');if(b)b.hidden=h===(C.hostname||'');
+ var hh=$('hostHint');if(hh)hh.textContent=h||'geekmagic'}
+function saveHostname(){var h=gv('hostname').trim();if(!h){toast(lz('Type a name first'));return}
+ if(!confirm(lz('Rename the device to “{0}”? It restarts.',[h])))return;
+ postCfg({hostname:h}).then(function(r){C.hostname=h;hostChanged();showName();
+  toast(r.reboot?lz('Renamed — restarting…'):lz('Renamed'));if(r.reboot)setTimeout(function(){location.reload()},8000)})
+ .catch(function(e){toast(lz('Not renamed: {0}',[e.message]))})}
+function apSummary(){var a=$('apSub');if(a)a.textContent=(C.apSsid||'-')+' · '+(C.apPassSet?lz('password set'):lz('open'))}
+function saveHotspot(){var o={apSsid:gv('apSsid')};
+ if(gc('apOpen'))o.apPass='';else{var p=gv('apPass');if(p){if(p.length<8){toast(lz('The password needs at least 8 characters'));return}o.apPass=p}}
+ postCfg(o).then(function(){C.apSsid=o.apSsid;if('apPass' in o)C.apPassSet=!!o.apPass;sv('apPass','');
+  var ap=$('apPass');if(ap)ap.placeholder=C.apPassSet?lz('(unchanged)'):lz('(open)');apSummary();toast(lz('Hotspot saved'))})
+ .catch(function(e){toast(lz('Not saved: {0}',[e.message]))})}
+
+// wifi networks (up to 4)
+var curSsid='',scanned=false,joinEnc=true;
+var LOCK='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-label="secured"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>';
+function bars(rssi){var n=rssi>=-55?4:rssi>=-65?3:rssi>=-75?2:1;return '<span class="bars b'+n+'" title="'+rssi+' dBm"><i></i><i></i><i></i><i></i></span>'}
+// The saved list is the data: each row keeps its SSID and a typed password in
+// hidden fields, and collectWifi() reads them back as before.
+function renderWifi(arr){var t=$('wifiTable');if(!t)return;t.textContent='';arr.forEach(addWifiRow);
+ if(!arr.length)t.innerHTML='<div class="item muted wempty">'+lz('No saved networks')+'</div>'}
+function addWifiRow(o){var t=$('wifiTable');var e=t.querySelector('.wempty');if(e)e.remove();
+ var r=document.createElement('div');r.className='item wrow';if(o.passSet)r.dataset.pass='1';if(o.ssid&&o.ssid===curSsid)r.dataset.cur='1';
+ r.innerHTML='<input class="ws" type="hidden" value="'+esc(o.ssid||'')+'"><input class="wp" type="hidden">'+
+  '<div class="grow"><span class="wn" translate="no">'+esc(o.ssid||'')+'</span><div class="sub">'+wifiRowState(r)+'</div></div>'+
+  '<button type="button" class="link red" onclick="forgetWifi(this)">'+lz('Forget')+'</button>';
+ t.appendChild(r);return r}
+// A saved row's line, from its data (never from its text).
+function wifiRowState(r){return lz(r.dataset.cur?'Connected':(r.dataset.pass?'Password saved':'Open'))}
+function collectWifi(){var w=[];document.querySelectorAll('#wifiTable .wrow').forEach(function(tr){
+ var s=tr.querySelector('.ws').value;if(!s.trim())return; // SSIDs may end in spaces: keep them as typed
+ var e={ssid:s};var p=tr.querySelector('.wp').value;if(p)e.pass=p;else if(tr.dataset.open)e.open=true;w.push(e);});return w}
+function forgetWifi(b){var r=b.closest('.wrow'),s=r.querySelector('.ws').value;
+ if(!confirm(lz(s===curSsid?'Forget “{0}”? The device restarts and, with no other saved network in range, opens its setup hotspot.':'Forget “{0}”? The device restarts.',[s])))return;
+ r.remove();if(!document.querySelector('#wifiTable .wrow'))renderWifi([]);saveWifi()}
+// Joining: a network from the scan (ssid given) or any other (typed in).
+function joinSheet(ssid,enc){joinEnc=enc;sv('joinSsid',ssid);sv('joinPass','');
+ $('joinTitle').textContent=ssid?lz(enc?'Enter the password for “{0}”':'Join “{0}”',[ssid]):lz('Join another network');
+ $('joinSsidRow').style.display=ssid?'none':'';$('joinPassRow').style.display=enc?'':'none';
+ $('joinSheet').hidden=false;var f=$(ssid?(enc?'joinPass':''):'joinSsid');if(f)f.focus()}
+function closeJoin(){$('joinSheet').hidden=true;sv('joinPass','')}
+function joinNetwork(){var s=gv('joinSsid'),p=joinEnc?gv('joinPass'):'';
+ if(!s.trim()){toast(lz('Type the network name'));return}
+ if(p&&p.length<8){toast(lz('A Wi‑Fi password has at least 8 characters'));return}
+ var row=null;document.querySelectorAll('#wifiTable .wrow').forEach(function(r){if(r.querySelector('.ws').value===s)row=r});
+ if(!row){if(document.querySelectorAll('#wifiTable .wrow').length>=4){toast(lz('Up to 4 networks: forget one first'));return}row=addWifiRow({ssid:s})}
+ // Joining an open network: say so, or the device would keep a password
+ // saved for that name earlier and fail to join.
+ row.querySelector('.wp').value=p;if(!joinEnc)row.dataset.open='1';else delete row.dataset.open;closeJoin();saveWifi()}
+
+// wifi scan
+function scan(){var L=$('scanList');scanned=true;L.innerHTML='<div class="item muted">'+lz('Scanning…')+'</div>';
+ var other='<button type="button" class="item act blue" onclick="joinSheet(\'\',true)">'+lz('Other…')+'</button>';
+ return j('/api/scan').then(function(l){var h='',seen={};l.sort(function(a,b){return b.rssi-a.rssi});
+  l.forEach(function(n){if(!n.ssid||seen[n.ssid]||n.ssid===curSsid)return;seen[n.ssid]=1;
+   h+='<button type="button" class="item net" data-s="'+esc(n.ssid)+'" data-e="'+(n.enc?1:0)+'" onclick="joinSheet(this.dataset.s,this.dataset.e===\'1\')"><span class="grow" translate="no">'+
+    esc(n.ssid)+'</span><span class="val">'+(n.enc?LOCK:'')+bars(n.rssi)+'</span></button>'});
+  L.innerHTML=(h||'<div class="item muted">'+lz('No other networks found')+'</div>')+other})
+ .catch(function(){L.innerHTML='<div class="item muted">'+lz('Could not scan. Tap Scan to try again.')+'</div>'+other})}
+
+// status
+// The device answers one request at a time and keeps the others waiting in
+// its small memory, so the status is read politely: the next read is timed
+// from the end of the last one (a slow device is not asked again while it is
+// still answering), a lost reply is given up after STATUS_TIMEOUT_MS, and a
+// hidden tab stops asking until it is shown again.
+var STATUS_MS=5000,STATUS_TIMEOUT_MS=8000,statusTimer=0,statusRead=null;
+function loadStatus(){
+ clearTimeout(statusTimer);statusTimer=0;
+ if(statusRead)return statusRead;   // one is under way; it schedules the next
+ var ac=new AbortController(),kill=setTimeout(function(){ac.abort()},STATUS_TIMEOUT_MS);
+ statusRead=j('/api/status',{signal:ac.signal}).then(showStatus).catch(function(){}).then(function(){
+  clearTimeout(kill);statusRead=null;statusNext()});
+ return statusRead;
+}
+function statusNext(){clearTimeout(statusTimer);statusTimer=0;if(!document.hidden)statusTimer=setTimeout(loadStatus,STATUS_MS)}
+document.addEventListener('visibilitychange',function(){
+ if(document.hidden){clearTimeout(statusTimer);statusTimer=0}else loadStatus()});
+function showStatus(s){
+ $('dot').className='dot'+(s.connected?' ok':'');
+ $('hi').textContent=s.mode==='ap'?lz('Setup hotspot is on'):(s.connected?lz('Connected to {0}',[s.ssid||'Wi‑Fi']):lz('Not connected'));
+ var cn=$('clockNow'); if(cn){var ne=!!(C.clock&&(C.clock.nightEnabled||C.clock.sunEnabled||C.clock.nightstand))||['theme','calendar','timer','carousel'].indexOf(C.mode)>=0;var ns=s.night?lz(' · night mode active'):(s.nightHeld?lz(' · night mode waiting for NTP'):'');cn.textContent=!ne?lz('Set over the internet once night mode, sunset to sunrise or an app that shows the time is on'):((s.synced?(s.time||lz('synced'))+(s.tz?' ('+s.tz+')':''):lz('Waiting for NTP…'))+ns);}
+ var sn=$('sunNow'),st=sunNowText(C.clock,s); if(sn&&st!==null)sn.textContent=st;
+ var fw=$('fwVer'); if(fw)fw.textContent=s.version;
+ var fv=$('footVer'); if(fv)fv.textContent=(s.fw||'geekmagic')+'-'+s.version;
+ $('statusBox').innerHTML=
+  kv(lz('Software'),esc((s.fw||'geekmagic')+'-'+s.version))+
+  kv('Wi‑Fi',s.mode==='ap'?lz('Setup hotspot'):esc(s.ssid||'-'))+kv(lz('IP address'),s.ip||'-')+kv(lz('Address'),'http://'+esc(C.hostname||'geekmagic')+'.local')+
+  kv(lz('Signal'),s.rssi?s.rssi+' dBm':'-')+
+  (s.wifiFail?kvCol(lz('Last join failure'),esc(s.wifiFail)):'')+
+  kv(lz('Free memory'),lz('{0} KB',[Math.round(s.heap/1024)])+(s.maxblk?' ('+lz('{0} KB block',[Math.round(s.maxblk/1024)])+')':''))+
+  kv(lz('Up for'),fmtUp(s.uptime))+kv(lz('Last start'),esc(lzReset(s.reset)))+
+  (s.lastCrash?kvCol(lz('Last crash'),esc(crashLine(s.lastCrash))+' <a href="#" onclick="clearCrash();return false">'+lz('clear')+'</a>'):'')+
+  '';
+ if(window.statusExtras)window.statusExtras(s);
+}
+// The device card and the Wi-Fi tab's top row, from the same status reply.
+function statusExtras(s){curSsid=s.connected?(s.ssid||''):'';
+ document.querySelectorAll('#scanList .net').forEach(function(b){if(b.dataset.s===curSsid)b.remove()});
+ var t=themeEntries.find(function(x){return x.id===themeSelected}),hn=$('heroNow');
+ if(hn)hn.textContent=[C.mode==='theme'&&t&&t.valid!==false?t.name:lz({calendar:'Calendar',reminders:'Reminders',weather:'Weather',timer:'Timer'}[C.mode]||''),s.synced&&s.time?s.time.slice(11):''].filter(Boolean).join(' · ');
+ $('wnName').textContent=s.mode==='ap'?lz('Setup hotspot'):(s.ssid||lz('Not connected'));
+ $('wnSub').textContent=s.connected?lz('Connected · {0}',[s.ip||'']):(s.mode==='ap'?lz('Join a network below to leave setup mode'):(s.wifiFail||lz('Not connected')));
+ $('wnBars').innerHTML=s.connected&&s.rssi?bars(s.rssi)+'<span class="tick">✓</span>':'';
+ document.querySelectorAll('#wifiTable .wrow').forEach(function(r){var sub=r.querySelector('.sub'),cur=!!curSsid&&r.querySelector('.ws').value===curSsid;
+  if(cur===!!r.dataset.cur)return;if(cur)r.dataset.cur='1';else delete r.dataset.cur;sub.textContent=wifiRowState(r)})}
+function crashLine(x){return x.reason+(x.epc?', cause '+x.exccause+', epc '+x.epc+', addr '+x.addr:'')+', fw '+x.fw+(x.uptime!=null?', up '+fmtUp(x.uptime):'')}
+function clearCrash(){j('/api/crash/clear',{method:'POST'}).then(function(){toast(lz('Crash record cleared'));loadStatus()}).catch(function(e){toast(e.message)})}
+function kv(k,v){return '<div class="item"><span class="grow">'+k+'</span><span class="val">'+v+'</span></div>'}
+// A long value (a crash record) goes under its name rather than beside it.
+function kvCol(k,v){return '<div class="item col"><span>'+k+'</span><span class="sub">'+v+'</span></div>'}
+function fmtUp(s){var d=Math.floor(s/86400),h=Math.floor(s%86400/3600),m=Math.floor(s%3600/60);
+ return (d?lz('{0} d',[d])+' ':'')+(h?lz('{0} h',[h])+' ':'')+lz('{0} min',[m])}
+// settings backup
+function importCfg(){var f=$('cfgFile').files[0];if(!f){toast(lz('Pick a config .json first'));return}
+ var r=new FileReader();
+ r.onload=function(){var txt=r.result;
+  try{JSON.parse(txt)}catch(e){toast(lz('Not valid JSON'));return}
+  if(!confirm(lz('Apply this configuration and reboot?')))return;
+  j('/api/import',{method:'POST',headers:{'Content-Type':'application/json'},body:txt})
+   .then(function(){toast(lz('Imported, rebooting...'));setTimeout(function(){location.reload()},8000)})
+   .catch(function(){toast(lz('Import failed'))});
+ };
+ r.readAsText(f);}
+
+// maintenance
+function reboot(){if(confirm(lz('Restart the device?')))j('/api/reboot',{method:'POST'}).then(function(){toast(lz('Restarting…'));setTimeout(function(){location.reload()},8000)})}
+function factory(){if(confirm(lz('Erase all settings? Wi‑Fi, watch face choice and every option go back to factory values, and the device restarts into its setup hotspot. This cannot be undone.')))j('/api/factory',{method:'POST'}).then(function(){toast(lz('Erased, restarting…'))})}
+
+// preview begin
+// Theme previews, drawn in the browser the way the device draws them (a port
+// of the firmware's ThemeEngine render path; tests/theme/test_webui_preview.py
+// holds it to the native renderer pixel for pixel). The font comes from the
+// device (GET /api/font), packages from /api/themes/package or a chosen file.
+var PV=(function(){
+var TURN=5760,LANGS=['en','ru'];
+var MON=[['January','February','March','April','May','June','July','August','September','October','November','December'],
+['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря']];
+var MONS=[['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+['янв','фев','мар','апр','мая','июн','июл','авг','сен','окт','ноя','дек']];
+var DAY=[['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],
+['Воскресенье','Понедельник','Вторник','Среда','Четверг','Пятница','Суббота']];
+var DAYS=[['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],
+['вс','пн','вт','ср','чт','пт','сб']];
+var ANCH=['top-left','top-center','top-right','center-left','center','center-right','bottom-left','bottom-center','bottom-right'];
+var STYLES=['caption','body','headline','display-s','display-m','display-l'];
+var RANGE={x:[-240,479],y:[-240,479],x2:[-240,479],y2:[-240,479],width:[0,240],height:[0,240],radius:[0,240],
+ cornerRadius:[0,120],size:[8,96],strokeWidth:[1,32],'scroll.width':[1,240],'scroll.speed':[1,240],sweep:[-360,360],angle:[-360,360]};
+function u16(b,o){return b[o]|(b[o+1]<<8)}
+function u32(b,o){return (b[o]|(b[o+1]<<8)|(b[o+2]<<16))+b[o+3]*16777216}
+function c565(s){var n=parseInt(s.slice(1),16);return ((n>>19)<<11)|(((n>>10)&63)<<5)|((n>>3)&31)}
+function blend(bg,fg,a){if(a===255)return fg;if(a===0)return bg;var b=255-a;
+ return (Math.floor(((fg>>11)*a+(bg>>11)*b+127)/255)<<11)|(Math.floor((((fg>>5)&63)*a+((bg>>5)&63)*b+127)/255)<<5)|Math.floor(((fg&31)*a+(bg&31)*b+127)/255)}
+// The font blob of GET /api/font (writeSystemFont in SystemFont.cpp).
+function font(buf){var b=new Uint8Array(buf);if(String.fromCharCode(b[0],b[1],b[2],b[3])!=='GMF1')throw new Error('Bad font');
+ var o=5,st=[];for(var s=0;s<b[4];s++){var n=b[o],f={size:b[o+1],base:b[o+2],line:b[o+3],g:{}},bs=u16(b,o+4);o+=6;
+  var codes=b.subarray(o,o+n);o+=n;for(var i=0;i<n;i++,o+=8)f.g[codes[i]]=[b[o+2],b[o+3],b[o+4],(b[o+5]<<24)>>24,(b[o+6]<<24)>>24,u16(b,o)];
+  f.bmp=b.subarray(o,o+bs);o+=bs;st.push(f)}return st}
+// A .stheme package: the manifest and its images (STH1 container).
+function pkg(buf){var b=new Uint8Array(buf),theme=null,assets={};
+ if(b.length<8||String.fromCharCode(b[0],b[1],b[2],b[3])!=='STH1')throw new Error('Not a .stheme package');
+ for(var n=u16(b,4),o=8,k=0;k<n;k++){var pl=u16(b,o),len=u32(b,o+2);o+=6;
+  var path=String.fromCharCode.apply(null,b.subarray(o,o+pl));o+=pl;var body=b.subarray(o,o+len);o+=len;
+  if(path==='theme.json')theme=JSON.parse(new TextDecoder().decode(body));else assets[path]=body}
+ if(!theme)throw new Error('Package has no theme.json');return {theme:theme,assets:assets}}
+// An STI1/STI2 image: width, height, RGB565 colours and alpha.
+function sti(d){var w=u16(d,4),h=u16(d,6),fl=d[8],c=new Uint16Array(w*h),a=new Uint8Array(w*h),cs=fl?3:2;
+ if(d[3]===49){for(var i=0;i<w*h;i++){c[i]=u16(d,12+i*cs);a[i]=fl?d[14+i*cs]:255}return {w:w,h:h,c:c,a:a}}
+ var np=d[9],p=12,pal=[];for(i=0;i<np;i++,p+=cs)pal.push([u16(d,p),fl?d[p+2]:255]);
+ var base=p+4*h;for(var y=0;y<h;y++){var at=base+u32(d,p+4*y),x=0,q=y*w;
+  while(x<w){var hd=d[at++],kind=hd>>6,cnt=(hd&63)+1,j,px;
+   if(kind===0){x+=cnt;continue}
+   if(kind===1){if(np){px=pal[d[at++]]}else{px=[u16(d,at),fl?d[at+2]:255];at+=cs}for(j=0;j<cnt;j++,x++){c[q+x]=px[0];a[q+x]=px[1]}continue}
+   for(j=0;j<cnt;j++,x++){if(np){var v=d[at+(j>>1)];px=pal[j&1?v&15:v>>4]}else{px=[u16(d,at),fl?d[at+2]:255];at+=cs}c[q+x]=px[0];a[q+x]=px[1]}
+   if(np)at+=(cnt+1)>>1}}
+ return {w:w,h:h,c:c,a:a}}
+function codes(t){var r=[];for(var i=0;i<t.length;i++){var o=t.charCodeAt(i);
+ r.push(o>=32&&o<=126?o:o>=0x410&&o<=0x44f?0xc0+o-0x410:o===0x401?0xa8:o===0x451?0xb8:o===0xb0?0xb0:63)}return r}
+function glyph(F,s,c){var f=F[s],g=f.g[c];if(g)return [g[0],g[1],g[2],g[3],g[4],f.bmp,g[5]];
+ var h=F[2];if(s>2&&h.g[c]){g=h.g[c];return [g[0],g[1],g[2],g[3],g[4]+f.base-h.base,h.bmp,g[5]]}
+ var sp=f.g[32];return [sp?sp[0]:Math.floor(f.size/4),0,0,0,0,null,0]}
+function cover(g,x,y){if(x<0||y<0||x>=g[1]||y>=g[2])return 0;var k=y*g[1]+x;return ((g[5][g[6]+(k>>2)]>>(6-2*(k&3)))&3)*85}
+function wrap(a){a%=TURN;return a<0?a+TURN:a}
+function sinq(a){a=wrap(a);var neg=a>=TURN/2;if(neg)a-=TURN/2;var k=a*(TURN/2-a),den=10368000-k,v=Math.floor((4*k*16384+Math.floor(den/2))/den);return neg?-v:v}
+function dir(a){return [sinq(a),-sinq(a+TURN/4)]}
+function rq(v){return v>=0?(v+8192)>>14:-((8192-v)>>14)}
+function atan(a,b){var r=Math.floor(a*1024/b);return (r*(737280+250*(1024-r)))>>20}
+function pang(dx,dy){var u=Math.abs(dx),v=Math.abs(dy);if(!u&&!v)return 0;var base=u<=v?atan(u,v):TURN/4-atan(v,u);
+ if(dx>=0)return dy<=0?base:TURN/2-base;return dy>0?TURN/2+base:TURN-base}
+function lpx(lx,ly,lx2,ly2,sw,x,y){var dx=lx2-lx,dy=ly2-ly,px=x-lx,py=y-ly,ln=dx*dx+dy*dy,dot=px*dx+py*dy;
+ if(dot<=0||ln===0)return 4*(px*px+py*py)<=sw*sw;if(dot>=ln){px=x-lx2;py=y-ly2;return 4*(px*px+py*py)<=sw*sw}
+ var cr=px*dy-py*dx;return 4*cr*cr<=sw*sw*ln}
+function rect(x,y,rx,ry,rw,rh,rad,sw){var edge=x-rx<sw||rx+rw-x<=sw||y-ry<sw||ry+rh-y<=sw;if(rad<=0)return [true,edge];
+ var l=x<rx+rad,r=x>=rx+rw-rad,t=y<ry+rad,b=y>=ry+rh-rad;if(!((l||r)&&(t||b)))return [true,edge];
+ var cx=l?rx+rad:rx+rw-rad-1,cy=t?ry+rad:ry+rh-rad-1,d=(x-cx)*(x-cx)+(y-cy)*(y-cy),inn=Math.max(0,rad-sw),ins=d<=rad*rad;
+ return [ins,ins&&(inn===0||d>inn*inn)]}
+function num(t){if(typeof t!=='string')return null;t=t.replace(/^[ \t\n\r\f\v]+|[ \t\n\r\f\v]+$/g,'');
+ if(!/^[+-]?(\d+\.?\d*|\.\d+)([eE][+-]?\d+)?$/.test(t))return null;var n=parseFloat(t);return isFinite(n)?n:null}
+// A broken-down local time {Y,M (1-12),D,h,m,s,wd (0 = Sunday)}.
+function tval(n,t){if(n==='moon'){var sec=Date.UTC(t.Y,t.M-1,t.D,t.h,t.m,t.s)/1000;return Math.floor((((sec-947182440)%2551443)+2551443)%2551443/86400)}
+ return {second:t.s,minute:t.m,hour:t.h,hour12:t.h%12,secondOfDay:t.h*3600+t.m*60+t.s,day:t.D,month:t.M,weekday:t.wd}[n]}
+function p2(n){return (n<10?'0':'')+n}
+function expand(v,t,data,lang){return v.replace(/\{([^}]*)\}/g,function(_,k){
+ var r={HH:p2(t.h),hh:p2(t.h%12||12),MM:p2(t.m),SS:p2(t.s),DD:p2(t.D),YYYY:String(t.Y),MO:p2(t.M),H:String(t.h),AMPM:t.h<12?'AM':'PM',
+  MON:MONS[lang][t.M-1],MONTH:MON[lang][t.M-1],WD:DAYS[lang][t.wd],WEEKDAY:DAY[lang][t.wd]}[k];
+ return r!==undefined?r:(data[k]!==undefined?data[k]:'--')})}
+function resolve(l,t,data){var sc=l.scroll||{},r={x:l.x,y:l.y,width:l.width||0,height:l.height||0,x2:l.x2||0,y2:l.y2||0,radius:l.radius||0,
+ cornerRadius:l.cornerRadius||0,size:l.size||16,strokeWidth:l.strokeWidth||1,'scroll.width':sc.width||0,'scroll.speed':sc.speed||0,
+ sweep:l.sweep||0,angle:l.angle||0,color:l.color,fill:l.fill,stroke:l.stroke},bind=l.bind||{};
+ for(var k in bind){var b=bind[k],src=b.source,v;
+  if(src.indexOf('time.')===0&&!(src in data)){v=tval(src.slice(5),t);if(v===undefined)continue}else{v=num(data[src]);if(v===null)continue}
+  if(k==='color'||k==='fill'||k==='stroke'){var res=b.stops[0].value;for(var i=0;i<b.stops.length;i++){if(b.stops[i].at>v)break;res=b.stops[i].value}r[k]=res;continue}
+  var i0=b.input[0],i1=b.input[1],o0=b.output[0],o1=b.output[1];
+  if(b.clamp!==false)v=Math.max(Math.min(i0,i1),Math.min(v,Math.max(i0,i1)));
+  var m=o0+(v-i0)*(o1-o0)/(i1-i0),lo=RANGE[k][0],hi=RANGE[k][1];
+  r[k]=m<=lo?lo:m>=hi?hi:(m<0?-1:1)*Math.floor(Math.abs(m)+0.5)}
+ if(l.shape==='rectangle')r.cornerRadius=Math.min(r.cornerRadius,Math.max(0,Math.floor(Math.min(r.width,r.height)/2)));return r}
+function hand(l,r){var d=dir(r.angle*16),tl=l.tail||0;return [r.x-rq(d[0]*tl),r.y-rq(d[1]*tl),r.x+rq(d[0]*l.length),r.y+rq(d[1]*l.length)]}
+function tick(l,r,k){var d=dir(Math.floor((k*TURN+Math.floor(l.count/2))/l.count)),inn=Math.max(0,r.radius-l.length);
+ return [r.x+rq(d[0]*inn),r.y+rq(d[1]*inn),r.x+rq(d[0]*r.radius),r.y+rq(d[1]*r.radius)]}
+function arange(r){var s=r.start16,w=r.sweep*16;if(w<0){s+=w;w=-w}return [wrap(s),w]}
+function wedge(r){var a=arange(r),s=dir(a[0]),e=dir(a[0]+a[1]);return [s[0],s[1],e[0],e[1],a[1]>=TURN,a[1]>TURN/2]}
+function inw(w,dx,dy){if(w[4])return true;var fs=w[0]*dy-w[1]*dx,te=dx*w[3]-dy*w[2];return w[5]?!(te<0&&fs<0):fs>=0&&te>=0}
+function abounds(r){if(r.radius<=0||r.sweep===0)return [r.x,r.y,0,0];var a=arange(r),st=a[0],sw=a[1];
+ var x0=r.x-r.radius,x1=r.x+r.radius,y0=r.y-r.radius,y1=r.y+r.radius;
+ if(sw<TURN){x0=x1=r.x;y0=y1=r.y;var inn=Math.max(0,r.radius-r.strokeWidth),pts=[[r.radius,st],[inn,st],[r.radius,st+sw],[inn,st+sw]];
+  for(var c=0;c<4;c++)if(wrap(c*(TURN/4)-st)<=sw)pts.push([r.radius,c*(TURN/4)]);
+  pts.forEach(function(q){var d=dir(q[1]),x=r.x+rq(d[0]*q[0]),y=r.y+rq(d[1]*q[0]);x0=Math.min(x0,x);x1=Math.max(x1,x);y0=Math.min(y0,y);y1=Math.max(y1,y)})}
+ return [x0-2,y0-2,x1-x0+5,y1-y0+5]}
+function style(l,r){if(l.font)return STYLES.indexOf(l.font);var s=r.size;return s<=18?0:s<=24?1:s<=38?2:s<=58?3:s<=82?4:5}
+function apath(l,f){var s=l.source.replace(/\.sti$/,'');return l.type==='image'?s+'.sti':s+'/'+('00'+f).slice(-3)+'.png.sti'}
+// Renders the theme at time `t` (static: animations on their first frame,
+// scrolling text at its start). Returns 240x240 RGB565 pixels.
+function render(p,F,t,lang,data){var th=p.theme,cache={},data_=data||{};
+ function img(path){if(!(path in cache))cache[path]=p.assets[path]?sti(p.assets[path]):null;return cache[path]}
+ var li=th.spec>=2?Math.max(0,LANGS.indexOf(lang)):0,out=new Uint16Array(57600).fill(c565(th.display.background));
+ th.layers.forEach(function(l){var r=resolve(l,t,data_),ty=l.type,sh=l.shape,txt='',bx,by,bw,bh,gl=null,w=0,st=0;
+  if(sh==='arc')r.start16=l.start*16;
+  if(ty==='text'){var v=l.value;txt=expand(typeof v==='object'?(v[LANGS[li]]||v.en):v,t,data_,li);st=style(l,r);
+   gl=codes(txt).map(function(c){return glyph(F,st,c)});gl.forEach(function(g){w+=g[0]});
+   var a=ANCH.indexOf(l.anchor||'top-left'),bw0=l.scroll?r['scroll.width']:w,h=F[st].line;
+   bx=r.x-Math.floor(bw0*(a%3)/2);by=r.y-Math.floor(h*Math.floor(a/3)/2);bw=bw0;bh=h}
+  else if(ty==='image'){var im=img(apath(l,0));bx=r.x;by=r.y;bw=im?im.w:0;bh=im?im.h:0}
+  else if(ty==='animation'){bx=r.x;by=r.y;bw=l.width;bh=l.height}
+  else if(sh==='circle'){if(r.radius===0){bx=r.x;by=r.y;bw=bh=0}else{bx=r.x-r.radius;by=r.y-r.radius;bw=bh=2*r.radius+1}}
+  else if(sh==='line'||sh==='hand'){var sg=sh==='line'?[r.x,r.y,r.x2,r.y2]:hand(l,r),pd=(r.strokeWidth+1)>>1;
+   bx=Math.min(sg[0],sg[2])-pd;by=Math.min(sg[1],sg[3])-pd;bw=Math.abs(sg[0]-sg[2])+2*pd+1;bh=Math.abs(sg[1]-sg[3])+2*pd+1}
+  else if(sh==='arc'){var ab=abounds(r);bx=ab[0];by=ab[1];bw=ab[2];bh=ab[3]}
+  else if(sh==='ticks'){if(r.radius<=0){bx=r.x;by=r.y;bw=bh=0}else{var re=r.radius+((r.strokeWidth+1)>>1)+1;bx=r.x-re;by=r.y-re;bw=bh=2*re+1}}
+  else{bx=r.x;by=r.y;bw=r.width;bh=r.height}
+  var x1=Math.max(0,bx),y1=Math.max(0,by),x2=Math.min(240,bx+bw),y2=Math.min(240,by+bh),x,y;
+  if(x1>=x2||y1>=y2)return;
+  if(ty==='image'||ty==='animation'){var a2=img(apath(l,0));if(!a2)return;
+   for(y=y1;y<y2;y++)for(x=x1;x<x2;x++){var i=(y-r.y)*a2.w+x-r.x;if(a2.a[i])out[y*240+x]=blend(out[y*240+x],a2.c[i],a2.a[i])}return}
+  if(ty==='text'){var fg=c565(r.color),starts=[],pen=0;gl.forEach(function(g){starts.push(pen);pen+=g[0]});
+   var loop=l.scroll&&l.scroll.mode==='loop',cyc=w+(l.scroll&&l.scroll.gap!==undefined?l.scroll.gap:24);
+   for(y=y1;y<y2;y++)for(x=x1;x<x2;x++){var cx=x-bx;if(loop)cx%=cyc;if(cx<0||cx>=w)continue;
+    var lo=0,hi=gl.length-1;while(lo<hi){var mid=(lo+hi+1)>>1;if(starts[mid]<=cx)lo=mid;else hi=mid-1}
+    var g=gl[lo],cv=cover(g,cx-starts[lo]-g[3],y-by-g[4]);if(cv)out[y*240+x]=blend(out[y*240+x],fg,cv)}return}
+  var sw=r.strokeWidth,rot=sh==='arc'||sh==='hand'||sh==='ticks',fill=r.fill&&!rot?c565(r.fill):null,stroke=r.stroke?c565(r.stroke):null,dx,dy,d;
+  if(sh==='arc'){var wd=wedge(r),ou=r.radius,inn=Math.max(0,ou-sw);
+   for(y=y1;y<y2;y++)for(x=x1;x<x2;x++){dx=x-r.x;dy=y-r.y;d=dx*dx+dy*dy;if(r.sweep!==0&&d<=ou*ou&&(inn===0||d>inn*inn)&&inw(wd,dx,dy))out[y*240+x]=stroke}return}
+  if(sh==='hand'){var hs=hand(l,r);for(y=y1;y<y2;y++)for(x=x1;x<x2;x++)if(lpx(hs[0],hs[1],hs[2],hs[3],sw,x,y))out[y*240+x]=stroke;return}
+  if(sh==='ticks'){var cnt=l.count,pad=((sw+1)>>1)+1,near=Math.max(0,r.radius-l.length-pad),far=r.radius+pad,segs={};
+   for(y=y1;y<y2;y++)for(x=x1;x<x2;x++){dx=x-r.x;dy=y-r.y;d=dx*dx+dy*dy;if(d<near*near||d>far*far)continue;
+    var k=Math.floor((pang(dx,dy)*cnt+TURN/2)/TURN)%cnt;if(!segs[k])segs[k]=tick(l,r,k);var s=segs[k];if(lpx(s[0],s[1],s[2],s[3],sw,x,y))out[y*240+x]=stroke}return}
+  for(y=y1;y<y2;y++)for(x=x1;x<x2;x++){var ie;
+   if(sh==='rectangle')ie=rect(x,y,r.x,r.y,r.width,r.height,r.cornerRadius,sw);
+   else if(sh==='circle'){dx=x-r.x;dy=y-r.y;d=dx*dx+dy*dy;var ci=Math.max(0,r.radius-sw),ins=d<=r.radius*r.radius;ie=[ins,ins&&(ci===0||d>ci*ci)]}
+   else{var on=lpx(r.x,r.y,r.x2,r.y2,sw,x,y);ie=[on,on]}
+   if(ie[0]&&fill!==null)out[y*240+x]=fill;if(ie[1]&&stroke!==null)out[y*240+x]=stroke}});
+ return out}
+// RGB565 pixels to canvas RGBA, as the desktop preview converts them.
+function rgba(px){var o=new Uint8ClampedArray(px.length*4);for(var i=0;i<px.length;i++){var c=px[i];
+ o[i*4]=Math.floor((c>>11)*255/31);o[i*4+1]=Math.floor(((c>>5)&63)*255/63);o[i*4+2]=Math.floor((c&31)*255/31);o[i*4+3]=255}return o}
+// The preview moment, Apple style: today at 10:09:30.
+function sample(){var n=new Date();return {Y:n.getFullYear(),M:n.getMonth()+1,D:n.getDate(),h:10,m:9,s:30,wd:n.getDay()}}
+return {font:font,pkg:pkg,sti:sti,render:render,rgba:rgba,sample:sample}})();
+// preview end
+// OTA
+function themeRequest(path,body){return fetch(path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}).then(function(r){return r.json().then(function(d){if(!r.ok)throw new Error(d.error||lz('Theme request failed'));return d})})}
+var themeEntries=[],themeSelected='',faceFocus='',facePkgs={},faceFontP=null,facePending=null;
+// The system font, once per firmware version (the device serves it from flash).
+function faceFont(){if(!faceFontP)faceFontP=j('/api/status').then(function(s){return fetch('/api/font?v='+encodeURIComponent(s.version||''))})
+ .then(function(r){if(!r.ok)throw new Error(lz('Could not load the font'));return r.arrayBuffer()}).then(PV.font)
+ .catch(function(e){faceFontP=null;throw e});return faceFontP}
+function facePackage(t){var key=t.id+':'+t.bytes;if(!facePkgs[key])facePkgs[key]=fetch('/api/themes/package?id='+encodeURIComponent(t.id))
+ .then(function(r){if(!r.ok)throw new Error('Could not read '+t.id);return r.arrayBuffer()}).catch(function(e){delete facePkgs[key];throw e});return facePkgs[key]}
+// The Weather app's reading as a face reads it (device.weather*, ThemeMode.cpp).
+function faceWeather(){var d=wxData;if(!d||!d.valid)return {};var r=function(x){return String(Math.round(x))};
+ return {'device.weatherTemp':r(d.temp),'device.weatherFeel':r(d.feels),'device.weatherHigh':r(d.high),'device.weatherLow':r(d.low),
+  'device.weatherHum':String(d.humidity),'device.weatherWind':r(d.wind/3.6),'device.weatherCode':String(d.code),
+  'device.weatherText':wxCond(d.cond),'device.weatherDay':d.day?'1':'0'}}
+// Draws a package's preview into a 240x240 canvas: today at 10:09:30, in the device language.
+function facePaint(canvas,buf){if(!canvas||!canvas.getContext)return Promise.resolve();
+ return faceFont().then(function(F){var p=PV.pkg(buf),g=canvas.getContext('2d'),im=g.createImageData(240,240);
+  im.data.set(PV.rgba(PV.render(p,F,PV.sample(),(C.clock&&C.clock.lang)||'en',faceWeather())));g.putImageData(im,0,0);return p})}
+function el(tag,cls,text){var e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e}
+function faceBezel(t){var b=el('div','bezel');if(t.valid===false){b.appendChild(el('div','bad','!'));return b}
+ var c=el('canvas');c.width=240;c.height=240;b.appendChild(c);
+ facePackage(t).then(function(buf){return facePaint(c,buf)}).catch(function(){});return b}
+function faceSize(t){return t.bytes<1024?lz('{0} B',[t.bytes]):lz('{0} KB',[Math.ceil(t.bytes/1024)])}
+function renderFaces(){var list=$('faceList');if(!list)return;list.textContent='';
+ themeEntries.forEach(function(t){var f=el('button','face'+(t.id===faceFocus?' sel':''));f.type='button';f.setAttribute('role','listitem');
+  f.appendChild(faceBezel(t));f.appendChild(el('div','fname',t.valid===false?t.id:t.name));
+  f.appendChild(t.valid===false?el('div','fmeta',lz('Invalid package')):t.id===themeSelected?el('div','fmeta now',lz('● On device')):el('div','fmeta',faceSize(t)));
+  f.onclick=function(){faceFocus=t.id;renderFaces()};list.appendChild(f)});
+ var add=el('button','face add');add.type='button';var ab=el('div','bezel');ab.textContent='+';ab.style.fontSize='30px';add.appendChild(ab);
+ add.appendChild(el('div','fname',lz('Add face')));add.appendChild(el('div','fmeta',lz('.stheme file')));add.onclick=function(){$('themeFile').click()};list.appendChild(add);
+ themeChoiceChanged()}
+// The detail of the face in focus: a large preview, what it is, and what to do with it.
+function themeChoiceChanged(){var d=$('faceDetail');if(!d)return;d.textContent='';
+ var t=themeEntries.find(function(x){return x.id===faceFocus});
+ if(!t){d.appendChild(el('div','dmeta',lz('No watch faces yet. Add one with the + tile.')));return}
+ d.appendChild(faceBezel(t));var info=el('div');info.appendChild(el('div','dname',t.valid===false?t.id:t.name));
+ info.appendChild(el('div','dmeta',t.valid===false?lz('Invalid package: {0}. Remove it and install a corrected package.',[t.error||lz('could not read theme')])
+  :[t.author,t.version?lz('version {0}',[t.version]):''].filter(Boolean).join(' · ')+(t.author||t.version?' · ':'')+faceSize(t)));
+ var act=el('div','actions'),use=el('button','btn',t.id===themeSelected&&C.mode==='theme'?lz('On device'):lz('Use on device'));
+ use.id='themeUseBtn';use.disabled=t.valid===false||(t.id===themeSelected&&C.mode==='theme');use.onclick=function(){selectTheme(t.id)};
+ var rm=el('button','btn ghost-danger',lz('Remove'));rm.onclick=function(){deleteTheme(t.id)};act.appendChild(use);act.appendChild(rm);
+ info.appendChild(act);d.appendChild(info)}
+function loadThemes(){return j('/api/themes').then(function(d){themeEntries=d.themes||[];themeSelected=d.selected||'';
+ if(!themeEntries.some(function(t){return t.id===faceFocus}))faceFocus=themeSelected||(themeEntries[0]?themeEntries[0].id:'');
+ renderFaces();heroPaint();renderApps();
+ $('themeStatus').textContent=lz('{0} installed · {1} KB free',[themeEntries.length,Math.floor(d.freeBytes/1024)])+(d.error?' · '+lzMsg(d.error):'');
+ }).catch(function(e){toast(lzMsg(e.message))})}
+function selectTheme(id){var theme=themeEntries.find(function(t){return t.id===id});
+ if(!theme||theme.valid===false){toast(lz('Choose a valid installed theme first'));return Promise.resolve()}
+ return themeRequest('/api/themes/select',{id:id}).then(function(){C.mode='theme';C.themeId=id;sv('mode','theme');modeChanged();toast(lz('Watch face set'));faceFocus=id;return loadThemes()}).catch(function(e){toast(lzMsg(e.message))})}
+function deleteTheme(id){if(!id||!confirm(lz('Remove this watch face from the device?')))return;
+ themeRequest('/api/themes/delete',{id:id}).then(function(){toast(lz('Watch face removed'));return loadThemes()}).catch(function(e){toast(lzMsg(e.message))})}
+// Adding a face: the chosen file is read here and previewed before anything is sent.
+function themeFileChosen(){var input=$('themeFile'),f=input.files[0];if(!f)return;
+ f.arrayBuffer().then(function(buf){facePending=f;$('sheetName').textContent=f.name;$('sheetMeta').textContent=faceSize({bytes:f.size});
+  $('sheetAdd').disabled=$('sheetUse').disabled=false;$('faceSheet').hidden=false;
+  return facePaint($('sheetCanvas'),buf).then(function(p){if(!p)return;var th=p.theme.theme||{};$('sheetName').textContent=th.name||f.name;
+   $('sheetMeta').textContent=[th.author,th.version?lz('version {0}',[th.version]):'',faceSize({bytes:f.size})].filter(Boolean).join(' · ')})})
+ .catch(function(e){$('sheetMeta').textContent=lz('Not a valid watch face: {0}',[lzMsg(e.message)]);$('sheetAdd').disabled=$('sheetUse').disabled=true})
+ .finally(function(){input.value=''})}
+// The device card shows the face on the device.
+function heroPaint(){var c=$('heroCanvas');if(!c)return;var t=themeEntries.find(function(x){return x.id===themeSelected});
+ if(!t||t.valid===false||C.mode!=='theme')return;facePackage(t).then(function(buf){return facePaint(c,buf)}).catch(function(){})}
+// The device card for an app that is not a watch face: the calendar drawn
+// here the way the clock lays it out (CalendarView), otherwise a blank screen.
+function heroOther(){var c=$('heroCanvas'),m=$('mode');if(!c||!m)return;var g=c.getContext('2d');g.fillStyle='#000';g.fillRect(0,0,240,240);
+ if(m.value==='reminders'){heroReminders(g);return}
+ if(m.value==='weather'){heroWeather(g);return}
+ if(m.value==='timer'){heroTimer(g);return}
+ if(m.value!=='calendar')return;var d=new Date(),y=d.getFullYear(),mo=d.getMonth(),today=d.getDate(),ru=(C.clock&&C.clock.lang)==='ru',sun=!ru&&(!C.clock||!C.clock.lang||C.clock.lang==='en');
+ var name=d.toLocaleString(ru?'ru-RU':((C.clock&&C.clock.lang)||'en'),{month:'long'});name=name.charAt(0).toUpperCase()+name.slice(1);
+ var ini=ru?['П','В','С','Ч','П','С','В']:(sun?['S','M','T','W','T','F','S']:['M','T','W','T','F','S','S']);
+ var first=new Date(y,mo,1).getDay(),fc=sun?first:(first+6)%7,days=new Date(y,mo+1,0).getDate(),rows=Math.ceil((fc+days)/7);
+ var rh=Math.min(28,Math.floor((200-65)/rows)),top=Math.round((240-(65+rows*rh))/2),cx=function(k){return 20+(2*k+1)*200/14};
+ var f='-apple-system,"SF Compact Text","SF Pro Text",system-ui,sans-serif';g.textBaseline='alphabetic';
+ g.font='500 28px '+f;g.fillStyle='#ff453a';g.textAlign='left';g.fillText(name,cx(0)-8,top+26);
+ g.font='500 22px '+f;g.fillStyle='#8e8e93';g.textAlign='right';g.fillText(String(y),cx(6)+8,top+26);
+ g.font='17px '+f;g.textAlign='center';g.fillStyle='#636366';ini.forEach(function(s,k){g.fillText(s,cx(k),top+54)});
+ for(var dd=1;dd<=days;dd++){var i=fc+dd-1,col=i%7,row=Math.floor(i/7),x=cx(col),yy=top+65+row*rh+rh/2,wd=sun?col:(col+1)%7;
+  if(dd===today){g.fillStyle='#ff453a';g.beginPath();g.arc(x,yy,Math.min(11,(rh-2)/2),0,7);g.fill()}
+  g.fillStyle=dd===today?'#fff':(wd===0||wd===6?'#8e8e93':'#f5f5f7');g.fillText(String(dd),x,yy+6)}}
+// Reminders: the list on the clock (RemindersMode), changed through /api/reminders.
+// Weather: the device's last Open-Meteo reading (/api/weather).
+var wxData=null,WXCOND=['Clear','Mostly Clear','Partly Cloudy','Cloudy','Fog','Drizzle','Rain','Freezing Rain','Snow','Showers','Snow Showers','Thunderstorm'],
+ WXCOND_RU=['Ясно','Преимущественно ясно','Местами облачно','Облачно','Туман','Морось','Дождь','Ледяной дождь','Снег','Ливни','Снегопад','Гроза'];
+// panel: in the panel language; else as the clock shows it (its language).
+function wxCond(i,panel){var ru=panel?UI_LANG==='ru':(C.clock&&C.clock.lang)==='ru';return (ru?WXCOND_RU:WXCOND)[i]||''}
+function wxShow(d){var had=!!(wxData&&wxData.valid);wxData=d;renderApps();var m=$('mode');if(m&&m.value==='weather')heroOther();if(m&&m.value==='theme'&&d.valid&&!had)heroPaint();
+ var n=$('wxNow');if(!n)return;var la=+(C.clock&&C.clock.lat)||0,lo=+(C.clock&&C.clock.lon)||0;
+  var mo=$('wxMore');if(mo){mo.hidden=!d.valid;if(d.valid)$('wxMoreText').textContent=lz('Feels like {0}° · Humidity {1}% · Wind {2} m/s',[Math.round(d.feels),d.humidity,Math.round(d.wind/3.6)])}
+ if(d.valid){n.textContent=Math.round(d.temp)+'°  '+wxCond(d.cond,true)+' · '+lz('H {0}°  L {1}°',[Math.round(d.high),Math.round(d.low)]);
+  $('wxAge').textContent=d.age<90?lz('just now'):lz('{0} min ago',[Math.round(d.age/60)])}
+ else{n.textContent=la||lo?(d.error?lz('Not loaded: {0}',[d.error]):lz('Loads when the app is on the screen')):lz('Set the location first');$('wxAge').textContent=''}}
+function wxLoad(){return j('/api/weather').then(wxShow).catch(function(){})}
+function wxRefresh(){j('/api/weather',{method:'POST'}).then(function(d){wxShow(d);toast(lz('Refreshes when the app is on the screen'))}).catch(function(e){toast(e.message)})}
+function heroWeather(g){var d=wxData;if(!d){wxLoad().then(function(){if(wxData)heroOther()});return}
+ var day=d.valid?d.day:true,gr=g.createLinearGradient(0,0,0,240);gr.addColorStop(0,day?'#2668c4':'#0a122c');gr.addColorStop(1,day?'#60a0e4':'#243862');
+ g.fillStyle=gr;g.fillRect(0,0,240,240);var f='-apple-system,"SF Compact Text","SF Pro Text",system-ui,sans-serif';g.textAlign='center';g.fillStyle='#fff';
+ g.font='500 48px '+f;g.fillText(d.valid?Math.round(d.temp)+'°':'--°',120,78);g.font='500 20px '+f;g.fillText(d.valid?wxCond(d.cond):'',120,110);
+ if(!d.valid)return;g.font='15px '+f;g.globalAlpha=.8;var ru=(C.clock&&C.clock.lang)==='ru';g.fillText((ru?'Макс.: ':'H ')+Math.round(d.high)+'°   '+(ru?'мин.: ':'L ')+Math.round(d.low)+'°',120,132);g.globalAlpha=1;
+ g.fillStyle='rgba(255,255,255,'+(day?.16:.1)+')';g.beginPath();g.roundRect?g.roundRect(22,142,196,76,14):g.rect(22,142,196,76);g.fill();g.fillStyle='#fff';
+ (d.hours||[]).forEach(function(h,i){var x=22+(2*i+1)*196/8;g.font='14px '+f;g.fillText(String(h.hour).padStart(2,'0'),x,163);g.fillText(h.temp+'°',x,208)})}
+// Timer: /api/timer, polled every second while its page is open.
+var tmData=null,tmPoll=0;
+function tmFmt(s){s=Math.max(0,s|0);var h=s/3600|0,m=(s/60|0)%60,x=s%60,p=function(n){return (n<10?'0':'')+n};return h?h+':'+p(m)+':'+p(x):p(m)+':'+p(x)}
+function tmShow(d){tmData=d;renderApps();var m=$('mode');if(m&&m.value==='timer')heroOther();var l=$('tmLeft');if(!l)return;
+ l.textContent=tmFmt(d.left);$('tmState').textContent=d.state==='running'?(d.label||lz('Running')):lz(d.state==='paused'?'Paused':'Not running');
+ $('tmMain').textContent=lz(d.state==='running'?'Pause':d.state==='paused'?'Resume':'Start');$('tmCancel').disabled=d.state==='idle';
+ $('tmMain').classList.toggle('sec',d.state==='running')}
+function tmLoad(){return j('/api/timer').then(tmShow).catch(function(){})}
+function tmSend(b){return j('/api/timer',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b)}).then(tmShow).catch(function(e){toast(e.message)})}
+function tmStart(sec){if(!(sec>0)){toast(lz('Set a time first'));return}var b={start:sec},lb=gv('tmLabel');if(lb)b.label=lb;tmSend(b)}
+function tmMainClick(){var st=tmData?tmData.state:'idle';
+ if(st==='running')tmSend({pause:true});else if(st==='paused')tmSend({resume:true});
+ else tmStart((parseInt(gv('tmMin'))||0)*60+(parseInt(gv('tmSec'))||0))}
+function tmPresets(){var p=$('tmPresets');if(!p)return;p.textContent='';[1,3,5,10,15,30,60].forEach(function(mn){var b=el('button','btn sec sm',mn<60?lz('{0} min',[mn]):lz('1 h'));b.type='button';
+ b.onclick=function(){sv('tmMin',mn);sv('tmSec',0);tmStart(mn*60)};p.appendChild(b)})}
+tmPresets();
+// The Timer in the device card: the ring and the time left.
+function heroTimer(g){var d=tmData;if(!d){tmLoad().then(function(){if(tmData)heroOther()});return}
+ var f='-apple-system,"SF Compact Text","SF Pro Text",system-ui,sans-serif',fr=d.state==='idle'?1:Math.max(0,d.left/Math.max(1,d.total));
+ g.lineWidth=12;g.strokeStyle='#333';g.beginPath();g.arc(120,120,92,0,7);g.stroke();
+ if(d.state!=='idle'){g.strokeStyle=d.state==='paused'?'#7a4a00':'#ff9f0a';g.lineCap='round';g.beginPath();g.arc(120,120,92,-Math.PI/2,-Math.PI/2+fr*2*Math.PI);g.stroke()}
+ g.fillStyle='#fff';g.textAlign='center';g.font='500 46px '+f;g.fillText(tmFmt(d.left),120,137);g.fillStyle='#8e8e93';g.font='15px '+f;g.fillText(d.label||'Timer',120,92)}
+var remData=null;
+// The Reminders app in the device card, laid out as RemindersView does it.
+function heroReminders(g){var d=remData;if(!d){loadReminders().then(function(){if(remData)heroOther()});return}
+ var f='-apple-system,"SF Compact Text","SF Pro Text",system-ui,sans-serif',ru=(C.clock&&C.clock.lang)==='ru';
+ var items=(d.items||[]).map(function(it,i){return {t:it.text,d:it.done,i:i}});items.sort(function(a,b){return (a.d-b.d)||(a.i-b.i)});
+ g.textBaseline='alphabetic';g.fillStyle='#0a84ff';g.font='500 22px '+f;g.textAlign='left';g.fillText(ru?'Напоминания':'Reminders',24,47);
+ g.textAlign='right';g.fillText(String(d.open||0),216,47);g.textAlign='left';
+ if(!items.length){g.fillStyle='#8e8e93';g.fillText(ru?'Нет напоминаний':'No reminders',24,84);return}
+ var cap=5,shown=items.length<=cap?items.length:cap-1;g.font='17px '+f;
+ for(var k=0;k<shown;k++){var cy=62+k*30+15,it=items[k];g.lineWidth=2;g.strokeStyle=it.d?'#0a84ff':'#636366';
+  g.beginPath();g.arc(33,cy,8,0,7);g.stroke();if(it.d){g.fillStyle='#0a84ff';g.beginPath();g.arc(33,cy,4.5,0,7);g.fill()}
+  g.fillStyle=it.d?'#8e8e93':'#f5f5f7';var t=it.t;while(t.length>1&&g.measureText(t).width>164)t=t.slice(0,-2)+'…';g.fillText(t,52,cy+6)}
+ if(shown<items.length){g.fillStyle='#8e8e93';g.fillText('+'+(items.length-shown)+(ru?' ещё':' more'),52,62+shown*30+21)}}
+function renderReminders(d){remData=d;renderApps();var m=$('mode');if(m&&m.value==='reminders')heroOther();var l=$('remList');if(!l)return;var items=d.items||[];l.innerHTML='';
+ $('remCount').textContent=items.length?lz('{0} open',[d.open]):'';
+ if(!items.length){l.appendChild(el('div','item muted',lz('No reminders')));return}
+ items.forEach(function(it,i){var row=el('div','item rem'+(it.done?' done':''));
+  var ring=el('button','rring'+(it.done?' on':''));ring.type='button';ring.setAttribute('aria-label',lz(it.done?'Mark as not done':'Mark as done'));
+  ring.onclick=function(){var o={};o[it.done?'undone':'done']=i;remSend(o)};
+  var del=el('button','rdel');del.type='button';del.setAttribute('aria-label',lz('Delete'));del.innerHTML='&times;';del.onclick=function(){remSend({remove:i})};
+  row.appendChild(ring);row.appendChild(el('div','grow',it.text));row.appendChild(del);l.appendChild(row)})}
+function loadReminders(){return j('/api/reminders').then(renderReminders).catch(function(){})}
+function remSend(body,msg){return j('/api/reminders',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
+ .then(function(d){renderReminders(d);if(msg)toast(msg)}).catch(function(e){toast(e.message)})}
+function remAdd(){var t=($('remNew').value||'').trim();if(!t)return;
+ remSend({add:t}).then(function(){$('remNew').value='';$('remNew').focus()})}
+function remClearAll(){if(confirm(lz('Clear every reminder from the clock?')))remSend({clear:true},lz('Reminders cleared'))}
+function closeSheet(){$('faceSheet').hidden=true;facePending=null}
+function installTheme(useNow){var f=facePending;if(!f){toast(lz('Choose a .stheme package'));return}
+ var data=new FormData();data.append('theme',f);$('sheetAdd').disabled=$('sheetUse').disabled=true;$('sheetMeta').textContent=lz('Installing…');
+ fetch('/api/themes/install',{method:'POST',body:data}).then(function(r){return r.json().then(function(d){if(!r.ok)throw new Error(d.error||lz('Install failed'));return d})})
+ .then(function(d){closeSheet();toast(lz('Watch face added'));faceFocus=d.id;return useNow?loadThemes().then(function(){return selectTheme(d.id)}):loadThemes()})
+ .catch(function(e){var m=lzMsg(e.message,true);$('sheetMeta').textContent=m;$('sheetAdd').disabled=$('sheetUse').disabled=false;toast(m)})}
+
+function upload(){var f=$('fw').files[0];if(!f){toast(lz('Pick a .bin first'));return}
+ var fd=new FormData();fd.append('firmware',f,f.name);
+ var x=new XMLHttpRequest();x.open('POST','/update');
+ $('upBtn').disabled=true;
+ x.upload.onprogress=function(e){if(e.lengthComputable){var p=Math.round(e.loaded/e.total*100);$('upBar').style.width=p+'%';$('upMsg').textContent=lz('Uploading {0}%',[p])}};
+ x.onload=function(){$('upBtn').disabled=false;if(x.status==200){$('upMsg').textContent=lz('Done. Rebooting...');$('upBar').style.width='100%';setTimeout(function(){location.reload()},9000)}else{$('upMsg').textContent=lz('Failed: {0}',[x.responseText])}};
+ x.onerror=function(){$('upBtn').disabled=false;$('upMsg').textContent=lz('Upload error')};
+ x.send(fd);
+}
+
+// Segmented controls stand in for a hidden <select class="segsrc">.
+function segs(){document.querySelectorAll('select.segsrc').forEach(function(sel){
+ if(!sel.nextElementSibling||!sel.nextElementSibling.classList.contains('seg')){var g=document.createElement('div');g.className='seg';
+  for(var i=0;i<sel.options.length;i++)(function(o){var b=document.createElement('button');b.type='button';b.textContent=o.textContent;b.dataset.v=o.value;
+   b.onclick=function(){sel.value=o.value;sel.dispatchEvent(new Event('change',{bubbles:true}))};g.appendChild(b)})(sel.options[i]);
+  sel.parentNode.insertBefore(g,sel.nextSibling)}
+ segSync(sel)})}
+function segSync(sel){var g=sel.nextElementSibling;if(g)g.querySelectorAll('button').forEach(function(b){b.classList.toggle('on',b.dataset.v===sel.value)})}
+// Night: one choice of three, kept in the two stored switches.
+function nightMode(){return gc('sunEnabled')?'sun':(gc('nightEnabled')?'schedule':'off')}
+function syncNight(){var v=nightMode();
+ document.querySelectorAll('#nightSeg button').forEach(function(b){b.classList.toggle('on',b.dataset.v===v)});
+ $('nightRows').style.display=v==='schedule'?'':'none';
+ $('sunRows').style.display=$('sunNow').style.display=v==='sun'?'':'none';
+ var ns=$('nsGroup');if(ns)ns.style.display=v==='off'?'none':''}
+function nightSet(v){sc('nightEnabled',v==='schedule');sc('sunEnabled',v==='sun');if(v==='sun')sunToggled();syncNight();autoSave()}
+document.querySelectorAll('#nightSeg button').forEach(function(b){b.onclick=function(){nightSet(b.dataset.v)}});
+function paintRange(r){var lo=+r.min||0,hi=+r.max||100;r.style.setProperty('--p',((r.value-lo)/(hi-lo)*100)+'%')}
+function paintRanges(){document.querySelectorAll('input[type=range]').forEach(paintRange)}
+function locSummary(){var la=parseFloat(gv('locLat'))||0,lo=parseFloat(gv('locLon'))||0,t=la||lo?la.toFixed(2)+', '+lo.toFixed(2):lz('Not set');
+ ['sunLoc','wxLoc'].forEach(function(id){var e=$(id);if(e)e.textContent=t})}
+function locChanged(){locSummary();autoSave()}
+function afterConfig(){
+ // The list of what the screen shows is only worth a row when the build has more than the watch face.
+ var m=$('mode');modeChanged();if(m&&m.value!=='theme')heroOther();
+ segs();syncNight();paintRanges();hostChanged();apSummary();locSummary();
+ var want=location.hash.slice(1),first=document.querySelector('nav button');
+ if(!(want&&$(want)&&(document.querySelector('nav button[data-t="'+want+'"]')||PAGEAPP[want])))want=first?first.dataset.t:'';
+ showTab(want)}
+document.addEventListener('input',function(e){var t=e.target;if(t.type!=='range')return;paintRange(t);
+ if(t.closest('main')&&!t.closest('[data-manual]'))autoSave()});
+document.addEventListener('change',function(e){var t=e.target;
+ if(t.type==='range'||t.type==='file'||!t.closest('main')||t.closest('[data-manual]')||t.hasAttribute('data-nosave'))return;
+ if(t.classList.contains('segsrc'))segSync(t);
+ if(/^loc(Lat|Lon|Res)$/.test(t.id))locSummary();
+ if(t.id==='mode')heroPaint();
+ autoSave()});
+
+lzPage(document.body);
+loadConfig().then(loadStatus,loadStatus);   // the status polls on, whatever the config did
+</script>
+</body></html>
