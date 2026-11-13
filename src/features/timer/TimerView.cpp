@@ -63,20 +63,8 @@ void layout(State st, uint32_t leftMs, uint32_t totalMs, const char* label,
   char w[40];
   if (label && *label) gm::displayTextTo(out.label, sizeof(out.label), label);
   else appdraw::word(kWords, lang * 4, out.label, sizeof(out.label));
-  // A long name is cut, with "...", to fit inside the ring (and the buffer).
-  if (appdraw::width(TextStyle::Caption, out.label) > kLabelMax) {
-    const size_t len = strlen(out.label);
-    size_t n = len < sizeof(out.label) - 4 ? len : sizeof(out.label) - 4;
-    char cut[sizeof(out.label)];
-    for (;;) {
-      while (n && out.label[n - 1] == ' ') --n;   // no space before the dots
-      memcpy(cut, out.label, n);
-      memcpy(cut + n, "...", 4);
-      if (!n || appdraw::width(TextStyle::Caption, cut) <= kLabelMax) break;
-      --n;
-    }
-    memcpy(out.label, cut, sizeof(out.label));
-  }
+  // A long name is cut, with "...", to fit inside the ring.
+  appdraw::cutToWidth(TextStyle::Caption, out.label, sizeof(out.label), kLabelMax);
   if (st == State::Paused) appdraw::word(kWords, lang * 4 + 2, out.sub, sizeof(out.sub));
   else if (st == State::Running && endHour >= 0) {
     appdraw::entry(kWords, lang * 4 + 1, w, sizeof(w));

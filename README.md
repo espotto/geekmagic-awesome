@@ -10,7 +10,7 @@ apps, styled after Apple's watch faces and settings.
 
 ## Features
 
-- **Apps:** watch faces, Calendar, Reminders, Weather, Timer, Pomodoro. Show one, or let
+- **Apps:** watch faces, Calendar, Reminders, Weather, Timer, Pomodoro, Exchange Rates. Show one, or let
   the screen rotate through several with a soft fade.
 - **Watch faces:** two built in, *Modular* (digital, with the weather) and
   *Utility* (analog). More can be installed as packages; you can make your own.

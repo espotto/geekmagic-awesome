@@ -130,6 +130,36 @@ void PomodoroSettings::fromJson(JsonObjectConst o) {
 }
 
 // ===========================================================================
+// Exchange Rates slice
+// ===========================================================================
+void CurrencySettings::setDefaults() { codes = "USD,EUR,CNY"; }
+
+void CurrencySettings::toJson(JsonObject o) const { o["codes"] = codes; }
+
+// Up to four three-letter codes, comma-separated; anything else is ignored.
+void CurrencySettings::fromJson(JsonObjectConst o) {
+  if (!o["codes"].is<const char*>()) return;
+  const char* in = o["codes"];
+  String out;
+  int n = 0, k = 0;
+  char code[4] = {0};
+  for (const char* p = in;; ++p) {
+    const char c = *p;
+    if (c == ',' || c == 0) {
+      if (k == 3 && n < 4 && out.indexOf(code) < 0) { if (n++) out += ','; out += code; }
+      k = 0;
+      if (!c) break;
+    } else if (c == ' ') {
+      continue;
+    } else {
+      const char u = (c >= 'a' && c <= 'z') ? c - 32 : c;
+      if (u < 'A' || u > 'Z' || k >= 3) k = 9; else code[k++] = u;
+    }
+  }
+  if (n) codes = out;
+}
+
+// ===========================================================================
 // Web UI password slice
 // ===========================================================================
 void AuthSettings::setDefaults() {
@@ -230,6 +260,7 @@ void Settings::setDefaults() {
   carouselWeather = false;
   carouselTimer = false;
   carouselPomodoro = false;
+  carouselCurrency = false;
   httpTimeout = DEFAULT_HTTP_TIMEOUT;
 
   brightness = DEFAULT_BRIGHTNESS;
@@ -242,6 +273,7 @@ void Settings::setDefaults() {
   auth.setDefaults();
   button.setDefaults();
   pomodoro.setDefaults();
+  currency.setDefaults();
 }
 
 // ---------------------------------------------------------------------------
@@ -318,6 +350,7 @@ void settingsToJson(const Settings& s, JsonObject root, bool includeSecrets) {
                             : (s.mode == MODE_WEATHER) ? "weather"
                             : (s.mode == MODE_TIMER) ? "timer"
                             : (s.mode == MODE_POMODORO) ? "pomodoro"
+                            : (s.mode == MODE_CURRENCY) ? "currency"
                             : (s.mode == MODE_CAROUSEL) ? "carousel" : "theme";
   root["carouselSec"]       = s.carouselSec;
   root["carouselTheme"]     = s.carouselTheme;
@@ -326,6 +359,7 @@ void settingsToJson(const Settings& s, JsonObject root, bool includeSecrets) {
   root["carouselWeather"]   = s.carouselWeather;
   root["carouselTimer"]     = s.carouselTimer;
   root["carouselPomodoro"]  = s.carouselPomodoro;
+  root["carouselCurrency"]  = s.carouselCurrency;
   root["httpTimeout"]       = s.httpTimeout;
   root["brightness"]        = s.brightness;
   root["autoBrightness"]    = s.autoBrightness;
@@ -338,6 +372,7 @@ void settingsToJson(const Settings& s, JsonObject root, bool includeSecrets) {
   s.auth.toJson(root["auth"].to<JsonObject>(), includeSecrets);
   s.button.toJson(root["button"].to<JsonObject>());
   s.pomodoro.toJson(root["pomodoro"].to<JsonObject>());
+  s.currency.toJson(root["currency"].to<JsonObject>());
 }
 
 // Apply only the keys that are present (partial update friendly). Accepts both
@@ -393,6 +428,7 @@ void settingsApplyJson(Settings& s, JsonObjectConst root) {
            : m.equalsIgnoreCase("weather") ? MODE_WEATHER
            : m.equalsIgnoreCase("timer") ? MODE_TIMER
            : m.equalsIgnoreCase("pomodoro") ? MODE_POMODORO
+           : m.equalsIgnoreCase("currency") ? MODE_CURRENCY
            : m.equalsIgnoreCase("carousel") ? MODE_CAROUSEL
            // apps this firmware no longer has: the watch face instead
            : (m.equalsIgnoreCase("stocks") || m.equalsIgnoreCase("radar") || m.equalsIgnoreCase("ha") ||
@@ -415,6 +451,7 @@ void settingsApplyJson(Settings& s, JsonObjectConst root) {
   if (root["carouselWeather"].is<bool>()) s.carouselWeather = root["carouselWeather"];
   if (root["carouselTimer"].is<bool>()) s.carouselTimer = root["carouselTimer"];
   if (root["carouselPomodoro"].is<bool>()) s.carouselPomodoro = root["carouselPomodoro"];
+  if (root["carouselCurrency"].is<bool>()) s.carouselCurrency = root["carouselCurrency"];
 
   if (root["httpTimeout"].is<int>())        s.httpTimeout = constrain((int)root["httpTimeout"], 1000, 20000);
   if (root["brightness"].is<int>())         s.brightness = constrain((int)root["brightness"], 0, 100);
@@ -428,6 +465,7 @@ void settingsApplyJson(Settings& s, JsonObjectConst root) {
   if (root["auth"].is<JsonObjectConst>()) s.auth.fromJson(root["auth"].as<JsonObjectConst>());
   if (root["button"].is<JsonObjectConst>()) s.button.fromJson(root["button"].as<JsonObjectConst>());
   if (root["pomodoro"].is<JsonObjectConst>()) s.pomodoro.fromJson(root["pomodoro"].as<JsonObjectConst>());
+  if (root["currency"].is<JsonObjectConst>()) s.currency.fromJson(root["currency"].as<JsonObjectConst>());
 
   // The sun schedule and the light sensor each pick the brightness alone: not
   // both. Whichever this save turned on wins; if both arrive on (or both were

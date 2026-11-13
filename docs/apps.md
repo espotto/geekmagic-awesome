@@ -74,6 +74,23 @@ banner says so and the screen goes back.
 curl -X POST http://geekmagic.local/api/timer -d '{"start":300,"label":"Tea"}'
 ```
 
+## Exchange Rates
+
+The Bank of Russia's official rates in roubles for up to four currencies, laid
+out like a phone's Stocks app: the code and name on the left, the rate on the
+right with the change since the previous day on a green, red or grey pill.
+Rates under 1 rouble show four decimals (per yen, per sum). The currencies are
+chosen on the app's page from twenty (`currency.codes` in `/api/config`, e.g.
+`"USD,EUR,CNY"`, the default). Fetched from
+[cbr-xml-daily.ru](https://www.cbr-xml-daily.ru) over plain HTTP every 30
+minutes while the app is on the screen; the Bank sets new rates once a working
+day.
+
+| Request | Does |
+| --- | --- |
+| `GET /api/currency` | `{"valid":true,"date":"14.11","rates":[{"code":"USD","value":82.15,"prev":82.98}],"age":120}` (`age` in seconds) |
+| `POST /api/currency` | Fetches again the next time the app is on the screen |
+
 ## Pomodoro
 
 Focus sessions and breaks on the Timer's ring: red for focus, green for the
