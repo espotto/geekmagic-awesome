@@ -117,5 +117,5 @@ over the set number of minutes.
 | `POST /api/config` | Changes the settings in the JSON body (only the keys present); a Wi‑Fi change restarts the device |
 | `GET /api/export` / `POST /api/import` | The full settings file, passwords included / restore it and restart |
 | `GET /api/scan` | Wi‑Fi networks in range |
-| `POST /api/reboot`, `POST /api/factory` | Restart / erase the settings, reminders and watch faces and restart as new |
+| `POST /api/reboot`, `POST /api/factory` | Restart / erase the settings, reminders and added watch faces (the built-in ones stay) and restart as new |
 | `POST /update` | A firmware image as `multipart/form-data` field `firmware` |
