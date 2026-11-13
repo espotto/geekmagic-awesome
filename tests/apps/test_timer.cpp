@@ -5,6 +5,7 @@
 #include "nightstand/NightstandView.h"
 #include "ppm.h"
 #include <cassert>
+#include <cmath>
 #include <cstring>
 #include <iostream>
 using namespace timerview;
