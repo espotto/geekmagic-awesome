@@ -77,8 +77,11 @@ as an app*):
   the icons `/apple-touch-icon.png`, `/icon-192.png`, `/icon-512.png` come from
   `src/PwaAssets.h`. `tools/pwa_icon.py` draws the icons into `tools/pwa/`,
   `tools/gen_pwa.py` writes the header; run both after changing an icon or
-  the manifest. They are served without the password (a phone fetches them
-  without credentials) and cached for a week.
+  the manifest; it also writes `?v=<content hash>` into the links (the
+  manifest's icon list and the `<link>`s in `webui.html`), because a phone
+  caches them for a week and iOS takes a home-screen icon from that cache.
+  They are served without the password (a phone fetches them without
+  credentials).
 - The `apple-mobile-web-app-*` meta tags give iOS a full-screen app with a
   translucent status bar; the page pads itself with `env(safe-area-inset-*)`.
 - The viewport has `maximum-scale=1`, which most browsers obey. Safari

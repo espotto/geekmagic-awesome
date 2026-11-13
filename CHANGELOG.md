@@ -9,6 +9,9 @@ The firmware is `geekmagic-<version>`; every release adds 0.01.
   fetches the image from this repository.
 - Releases are built, tested and published by GitHub Actions from a version
   tag.
+- A changed home-screen icon reaches the phone: the icon and manifest links
+  carry a content hash, so a phone no longer adds the app with an old cached
+  icon.
 
 ## 1.40 — 2026-11-13
 
